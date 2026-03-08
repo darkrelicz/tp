@@ -8,7 +8,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 
 /**
- * Edits the details of an existing person in the address book.
+ * Edits the details of an existing person in the address book as per subcommand
  */
 public abstract class EditCommand extends Command {
 

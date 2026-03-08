@@ -293,34 +293,60 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 (For all use cases below, the **System** is `TutorFlow` and the **Actor** is the `Tutor`, unless specified otherwise)
 
+
 ---
 
+**Use case: View all students**
+
+**MSS**
+1. Tutor requests to view all students.
+2. TutorFlow shows all the students available in the system.
+
+Use case ends
+
+**Extensions**
+* 2a. There are no students available in the system
+    * 2a1. TutorFlow informs the tutor that there are no students recorded.
+
+Use case ends.
+
+---
+**Use case: View appointment details for the week**
+
+**MSS**
+1. Tutor requests to view appointments for a given week.
+2. TutorFlow retrieves the appointments for the target week.
+3. TutorFlow displays the list of appointments and their details.
+
+Use case ends.
+
+**Extensions**
+* 1a. Tutor provides an invalid request.
+    * 1a1. TutorFlow indicates that the request is invalid and asks for a valid date.
+    * 1a2. Steps 1 to 1a2 are repeated until a valid request is provided.
+* Use case resumes at step 2
+
+* 4a. No appointments exist for the target week.
+    * 4a1. TutorFlow indicates that there are no appointments.
+* Use case ends.
+
+---
 **Use case: Add appointment details for a student**
 
 **MSS**
-
-1. Tutor requests to list students.
-2. TutorFlow shows the list of students.
-3. Tutor selects a student.
-4. Tutor enters appointment details for the student.
-5. TutorFlow records the appointment details and displays confirmation.
+1. Tutor **View all students.**
+2. Tutor selects a student.
+3. Tutor enters appointment details for the student.
+4. TutorFlow records the appointment details and displays confirmation.
 
 Use case ends.
 
 **Extensions**
 
-* 2a. The student list is empty.
-
-  * 2a1. TutorFlow informs the tutor that there are no students recorded.
-
-  Use case ends.
-
 * 4a. The tutor enters invalid appointment details.
-
-  * 4a1. TutorFlow shows an error message.
-  * 4a2. Tutor re-enters valid appointment details.
-
-  Use case resumes at step 5.
+    * 4a1. TutorFlow requests for correct data.
+    * 4a2. Step 4-4a2 are repeated until the tutor enters valid appointment details.  
+* Use case resumes at step 5.
 
 ---
 
@@ -341,15 +367,13 @@ Use case ends.
 * 2a. The student list is empty.
 
   * 2a1. TutorFlow informs the tutor that there are no students recorded.
-
-  Use case ends.
+* Use case ends.
 
 * 4a. The tutor enters invalid payment information.
 
   * 4a1. TutorFlow shows an error message.
   * 4a2. Tutor re-enters the payment information.
-
-  Use case resumes at step 5.
+* Use case resumes at step 5.
 
   **Use case: Add Parent Details with Student Contact**
 

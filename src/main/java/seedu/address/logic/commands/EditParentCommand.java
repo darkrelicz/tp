@@ -61,7 +61,8 @@ public class EditParentCommand extends EditCommand {
                 personToEdit.getEmail(),
                 personToEdit.getAddress(),
                 personToEdit.getTags(),
-                Optional.of(parentName));
+                Optional.of(parentName),
+                personToEdit.getAppointmentStart());
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);

@@ -1,5 +1,6 @@
 package seedu.address.logic;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,8 +43,10 @@ public class Messages {
                 .append("; Email: ")
                 .append(person.getEmail())
                 .append("; Address: ")
-                .append(person.getAddress())
-                .append("; Tags: ");
+                .append(person.getAddress());
+        person.getAppointmentStart().ifPresent(start -> builder.append("; Lesson start: ")
+                .append(start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+        builder.append("; Tags: ");
         person.getTags().forEach(builder::append);
         person.getParentName().ifPresent(pn -> builder.append("; Parent: ").append(pn));
         return builder.toString();

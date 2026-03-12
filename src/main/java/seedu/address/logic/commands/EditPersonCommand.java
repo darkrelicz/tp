@@ -98,7 +98,8 @@ public class EditPersonCommand extends EditCommand {
         Set<Tag> currentTags = personToEdit.getTags();
         Optional<ParentName> preservedParentName = personToEdit.getParentName();
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, currentTags, preservedParentName);
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, currentTags, preservedParentName,
+                personToEdit.getAppointmentStart());
     }
 
     @Override

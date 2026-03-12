@@ -2,6 +2,7 @@ package seedu.address.model.person;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,27 +26,29 @@ public class Person {
     // Data fields
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
+    private final Optional<LocalDateTime> appointmentStart;
     private final Optional<ParentName> parentName;
 
     /**
      * Every field must be present and not null. parentName defaults to empty.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        this(name, phone, email, address, tags, Optional.empty());
+        this(name, phone, email, address, tags, Optional.empty(), Optional.empty());
     }
 
     /**
-     * Constructor that includes an optional parentName.
+     * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
-            Optional<ParentName> parentName) {
-        requireAllNonNull(name, phone, email, address, tags, parentName);
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Optional<ParentName> parentName,
+            Optional<LocalDateTime> appointmentStart) {
+        requireAllNonNull(name, phone, email, address, tags, parentName, appointmentStart);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
         this.parentName = parentName;
+        this.appointmentStart = appointmentStart;
     }
 
     public Name getName() {
@@ -62,6 +65,10 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public Optional<LocalDateTime> getAppointmentStart() {
+        return appointmentStart;
     }
 
     /**
@@ -113,13 +120,15 @@ public class Person {
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
-                && parentName.equals(otherPerson.parentName);
+                && parentName.equals(otherPerson.parentName)
+                && appointmentStart.equals(otherPerson.appointmentStart);
+
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, parentName);
+        return Objects.hash(name, phone, email, address, tags, parentName, appointmentStart);
     }
 
     @Override
@@ -131,6 +140,7 @@ public class Person {
                 .add("address", address)
                 .add("tags", tags)
                 .add("parentName", parentName.orElse(null))
+                .add("appointmentStart", appointmentStart)
                 .toString();
     }
 

@@ -3,9 +3,11 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.APPOINTMENT_START_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_ADDRESS_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_APPOINTMENT_START_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_EMAIL_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
@@ -13,11 +15,13 @@ import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_APPOINTMENT_START;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_APPOINTMENT_START;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -26,10 +30,13 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_THIRD_PERSON;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
+import seedu.address.logic.commands.EditApptCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditPersonCommand;
 import seedu.address.logic.commands.EditPersonCommand.EditPersonDescriptor;
@@ -46,6 +53,8 @@ public class EditCommandParserTest {
 
     private static final String MESSAGE_INVALID_PERSON_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditPersonCommand.MESSAGE_USAGE);
+    private static final String MESSAGE_INVALID_APPT_FORMAT =
+            String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditApptCommand.MESSAGE_USAGE);
 
     private EditCommandParser parser = new EditCommandParser();
 
@@ -59,6 +68,9 @@ public class EditCommandParserTest {
 
         // valid subcommand but no field specified
         assertParseFailure(parser, "person 1", EditCommand.MESSAGE_NOT_EDITED);
+
+        // valid appt subcommand but no field specified
+        assertParseFailure(parser, "appt 1", EditCommand.MESSAGE_NOT_EDITED);
 
         // no input at all
         assertParseFailure(parser, "", MESSAGE_INVALID_FORMAT);
@@ -77,6 +89,9 @@ public class EditCommandParserTest {
 
         // invalid prefix being parsed as preamble
         assertParseFailure(parser, "person 1 i/ string", MESSAGE_INVALID_PERSON_FORMAT);
+
+        // invalid prefix being parsed as preamble for appt
+        assertParseFailure(parser, "appt 1 i/ string", MESSAGE_INVALID_APPT_FORMAT);
     }
 
     @Test
@@ -93,6 +108,10 @@ public class EditCommandParserTest {
         assertParseFailure(parser,
                 "person 1" + INVALID_NAME_DESC + INVALID_EMAIL_DESC + VALID_ADDRESS_AMY + VALID_PHONE_AMY,
                 Name.MESSAGE_CONSTRAINTS);
+
+        // invalid appointment start
+        assertParseFailure(parser, "appt 1" + INVALID_APPOINTMENT_START_DESC,
+                ParserUtil.MESSAGE_INVALID_DATE_TIME);
     }
 
     @Test
@@ -147,6 +166,12 @@ public class EditCommandParserTest {
         descriptor = new EditPersonDescriptorBuilder().withAddress(VALID_ADDRESS_AMY).build();
         expectedCommand = new EditPersonCommand(targetIndex, descriptor);
         assertParseSuccess(parser, userInput, expectedCommand);
+
+        // appointment start
+        userInput = "appt " + targetIndex.getOneBased() + APPOINTMENT_START_DESC;
+        EditApptCommand expectedApptCommand = new EditApptCommand(targetIndex,
+                LocalDateTime.parse(VALID_APPOINTMENT_START));
+        assertParseSuccess(parser, userInput, expectedApptCommand);
     }
 
     @Test
@@ -180,5 +205,10 @@ public class EditCommandParserTest {
 
         assertParseFailure(parser, userInput,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS));
+
+        // duplicate appointment start
+        userInput = "appt " + targetIndex.getOneBased() + APPOINTMENT_START_DESC + APPOINTMENT_START_DESC;
+        assertParseFailure(parser, userInput,
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_APPOINTMENT_START));
     }
 }

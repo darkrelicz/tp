@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import seedu.address.logic.commands.EditApptCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditParentCommand;
 import seedu.address.logic.commands.EditPersonCommand;
@@ -28,6 +29,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         parsers.put(EditPersonCommand.SUB_COMMAND_WORD, new EditPersonCommandParser());
         parsers.put(EditParentCommand.SUB_COMMAND_WORD, new EditParentCommandParser());
         parsers.put(EditTagCommand.SUB_COMMAND_WORD, new EditTagCommandParser());
+        parsers.put(EditApptCommand.SUB_COMMAND_WORD, new EditApptCommandParser());
         this.subCommandParsers = Collections.unmodifiableMap(parsers);
     }
 

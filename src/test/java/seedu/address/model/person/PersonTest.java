@@ -88,13 +88,18 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_JC).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different appointment start -> returns false
+        editedAlice = new PersonBuilder(ALICE).withAppointmentStart("2026-01-13T08:00:00").build();
+        assertFalse(ALICE.equals(editedAlice));
     }
 
     @Test
     public void toStringMethod() {
         String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress() + ", tags=" + ALICE.getTags()
-                + ", parentName=" + ALICE.getParentName().orElse(null) + "}";
+                + ", parentName=" + ALICE.getParentName().orElse(null)
+                + ", appointmentStart=" + ALICE.getAppointmentStart() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

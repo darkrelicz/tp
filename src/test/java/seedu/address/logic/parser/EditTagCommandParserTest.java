@@ -101,7 +101,7 @@ public class EditTagCommandParserTest {
     @Test
     public void parse_resetTags_success() {
         Index targetIndex = INDEX_FIRST_PERSON;
-        String userInput = targetIndex.getOneBased() + TAG_EMPTY;
+        String userInput = targetIndex.getOneBased() + "";
 
         EditTagDescriptor descriptor = new EditTagDescriptor();
         descriptor.setTags(Set.of());
@@ -109,5 +109,13 @@ public class EditTagCommandParserTest {
         EditTagCommand expectedCommand = new EditTagCommand(targetIndex, descriptor);
 
         assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_emptyTag_failure() {
+        Index targetIndex = INDEX_FIRST_PERSON;
+        String userInput = targetIndex.getOneBased() + TAG_EMPTY;
+
+        assertParseFailure(parser, userInput, Tag.MESSAGE_CONSTRAINTS);
     }
 }

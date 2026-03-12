@@ -8,11 +8,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
-import seedu.address.commons.util.CollectionUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -76,7 +74,7 @@ public class EditTagCommand extends EditCommand {
     private static Person createEditedPerson(Person personToEdit, EditTagDescriptor editTagDescriptor) {
         assert personToEdit != null;
 
-        Set<Tag> updatedTags = editTagDescriptor.getTags().orElse(Collections.emptySet());
+        Set<Tag> updatedTags = editTagDescriptor.getTags();
 
         return new Person(
                 personToEdit.getName(),
@@ -114,7 +112,7 @@ public class EditTagCommand extends EditCommand {
      */
     public static class EditTagDescriptor {
 
-        private Set<Tag> tags;
+        private Set<Tag> tags = new HashSet<>();
 
         public EditTagDescriptor() {}
 
@@ -126,24 +124,17 @@ public class EditTagCommand extends EditCommand {
         }
 
         /**
-         * Returns true if tags are edited.
-         */
-        public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(tags);
-        }
-
-        /**
          * Sets {@code tags}.
          */
         public void setTags(Set<Tag> tags) {
-            this.tags = (tags != null) ? new HashSet<>(tags) : null;
+            this.tags = new HashSet<>(tags);
         }
 
         /**
          * Returns an unmodifiable tag set.
          */
-        public Optional<Set<Tag>> getTags() {
-            return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
+        public Set<Tag> getTags() {
+            return Collections.unmodifiableSet(tags);
         }
 
         @Override

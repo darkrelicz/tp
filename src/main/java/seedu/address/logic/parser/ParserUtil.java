@@ -58,12 +58,8 @@ public class ParserUtil {
      * @throws ParseException if the given {@code parentName} is invalid.
      */
     public static ParentName parseParentName(String parentName) throws ParseException {
-        requireNonNull(parentName);
-        String trimmedParentName = parentName.trim();
-        if (!ParentName.isValidParentName(trimmedParentName)) {
-            throw new ParseException(ParentName.MESSAGE_CONSTRAINTS);
-        }
-        return new ParentName(trimmedParentName);
+        Name name = parseName(parentName);
+        return new ParentName(name.fullName);
     }
 
     /**

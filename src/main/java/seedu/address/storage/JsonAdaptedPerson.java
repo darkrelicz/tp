@@ -111,8 +111,8 @@ class JsonAdaptedPerson {
 
         ParentName modelParentName = null;
         if (parentName != null) {
-            if (!ParentName.isValidParentName(parentName)) {
-                throw new IllegalValueException(ParentName.MESSAGE_CONSTRAINTS);
+            if (!Name.isValidName(parentName)) {
+                throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS);
             }
             modelParentName = new ParentName(parentName);
         }

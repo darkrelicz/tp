@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditTagCommand;
-import seedu.address.logic.commands.EditTagCommand.EditTagDescriptor;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -77,10 +76,9 @@ public class EditTagCommandParserTest {
         Index targetIndex = INDEX_FIRST_PERSON;
         String userInput = targetIndex.getOneBased() + TAG_DESC_JC;
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag(VALID_TAG_JC)));
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC));
 
-        EditTagCommand expectedCommand = new EditTagCommand(targetIndex, descriptor);
+        EditTagCommand expectedCommand = new EditTagCommand(targetIndex, tags);
 
         assertParseSuccess(parser, userInput, expectedCommand);
     }
@@ -90,10 +88,9 @@ public class EditTagCommandParserTest {
         Index targetIndex = INDEX_SECOND_PERSON;
         String userInput = targetIndex.getOneBased() + TAG_DESC_JC + TAG_DESC_GROUP1;
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag(VALID_TAG_JC), new Tag(VALID_TAG_GROUP1)));
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC), new Tag(VALID_TAG_GROUP1));
 
-        EditTagCommand expectedCommand = new EditTagCommand(targetIndex, descriptor);
+        EditTagCommand expectedCommand = new EditTagCommand(targetIndex, tags);
 
         assertParseSuccess(parser, userInput, expectedCommand);
     }
@@ -103,10 +100,9 @@ public class EditTagCommandParserTest {
         Index targetIndex = INDEX_FIRST_PERSON;
         String userInput = targetIndex.getOneBased() + "";
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of());
+        Set<Tag> tags = Set.of();
 
-        EditTagCommand expectedCommand = new EditTagCommand(targetIndex, descriptor);
+        EditTagCommand expectedCommand = new EditTagCommand(targetIndex, tags);
 
         assertParseSuccess(parser, userInput, expectedCommand);
     }

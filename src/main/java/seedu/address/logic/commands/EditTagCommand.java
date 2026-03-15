@@ -4,10 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
@@ -16,6 +14,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -37,23 +36,24 @@ public class EditTagCommand extends EditCommand {
     public static final String MESSAGE_EDIT_TAG_SUCCESS = "Edited Tags for Person: %1$s";
 
     private final Index index;
-    private final EditTagDescriptor editTagDescriptor;
+    private final Set<Tag> tags;
 
     /**
      * @param index of the person in the filtered person list to edit
-     * @param editTagDescriptor details to edit the tags with
+     * @param tags new tag set (empty set means clear all tags)
      */
-    public EditTagCommand(Index index, EditTagDescriptor editTagDescriptor) {
+    public EditTagCommand(Index index, Set<Tag> tags) {
         requireNonNull(index);
-        requireNonNull(editTagDescriptor);
+        requireNonNull(tags);
 
         this.index = index;
-        this.editTagDescriptor = new EditTagDescriptor(editTagDescriptor);
+        this.tags = new HashSet<>(tags);
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+
         List<Person> lastShownList = model.getFilteredPersonList();
 
         if (index.getZeroBased() >= lastShownList.size()) {
@@ -61,27 +61,16 @@ public class EditTagCommand extends EditCommand {
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
-        Person editedPerson = createEditedPerson(personToEdit, editTagDescriptor);
+
+        Person editedPerson = new PersonBuilder(personToEdit)
+                .withTags(tags)
+                .build();
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        return new CommandResult(String.format(MESSAGE_EDIT_TAG_SUCCESS, Messages.format(editedPerson)));
-    }
 
-    /**
-     * Creates and returns a {@code Person} with updated tags.
-     */
-    private static Person createEditedPerson(Person personToEdit, EditTagDescriptor editTagDescriptor) {
-        assert personToEdit != null;
-
-        Set<Tag> updatedTags = editTagDescriptor.getTags();
-
-        return new Person(
-                personToEdit.getName(),
-                personToEdit.getPhone(),
-                personToEdit.getEmail(),
-                personToEdit.getAddress(),
-                updatedTags);
+        return new CommandResult(
+                String.format(MESSAGE_EDIT_TAG_SUCCESS, Messages.format(editedPerson)));
     }
 
     @Override
@@ -96,66 +85,14 @@ public class EditTagCommand extends EditCommand {
 
         EditTagCommand otherCommand = (EditTagCommand) other;
         return index.equals(otherCommand.index)
-                && editTagDescriptor.equals(otherCommand.editTagDescriptor);
+                && tags.equals(otherCommand.tags);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("index", index)
-                .add("editTagDescriptor", editTagDescriptor)
+                .add("tags", tags)
                 .toString();
-    }
-
-    /**
-     * Stores the details to edit the tag set.
-     */
-    public static class EditTagDescriptor {
-
-        private Set<Tag> tags = new HashSet<>();
-
-        public EditTagDescriptor() {}
-
-        /**
-         * Copy constructor.
-         */
-        public EditTagDescriptor(EditTagDescriptor toCopy) {
-            setTags(toCopy.tags);
-        }
-
-        /**
-         * Sets {@code tags}.
-         */
-        public void setTags(Set<Tag> tags) {
-            this.tags = new HashSet<>(tags);
-        }
-
-        /**
-         * Returns an unmodifiable tag set.
-         */
-        public Set<Tag> getTags() {
-            return Collections.unmodifiableSet(tags);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other == this) {
-                return true;
-            }
-
-            if (!(other instanceof EditTagDescriptor)) {
-                return false;
-            }
-
-            EditTagDescriptor otherDescriptor = (EditTagDescriptor) other;
-            return Objects.equals(tags, otherDescriptor.tags);
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this)
-                    .add("tags", tags)
-                    .toString();
-        }
     }
 }

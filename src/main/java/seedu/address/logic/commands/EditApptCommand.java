@@ -15,6 +15,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonBuilder;
 
 /**
  * Edits the appointment start date-time of an existing person in the address book.
@@ -57,9 +58,9 @@ public class EditApptCommand extends EditCommand {
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
-        Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
-                personToEdit.getAddress(), personToEdit.getTags(), personToEdit.getParentName(),
-                Optional.of(appointmentStart));
+        Person editedPerson = new PersonBuilder(personToEdit)
+                .withAppointmentStart(Optional.of(appointmentStart))
+                .build();
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);

@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
-import seedu.address.logic.commands.EditTagCommand.EditTagDescriptor;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
@@ -38,10 +37,9 @@ public class EditTagCommandTest {
     public void execute_replaceTagsUnfilteredList_success() {
         Person personInList = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag(VALID_TAG_JC), new Tag(VALID_TAG_GROUP1)));
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC), new Tag(VALID_TAG_GROUP1));
 
-        EditTagCommand editCommand = new EditTagCommand(INDEX_FIRST_PERSON, descriptor);
+        EditTagCommand editCommand = new EditTagCommand(INDEX_FIRST_PERSON, tags);
 
         Person editedPerson = new PersonBuilder(personInList)
                 .withTags(VALID_TAG_JC, VALID_TAG_GROUP1)
@@ -60,10 +58,9 @@ public class EditTagCommandTest {
     public void execute_clearTags_success() {
         Person personInList = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of());
+        Set<Tag> tags = Set.of();
 
-        EditTagCommand editCommand = new EditTagCommand(INDEX_FIRST_PERSON, descriptor);
+        EditTagCommand editCommand = new EditTagCommand(INDEX_FIRST_PERSON, tags);
 
         Person editedPerson = new PersonBuilder(personInList)
                 .withTags()
@@ -84,10 +81,9 @@ public class EditTagCommandTest {
 
         Person personInFilteredList = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag(VALID_TAG_JC)));
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC));
 
-        EditTagCommand editCommand = new EditTagCommand(INDEX_FIRST_PERSON, descriptor);
+        EditTagCommand editCommand = new EditTagCommand(INDEX_FIRST_PERSON, tags);
 
         Person editedPerson = new PersonBuilder(personInFilteredList)
                 .withTags(VALID_TAG_JC)
@@ -106,24 +102,22 @@ public class EditTagCommandTest {
     public void execute_invalidPersonIndexUnfilteredList_failure() {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
 
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag(VALID_TAG_JC)));
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC));
 
-        EditTagCommand editCommand = new EditTagCommand(outOfBoundIndex, descriptor);
+        EditTagCommand editCommand = new EditTagCommand(outOfBoundIndex, tags);
 
         assertCommandFailure(editCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
     @Test
     public void equals() {
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag(VALID_TAG_JC)));
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC));
 
-        final EditTagCommand standardCommand = new EditTagCommand(INDEX_FIRST_PERSON, descriptor);
+        final EditTagCommand standardCommand = new EditTagCommand(INDEX_FIRST_PERSON, tags);
 
         // same values -> returns true
-        EditTagDescriptor copyDescriptor = new EditTagDescriptor(descriptor);
-        EditTagCommand commandWithSameValues = new EditTagCommand(INDEX_FIRST_PERSON, copyDescriptor);
+        Set<Tag> copyTags = Set.of(new Tag(VALID_TAG_JC));
+        EditTagCommand commandWithSameValues = new EditTagCommand(INDEX_FIRST_PERSON, copyTags);
         assertTrue(standardCommand.equals(commandWithSameValues));
 
         // same object -> returns true
@@ -136,17 +130,22 @@ public class EditTagCommandTest {
         assertFalse(standardCommand.equals(new ClearCommand()));
 
         // different index -> returns false
-        assertFalse(standardCommand.equals(new EditTagCommand(INDEX_SECOND_PERSON, descriptor)));
+        assertFalse(standardCommand.equals(new EditTagCommand(INDEX_SECOND_PERSON, tags)));
+
+        // different tags -> returns false
+        Set<Tag> differentTags = Set.of(new Tag("DIFFERENT"));
+        assertFalse(standardCommand.equals(new EditTagCommand(INDEX_FIRST_PERSON, differentTags)));
     }
 
     @Test
     public void toStringMethod() {
         Index index = Index.fromOneBased(1);
-        EditTagDescriptor descriptor = new EditTagDescriptor();
-        EditTagCommand command = new EditTagCommand(index, descriptor);
+        Set<Tag> tags = Set.of(new Tag(VALID_TAG_JC));
+
+        EditTagCommand command = new EditTagCommand(index, tags);
 
         String expected = EditTagCommand.class.getCanonicalName()
-                + "{index=" + index + ", editTagDescriptor=" + descriptor + "}";
+                + "{index=" + index + ", tags=" + tags + "}";
 
         assertEquals(expected, command.toString());
     }

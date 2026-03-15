@@ -75,10 +75,9 @@ public class AddressBookParserTest {
                         + EditTagCommand.SUB_COMMAND_WORD + " "
                         + INDEX_FIRST_PERSON.getOneBased() + " t/friend");
 
-        EditTagCommand.EditTagDescriptor descriptor = new EditTagCommand.EditTagDescriptor();
-        descriptor.setTags(Set.of(new Tag("friend")));
+        Set<Tag> tags = Set.of(new Tag("friend"));
 
-        assertEquals(new EditTagCommand(INDEX_FIRST_PERSON, descriptor), command);
+        assertEquals(new EditTagCommand(INDEX_FIRST_PERSON, tags), command);
     }
 
     @Test

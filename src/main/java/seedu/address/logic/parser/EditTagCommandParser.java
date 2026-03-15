@@ -8,7 +8,6 @@ import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditTagCommand;
-import seedu.address.logic.commands.EditTagCommand.EditTagDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.tag.Tag;
 
@@ -38,11 +37,8 @@ public class EditTagCommandParser implements Parser<EditTagCommand> {
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditTagCommand.MESSAGE_USAGE), pe);
         }
 
-        EditTagDescriptor editTagDescriptor = new EditTagDescriptor();
-
         Set<Tag> tags = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
-        editTagDescriptor.setTags(tags);
 
-        return new EditTagCommand(index, editTagDescriptor);
+        return new EditTagCommand(index, tags);
     }
 }

@@ -14,6 +14,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.ParentName;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonBuilder;
 
 /**
  * Edits the parent name of an existing person in the address book.
@@ -55,14 +56,9 @@ public class EditParentCommand extends EditCommand {
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
-        Person editedPerson = new Person(
-                personToEdit.getName(),
-                personToEdit.getPhone(),
-                personToEdit.getEmail(),
-                personToEdit.getAddress(),
-                personToEdit.getTags(),
-                Optional.of(parentName),
-                personToEdit.getAppointmentStart());
+        Person editedPerson = new PersonBuilder(personToEdit)
+                .withParentName(Optional.of(parentName))
+                .build();
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);

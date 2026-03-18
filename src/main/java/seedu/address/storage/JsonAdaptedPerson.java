@@ -85,7 +85,7 @@ class JsonAdaptedPerson {
                 .collect(Collectors.toList()));
         parentName = source.getParentName().map(pn -> pn.fullName).orElse(null);
         paymentDate = source.getPaymentDate()
-            .map(value -> value.format(DateTimeFormatter.ISO_LOCAL_DATE))
+            .map(value -> value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .orElse(null);
     }
 

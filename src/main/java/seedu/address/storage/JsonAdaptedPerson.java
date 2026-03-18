@@ -31,7 +31,9 @@ class JsonAdaptedPerson {
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
     private static final String APPOINTMENT_START_MESSAGE_CONSTRAINTS =
             "Appointment start date-time must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
-    private static final DateTimeFormatter APPOINTMENT_START_FORMATTER =
+    private static final String LAST_ATTENDANCE_MESSAGE_CONSTRAINTS =
+            "Last attendance date-time must be in ISO 8601 local format, e.g. 2026-01-29T08:00:00";
+    private static final DateTimeFormatter DATETIME_FORMATTER =
             DateTimeFormatter.ISO_LOCAL_DATE_TIME.withResolverStyle(ResolverStyle.STRICT);
 
     private final String name;
@@ -39,6 +41,7 @@ class JsonAdaptedPerson {
     private final String email;
     private final String address;
     private final String appointmentStart;
+    private final String lastAttendance;
     private final String parentName; // optional, may be null
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
 
@@ -50,13 +53,15 @@ class JsonAdaptedPerson {
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("parentName") String parentName,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
-            @JsonProperty("appointmentStart") String appointmentStart) {
+            @JsonProperty("appointmentStart") String appointmentStart,
+            @JsonProperty("lastAttendance") String lastAttendance) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.parentName = parentName;
         this.appointmentStart = appointmentStart;
+        this.lastAttendance = lastAttendance;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -73,6 +78,9 @@ class JsonAdaptedPerson {
         appointmentStart = source.getAppointmentStart()
                 .map(value -> value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .orElse(null);
+        lastAttendance = source.getLastAttendance()
+            .map(value -> value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            .orElse(null);
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -125,9 +133,18 @@ class JsonAdaptedPerson {
         LocalDateTime modelAppointmentStart = null;
         if (appointmentStart != null) {
             try {
-                modelAppointmentStart = LocalDateTime.parse(appointmentStart, APPOINTMENT_START_FORMATTER);
+                modelAppointmentStart = LocalDateTime.parse(appointmentStart, DATETIME_FORMATTER);
             } catch (DateTimeParseException e) {
                 throw new IllegalValueException(APPOINTMENT_START_MESSAGE_CONSTRAINTS);
+            }
+        }
+
+        LocalDateTime modelLastAttendance = null;
+        if (lastAttendance != null) {
+            try {
+                modelLastAttendance = LocalDateTime.parse(lastAttendance, DATETIME_FORMATTER);
+            } catch (DateTimeParseException e) {
+                throw new IllegalValueException(LAST_ATTENDANCE_MESSAGE_CONSTRAINTS);
             }
         }
 

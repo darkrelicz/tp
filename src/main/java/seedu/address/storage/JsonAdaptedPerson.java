@@ -152,7 +152,7 @@ class JsonAdaptedPerson {
         }
         final Set<Tag> modelTags = new HashSet<>(personTags);
 
-        // ---------- Subjects (optional level supported) ----------
+        // ---------- Subjects ----------
         final List<Subject> personSubjects = new ArrayList<>();
         if (subjects != null) {
             for (JsonAdaptedSubject subject : subjects) {

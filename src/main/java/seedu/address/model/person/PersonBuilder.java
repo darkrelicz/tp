@@ -34,6 +34,7 @@ public class PersonBuilder {
         this.tags = new HashSet<>(tags);
         this.parentName = Optional.empty();
         this.appointmentStart = Optional.empty();
+        this.paymentDate = Optional.empty();
         this.lastAttendance = Optional.empty();
     }
 

@@ -20,8 +20,9 @@ public class PersonTest {
 
     @Test
     public void asObservableList_modifyList_throwsUnsupportedOperationException() {
-        Person person = new PersonBuilder().build();
-        assertThrows(UnsupportedOperationException.class, () -> person.getTags().remove(0));
+        Person person = new PersonBuilder().withTags("friend").build();
+        assertThrows(UnsupportedOperationException.class, () ->
+                person.getTags().stream().findAny().ifPresent(person.getTags()::remove));
     }
 
     @Test

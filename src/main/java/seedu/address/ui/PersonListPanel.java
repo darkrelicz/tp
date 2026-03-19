@@ -2,6 +2,7 @@ package seedu.address.ui;
 
 import java.util.logging.Logger;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
@@ -27,6 +28,22 @@ public class PersonListPanel extends UiPart<Region> {
         super(FXML);
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
+    }
+
+    /**
+     * Returns the selected person property from the list view.
+     */
+    public ReadOnlyObjectProperty<Person> selectedPersonProperty() {
+        return personListView.getSelectionModel().selectedItemProperty();
+    }
+
+    /**
+     * Selects the first person in the list if available.
+     */
+    public void selectFirstPerson() {
+        if (!personListView.getItems().isEmpty()) {
+            personListView.getSelectionModel().selectFirst();
+        }
     }
 
     /**

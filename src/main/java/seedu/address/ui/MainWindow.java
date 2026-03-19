@@ -33,6 +33,7 @@ public class MainWindow extends UiPart<Stage> {
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private PersonDetailPanel personDetailPanel;
     private AppointmentListPanel appointmentListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
@@ -46,6 +47,9 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane listPanelPlaceholder;
+
+    @FXML
+    private StackPane personDetailPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -118,6 +122,9 @@ public class MainWindow extends UiPart<Stage> {
         listPanelPlaceholder.getChildren().add(personListPanel.getRoot());
         isAppointmentPanelVisible = false;
 
+        personDetailPanel = new PersonDetailPanel();
+        personDetailPanelPlaceholder.getChildren().add(personDetailPanel.getRoot());
+
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
 
@@ -126,6 +133,10 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+
+        personListPanel.selectedPersonProperty().addListener((observable, oldValue, newValue)
+                -> personDetailPanel.displayPerson(newValue));
+        personListPanel.selectFirstPerson();
     }
 
     /**

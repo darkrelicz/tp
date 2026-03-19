@@ -171,7 +171,6 @@ class JsonAdaptedPerson {
             modelParentEmail = new ParentEmail(parentEmail);
         }
 
-        LocalDateTime modelPaymentDate = null;
         LocalDate modelPaymentDate = null;
         if (paymentDate != null) {
             try {

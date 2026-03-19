@@ -32,14 +32,6 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
-    private static final String APPOINTMENT_START_MESSAGE_CONSTRAINTS = "Appointment start date-time must be in "
-            + "ISO 8601 local format, e.g. 2026-01-13T08:00:00";
-    private static final DateTimeFormatter APPOINTMENT_START_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-            .withResolverStyle(ResolverStyle.STRICT);
-    private static final String PAYMENT_DATE_MESSAGE_CONSTRAINTS = "Payment date must be in ISO 8601 local format, "
-            + "e.g. 2026-01-13T08:00:00";
-    private static final DateTimeFormatter PAYMENT_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-            .withResolverStyle(ResolverStyle.STRICT);
     private static final String APPOINTMENT_START_MESSAGE_CONSTRAINTS =
             "Appointment start date-time must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
     private static final DateTimeFormatter APPOINTMENT_START_FORMATTER =

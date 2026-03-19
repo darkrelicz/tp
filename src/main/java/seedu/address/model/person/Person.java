@@ -31,7 +31,6 @@ public class Person {
     private final Optional<ParentName> parentName;
     private final Optional<ParentPhone> parentPhone;
     private final Optional<ParentEmail> parentEmail;
-    private final Optional<LocalDateTime> paymentDate;
     private final Optional<LocalDate> paymentDate;
 
     /**

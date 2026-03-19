@@ -1,5 +1,6 @@
 package seedu.address.storage;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -37,6 +38,8 @@ class JsonAdaptedPerson {
     private static final String PAYMENT_DATE_MESSAGE_CONSTRAINTS =
         "Payment date must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE
+            .withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter DATETIME_FORMATTER =
             DateTimeFormatter.ISO_LOCAL_DATE_TIME.withResolverStyle(ResolverStyle.STRICT);
 
@@ -169,10 +172,10 @@ class JsonAdaptedPerson {
             modelParentName = new ParentName(parentName);
         }
 
-        LocalDateTime modelPaymentDate = null;
+        LocalDate modelPaymentDate = null;
         if (paymentDate != null) {
             try {
-                modelPaymentDate = LocalDateTime.parse(paymentDate, DATETIME_FORMATTER);
+                modelPaymentDate = LocalDate.parse(paymentDate, DATE_FORMATTER);
             } catch (DateTimeParseException e) {
                 throw new IllegalValueException(PAYMENT_DATE_MESSAGE_CONSTRAINTS);
             }

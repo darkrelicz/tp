@@ -2,6 +2,7 @@ package seedu.address.model.person;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ public class Person {
     private final Optional<LocalDateTime> appointmentStart;
     private final Optional<LocalDateTime> lastAttendance;
     private final Optional<ParentName> parentName;
-    private final Optional<LocalDateTime> paymentDate;
+    private final Optional<LocalDate> paymentDate;
 
     /**
      * Every field must be present and not null.
@@ -45,7 +46,7 @@ public class Person {
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
         Optional<ParentName> parentName, Optional<LocalDateTime> appointmentStart,
-        Optional<LocalDateTime> paymentDate, Optional<LocalDateTime> lastAttendance) {
+        Optional<LocalDate> paymentDate, Optional<LocalDateTime> lastAttendance) {
         requireAllNonNull(name, phone, email, address, tags,
             parentName, appointmentStart, paymentDate, lastAttendance);
         this.name = name;
@@ -79,7 +80,7 @@ public class Person {
         return appointmentStart;
     }
 
-    public Optional<LocalDateTime> getPaymentDate() {
+    public Optional<LocalDate> getPaymentDate() {
         return paymentDate;
     }
 

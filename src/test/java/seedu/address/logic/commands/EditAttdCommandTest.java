@@ -24,7 +24,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.PersonBuilder;
+import seedu.address.testutil.PersonBuilder;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for EditAttdCommand.
@@ -40,7 +40,7 @@ public class EditAttdCommandTest {
         EditAttdCommand editCommand = new EditAttdCommand(INDEX_FIRST_PERSON, Optional.of(lastAttendance));
 
         Person editedPerson = new PersonBuilder(personToEdit)
-            .withLastAttendance(Optional.of(lastAttendance))
+            .withLastAttendance(VALID_LAST_ATTENDANCE)
             .build();
         String expectedMessage = String.format(EditAttdCommand.MESSAGE_EDIT_ATTD_SUCCESS,
                 editedPerson.getName().fullName, lastAttendance.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));

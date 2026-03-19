@@ -12,7 +12,6 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.PersonBuilder;
+import seedu.address.testutil.PersonBuilder;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for EditApptCommand.
@@ -39,7 +38,7 @@ public class EditApptCommandTest {
         EditApptCommand editCommand = new EditApptCommand(INDEX_FIRST_PERSON, appointmentStart);
 
         Person editedPerson = new PersonBuilder(personToEdit)
-            .withAppointmentStart(Optional.of(appointmentStart))
+            .withAppointmentStart(VALID_APPOINTMENT_START)
             .build();
         String expectedMessage = String.format(EditApptCommand.MESSAGE_EDIT_APPT_SUCCESS,
                 editedPerson.getName().fullName, appointmentStart.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));

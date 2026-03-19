@@ -1,7 +1,7 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_APPOINTMENT_START;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,9 +25,9 @@ public class EditPaymentCommand extends EditCommand {
         + ": Records the day tuition fees was paid by the person identified "
         + "by the index number used in the displayed person list.\n"
         + "Parameters: payment INDEX (must be a positive integer) "
-        + PREFIX_APPOINTMENT_START + "DATE\n"
+        + PREFIX_DATE + "DATE\n"
         + "Example: " + COMMAND_WORD + " " + SUB_COMMAND_WORD + " 1 "
-        + PREFIX_APPOINTMENT_START + "2026-01-13";
+        + PREFIX_DATE + "2026-01-13";
 
     public static final String MESSAGE_EDIT_PAYMENT_SUCCESS = "Recorded date tuition fees paid by %1$s: %2$s";
 

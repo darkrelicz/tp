@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.billing.Billing;
+import seedu.address.model.billing.Payment;
 import seedu.address.model.subject.Subject;
 import seedu.address.model.tag.Tag;
 
@@ -34,7 +36,8 @@ public class Person {
     private final Optional<Name> parentName;
     private final Optional<Phone> parentPhone;
     private final Optional<Email> parentEmail;
-    private final Optional<LocalDate> paymentDate;
+    private final Billing billing;
+    private final Payment payment;
 
     /**
      * Creates a {@code Person} with the given core fields and tags.
@@ -44,7 +47,24 @@ public class Person {
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
         this(name, phone, email, address, tags, new HashSet<>(),
                 Optional.empty(), Optional.empty(), Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.empty());
+                Optional.empty(), Billing.defaultBilling(), Payment.EMPTY, Optional.empty());
+    }
+
+    /**
+     * Creates a Person using legacy paymentDate field as convenience for compatibility.
+     */
+    public Person(Name name, Phone phone, Email email, Address address,
+                  Set<Tag> tags, Set<Subject> subjects,
+                  Optional<Name> parentName, Optional<Phone> parentPhone, Optional<Email> parentEmail,
+                  Optional<LocalDateTime> appointmentStart,
+                  Optional<LocalDate> paymentDate,
+                  Optional<LocalDateTime> lastAttendance) {
+        this(name, phone, email, address, tags, subjects,
+                parentName, parentPhone, parentEmail,
+                appointmentStart,
+                Billing.defaultBilling(),
+                paymentDate.map(Payment::withInitialDate).orElse(Payment.EMPTY),
+                lastAttendance);
     }
 
     /**
@@ -54,12 +74,13 @@ public class Person {
                   Set<Tag> tags, Set<Subject> subjects,
                   Optional<Name> parentName, Optional<Phone> parentPhone, Optional<Email> parentEmail,
                   Optional<LocalDateTime> appointmentStart,
-                  Optional<LocalDate> paymentDate,
+                  Billing billing,
+                  Payment payment,
                   Optional<LocalDateTime> lastAttendance) {
 
         requireAllNonNull(name, phone, email, address, tags, subjects,
                 parentName, parentPhone, parentEmail,
-                appointmentStart, paymentDate, lastAttendance);
+                appointmentStart, billing, payment, lastAttendance);
 
         this.name = name;
         this.phone = phone;
@@ -72,7 +93,8 @@ public class Person {
         this.parentEmail = parentEmail;
         this.appointmentStart = appointmentStart;
         this.lastAttendance = lastAttendance;
-        this.paymentDate = paymentDate;
+        this.billing = billing;
+        this.payment = payment;
     }
 
     public Name getName() {
@@ -95,8 +117,12 @@ public class Person {
         return appointmentStart;
     }
 
-    public Optional<LocalDate> getPaymentDate() {
-        return paymentDate;
+    public Billing getBilling() {
+        return billing;
+    }
+
+    public Payment getPayment() {
+        return payment;
     }
 
     public Optional<LocalDateTime> getLastAttendance() {
@@ -178,7 +204,8 @@ public class Person {
                 && parentPhone.equals(otherPerson.parentPhone)
                 && parentEmail.equals(otherPerson.parentEmail)
                 && appointmentStart.equals(otherPerson.appointmentStart)
-                && paymentDate.equals(otherPerson.paymentDate)
+                && billing.equals(otherPerson.billing)
+                && payment.equals(otherPerson.payment)
                 && lastAttendance.equals(otherPerson.lastAttendance);
     }
 
@@ -187,7 +214,7 @@ public class Person {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, phone, email, address, tags, subjects,
                 parentName, parentPhone, parentEmail,
-                appointmentStart, paymentDate, lastAttendance);
+                appointmentStart, billing, payment, lastAttendance);
     }
 
     @Override
@@ -203,7 +230,8 @@ public class Person {
                 .add("parentPhone", parentPhone.orElse(null))
                 .add("parentEmail", parentEmail.orElse(null))
                 .add("appointmentStart", appointmentStart)
-                .add("paymentDate", paymentDate)
+                .add("billing", billing)
+                .add("payment", payment)
                 .add("lastAttendance", lastAttendance)
                 .toString();
     }

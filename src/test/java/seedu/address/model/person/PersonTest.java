@@ -1,8 +1,11 @@
 package seedu.address.model.person;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
@@ -14,6 +17,7 @@ import static seedu.address.testutil.TypicalPersons.BOB;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.billing.Payment;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonTest {
@@ -95,7 +99,9 @@ public class PersonTest {
         assertFalse(ALICE.equals(editedAlice));
 
         // different payment date -> returns false
-        editedAlice = new PersonBuilder(ALICE).withPaymentDate("2026-01-13").build();
+        LocalDate differentPaymentDate = LocalDate.parse("2026-01-13");
+        Payment differentPaymentHistory = Payment.withInitialDate(differentPaymentDate);
+        editedAlice = new PersonBuilder(ALICE).withPayment(differentPaymentHistory).build();
         assertFalse(ALICE.equals(editedAlice));
 
         // different last attendance -> returns false
@@ -116,7 +122,8 @@ public class PersonTest {
                 + ", parentPhone=" + ALICE.getParentPhone().orElse(null)
                 + ", parentEmail=" + ALICE.getParentEmail().orElse(null)
                 + ", appointmentStart=" + ALICE.getAppointmentStart()
-                + ", paymentDate=" + ALICE.getPaymentDate()
+                + ", billing=" + ALICE.getBilling() 
+                + ", payment=" + ALICE.getPayment()
                 + ", lastAttendance=" + ALICE.getLastAttendance()
                 + "}";
 

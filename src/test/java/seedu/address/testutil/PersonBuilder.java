@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import seedu.address.model.billing.Billing;
+import seedu.address.model.billing.Payment;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -25,6 +27,7 @@ public class PersonBuilder {
     public static final String DEFAULT_PHONE = "85355255";
     public static final String DEFAULT_EMAIL = "amy@gmail.com";
     public static final String DEFAULT_ADDRESS = "123, Jurong West Ave 6, #08-111";
+    public static final LocalDate DEFAULT_PAYMENT_DATE = LocalDate.of(2026, 02, 10); 
 
     private Name name;
     private Phone phone;
@@ -36,7 +39,8 @@ public class PersonBuilder {
     private Phone parentPhone;
     private Email parentEmail;
     private LocalDateTime appointmentStart;
-    private LocalDate paymentDate;
+    private Billing billing;
+    private Payment payment;
     private LocalDateTime lastAttendance;
 
     /**
@@ -53,7 +57,8 @@ public class PersonBuilder {
         parentPhone = null;
         parentEmail = null;
         appointmentStart = null;
-        paymentDate = null;
+        billing = Billing.defaultBilling();
+        payment = Payment.EMPTY;
         lastAttendance = null;
     }
 
@@ -71,8 +76,9 @@ public class PersonBuilder {
         parentPhone = personToCopy.getParentPhone().orElse(null);
         parentEmail = personToCopy.getParentEmail().orElse(null);
         appointmentStart = personToCopy.getAppointmentStart().orElse(null);
+        billing = personToCopy.getBilling();
+        payment = personToCopy.getPayment();
         lastAttendance = personToCopy.getLastAttendance().orElse(null);
-        paymentDate = personToCopy.getPaymentDate().orElse(null);
     }
 
     /**
@@ -177,10 +183,18 @@ public class PersonBuilder {
     }
 
     /**
-     * Sets the payment date of the {@code Person} that we are building.
+     * Sets the {@code Billing} information of the {@code Person} that we are building.
      */
-    public PersonBuilder withPaymentDate(String paymentDate) {
-        this.paymentDate = LocalDate.parse(paymentDate);
+    public PersonBuilder withBilling(Billing billing) {
+        this.billing = billing;
+        return this;
+    }
+
+    /**
+     * Sets the {@code Payment} history of the {@code Person} that we are building.
+     */
+    public PersonBuilder withPayment(Payment payment) {
+        this.payment = payment;
         return this;
     }
 
@@ -193,7 +207,8 @@ public class PersonBuilder {
                 Optional.ofNullable(parentPhone),
                 Optional.ofNullable(parentEmail),
                 Optional.ofNullable(appointmentStart),
-                Optional.ofNullable(paymentDate),
+                billing,
+                payment,
                 Optional.ofNullable(lastAttendance));
     }
 }

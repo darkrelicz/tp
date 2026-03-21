@@ -16,6 +16,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.billing.Billing;
+import seedu.address.model.billing.Payment;
+import seedu.address.model.billing.Recurrence;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -53,7 +56,9 @@ class JsonAdaptedPerson {
     private final String parentName; // optional, may be null
     private final String parentPhone; // optional, may be null
     private final String parentEmail; // optional, may be null
-    private final String paymentDate;
+    private final List<String> paymentDates;
+    private final String paymentRecurrence;
+    private final Double billingMonthlyRate;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<JsonAdaptedSubject> subjects = new ArrayList<>();
 
@@ -69,7 +74,9 @@ class JsonAdaptedPerson {
             @JsonProperty("parentPhone") String parentPhone,
             @JsonProperty("parentEmail") String parentEmail,
             @JsonProperty("appointmentStart") String appointmentStart,
-            @JsonProperty("paymentDate") String paymentDate,
+            @JsonProperty("paymentDates") List<String> paymentDates,
+            @JsonProperty("paymentRecurrence") String paymentRecurrence,
+            @JsonProperty("billingMonthlyRate") Double billingMonthlyRate,
             @JsonProperty("lastAttendance") String lastAttendance) {
         this.name = name;
         this.phone = phone;
@@ -79,7 +86,9 @@ class JsonAdaptedPerson {
         this.parentPhone = parentPhone;
         this.parentEmail = parentEmail;
         this.appointmentStart = appointmentStart;
-        this.paymentDate = paymentDate;
+        this.paymentDates = paymentDates;
+        this.paymentRecurrence = paymentRecurrence;
+        this.billingMonthlyRate = billingMonthlyRate;
         this.lastAttendance = lastAttendance;
         if (tags != null) {
             this.tags.addAll(tags);
@@ -112,7 +121,11 @@ class JsonAdaptedPerson {
         parentName = source.getParentName().map(pn -> pn.fullName).orElse(null);
         parentPhone = source.getParentPhone().map(pp -> pp.value).orElse(null);
         parentEmail = source.getParentEmail().map(pe -> pe.value).orElse(null);
-        paymentDate = source.getPaymentDate().map(value -> value.format(DateTimeFormatter.ISO_LOCAL_DATE)).orElse(null);
+        paymentDates = source.getPayment().getPaidDates().stream()
+                .map(value -> value.format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .collect(java.util.stream.Collectors.toList());
+        paymentRecurrence = source.getPayment().getRecurrence().name();
+        billingMonthlyRate = source.getBilling().getMonthlyRate();
     }
 
     /**
@@ -213,13 +226,40 @@ class JsonAdaptedPerson {
         }
 
         // ---------- Payment ----------
-        LocalDate modelPaymentDate = null;
-        if (paymentDate != null) {
-            try {
-                modelPaymentDate = LocalDate.parse(paymentDate, DATE_FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalValueException(PAYMENT_DATE_MESSAGE_CONSTRAINTS);
+
+        Set<LocalDate> modelPaidDates = new java.util.LinkedHashSet<>();
+        if (paymentDates != null) {
+            for (String dateString : paymentDates) {
+                try {
+                    modelPaidDates.add(LocalDate.parse(dateString, DATE_FORMATTER));
+                } catch (DateTimeParseException e) {
+                    throw new IllegalValueException(PAYMENT_DATE_MESSAGE_CONSTRAINTS);
+                }
             }
+        }
+
+        Recurrence modelRecurrence = Recurrence.MONTHLY;
+        if (paymentRecurrence != null) {
+            try {
+                modelRecurrence = Recurrence.valueOf(paymentRecurrence);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalValueException(
+                    "Payment recurrence must be one of: BIWEEKLY, MONTHLY, NONE");
+            }
+        }
+
+        Payment modelPayment;
+        if (!modelPaidDates.isEmpty()) {
+            modelPayment = new Payment(modelRecurrence, modelPaidDates);
+        } else {
+            modelPayment = Payment.EMPTY;
+        }
+
+        Billing modelBilling;
+        if (billingMonthlyRate == null) {
+            modelBilling = Billing.defaultBilling();
+        } else {
+            modelBilling = new Billing(billingMonthlyRate);
         }
 
         // ---------- Last attendance ----------
@@ -238,7 +278,8 @@ class JsonAdaptedPerson {
             .withParentPhone(Optional.ofNullable(modelParentPhone))
             .withParentEmail(Optional.ofNullable(modelParentEmail))
             .withAppointmentStart(Optional.ofNullable(modelAppointmentStart))
-            .withPaymentDate(Optional.ofNullable(modelPaymentDate))
+            .withBilling(modelBilling)
+            .withPayment(modelPayment)
             .withLastAttendance(Optional.ofNullable(modelLastAttendance))
             .build();
     }

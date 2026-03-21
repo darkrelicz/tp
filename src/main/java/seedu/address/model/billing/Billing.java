@@ -20,12 +20,13 @@ public class Billing {
     private final LocalDate paymentDueDate;
     private final double tuitionFee;
     private final PaymentHistory paymentHistory;
+    private final double tuitionFee;
 
     /**
      * Creates a billing record with a tuition fee
      * @param tuitionFee A non-negative amount
      */
-    public Billing(Recurrence recurrence, LocalDate paymentDueDate, double tuitionfee, PaymentHistory paymentHistory) {
+    public Billing(Recurrence recurrence, LocalDate paymentDueDate, Double tuitionfee, PaymentHistory paymentHistory) {
         requireNonNull(recurrence);
         requireNonNull(paymentDueDate);
         requireNonNull(paymentHistory);
@@ -56,7 +57,16 @@ public class Billing {
         return paymentDueDate;
     }
 
-    public double getTuitionFee() {
+    /**
+     * Returns a new {@code Billing} object with updated monthly rate
+     * @return {@code Billing} object with updated monthly rate
+     */
+    public Billing updateRate(Double newMonthlyRate) {
+        checkArgument(newMonthlyRate >= 0, "Monthly rate must be non-negative");
+        return new Billing(newMonthlyRate);
+    }
+
+    public Double getTuitionFee() {
         return tuitionFee;
     }
 

@@ -29,7 +29,7 @@
     "phone" : "95352563",
     "email" : "heinz@example.com",
     "address" : "wall street",
-    "tags" : [ "school", "neighbour" ],
+    "tags" : [ ],
     "academics": {
       "subjects": []
     }

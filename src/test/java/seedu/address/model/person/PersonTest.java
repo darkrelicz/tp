@@ -111,7 +111,7 @@ public class PersonTest {
                 + ", email=" + ALICE.getEmail()
                 + ", address=" + ALICE.getAddress()
                 + ", tags=" + ALICE.getTags()
-                + ", subjects=" + ALICE.getSubjects()
+                + ", academics=" + ALICE.getAcademics()
                 + ", parentName=" + ALICE.getParentName().orElse(null)
                 + ", parentPhone=" + ALICE.getParentPhone().orElse(null)
                 + ", parentEmail=" + ALICE.getParentEmail().orElse(null)

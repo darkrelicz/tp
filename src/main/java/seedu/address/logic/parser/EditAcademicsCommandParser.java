@@ -13,6 +13,7 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditAcademicsCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.academic.Academics;
 import seedu.address.model.academic.Level;
 import seedu.address.model.academic.LevelUtil;
 import seedu.address.model.academic.Subject;
@@ -21,7 +22,7 @@ import seedu.address.model.academic.Subject;
  * Parses input arguments and creates a new {@code EditAcademicsCommand} object.
  * STRICT version: enforces level must immediately follow subject.
  */
-public class EditSubjectCommandParser implements Parser<EditAcademicsCommand> {
+public class EditAcademicsCommandParser implements Parser<EditAcademicsCommand> {
 
     @Override
     public EditAcademicsCommand parse(String args) throws ParseException {
@@ -46,7 +47,7 @@ public class EditSubjectCommandParser implements Parser<EditAcademicsCommand> {
 
         // No subjects → clear
         if (split.length == 1) {
-            return new EditAcademicsCommand(index, new HashSet<>());
+            return new EditAcademicsCommand(index, new Academics());
         }
 
         String remainder = split[1];
@@ -107,6 +108,6 @@ public class EditSubjectCommandParser implements Parser<EditAcademicsCommand> {
             }
         }
 
-        return new EditAcademicsCommand(index, new HashSet<>(subjects));
+        return new EditAcademicsCommand(index, new Academics(new HashSet<>(subjects)));
     }
 }

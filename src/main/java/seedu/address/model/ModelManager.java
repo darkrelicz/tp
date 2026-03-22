@@ -24,6 +24,8 @@ public class ModelManager implements Model {
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private Predicate<Person> currentFilterPredicate;
+    private final Set<Person> preservedPersons;
     private ListDisplayMode listDisplayMode;
 
     /**
@@ -37,6 +39,8 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        currentFilterPredicate = PREDICATE_SHOW_ALL_PERSONS;
+        preservedPersons = new HashSet<>();
         listDisplayMode = ListDisplayMode.PERSON;
     }
 
@@ -84,6 +88,8 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        preservedPersons.clear();
+        applyEffectiveFilterPredicate();
     }
 
     @Override
@@ -100,6 +106,7 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
+        preservedPersons.remove(target);
     }
 
     @Override
@@ -112,23 +119,12 @@ public class ModelManager implements Model {
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
 
-        // Widen the current filter predicate to also match the edited person if a filter is applied
-        Predicate<? super Person> currentPredicate = filteredPersons.getPredicate();
-        if (currentPredicate != null && currentPredicate != PREDICATE_SHOW_ALL_PERSONS) {
-            if (currentPredicate instanceof PredicateWithPinnedPersons) {
-                PredicateWithPinnedPersons pinnedPredicate = (PredicateWithPinnedPersons) currentPredicate;
-                Set<Person> newPinned = new HashSet<>(pinnedPredicate.pinnedPersons);
-                newPinned.remove(target);
-                newPinned.add(editedPerson);
-                filteredPersons.setPredicate(new PredicateWithPinnedPersons(pinnedPredicate.basePredicate, newPinned));
-            } else {
-                Set<Person> newPinned = new HashSet<>();
-                newPinned.add(editedPerson);
-                filteredPersons.setPredicate(new PredicateWithPinnedPersons(currentPredicate, newPinned));
-            }
+        preservedPersons.remove(target);
+        if (hasActiveFilter()) {
+            preservedPersons.add(editedPerson);
         }
-
         addressBook.setPerson(target, editedPerson);
+        applyEffectiveFilterPredicate();
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -145,7 +141,32 @@ public class ModelManager implements Model {
     @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
-        filteredPersons.setPredicate(predicate);
+        if (predicate == PREDICATE_SHOW_ALL_PERSONS) {
+            preservedPersons.clear();
+        }
+        currentFilterPredicate = predicate;
+        applyEffectiveFilterPredicate();
+    }
+
+    @Override
+    public void updateFilteredPersonListWithAnd(Predicate<Person> predicate) {
+        requireNonNull(predicate);
+
+        Predicate<? super Person> previousDisplayedPredicate = filteredPersons.getPredicate();
+
+        // If there is no previous filter, allow everyone; otherwise, keep the current displayed set.
+        Predicate<Person> displayedPredicate = person -> previousDisplayedPredicate == null
+                || previousDisplayedPredicate.test(person);
+
+        // Edited persons are preserved only until the next find command.
+        preservedPersons.clear();
+
+        if (currentFilterPredicate == PREDICATE_SHOW_ALL_PERSONS) {
+            currentFilterPredicate = predicate;
+        } else {
+            currentFilterPredicate = displayedPredicate.and(predicate);
+        }
+        applyEffectiveFilterPredicate();
     }
 
     @Override
@@ -177,38 +198,21 @@ public class ModelManager implements Model {
                 && listDisplayMode == otherModelManager.listDisplayMode;
     }
 
-    /**
-     * A predicate that evaluates to true if the person is in the pinned set,
-     * or if the base predicate evaluates to true.
-     */
-    private static class PredicateWithPinnedPersons implements Predicate<Person> {
-        private final Predicate<? super Person> basePredicate;
-        private final Set<Person> pinnedPersons;
+    private boolean hasActiveFilter() {
+        return currentFilterPredicate != PREDICATE_SHOW_ALL_PERSONS;
+    }
 
-        private PredicateWithPinnedPersons(Predicate<? super Person> basePredicate, Set<Person> pinnedPersons) {
-            this.basePredicate = basePredicate;
-            this.pinnedPersons = pinnedPersons;
+    private void applyEffectiveFilterPredicate() {
+        if (preservedPersons.isEmpty()) {
+            filteredPersons.setPredicate(currentFilterPredicate);
+            return;
         }
 
-        @Override
-        public boolean test(Person person) {
-            return pinnedPersons.contains(person) || basePredicate.test(person);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other == this) {
-                return true;
-            }
-
-            if (!(other instanceof PredicateWithPinnedPersons)) {
-                return false;
-            }
-
-            PredicateWithPinnedPersons otherPredicate = (PredicateWithPinnedPersons) other;
-            return basePredicate.equals(otherPredicate.basePredicate)
-                    && pinnedPersons.equals(otherPredicate.pinnedPersons);
-        }
+        Set<Person> pinnedSnapshot = new HashSet<>(preservedPersons);
+        Predicate<Person> basePredicateSnapshot = currentFilterPredicate;
+        Predicate<Person> effectivePredicate = person -> pinnedSnapshot.contains(person)
+                || basePredicateSnapshot.test(person);
+        filteredPersons.setPredicate(effectivePredicate);
     }
 
 }

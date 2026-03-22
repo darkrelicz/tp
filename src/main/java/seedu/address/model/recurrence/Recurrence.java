@@ -1,9 +1,7 @@
 package seedu.address.model.recurrence;
 
-import java.time.LocalDate;
-
 /**
- * Recurrence schedule options for tuition payment.
+ * Recurrence schedule options for recurring dates.
  */
 public enum Recurrence {
     WEEKLY(7),
@@ -15,7 +13,7 @@ public enum Recurrence {
 
     /**
      * Creates a {@code Recurrence} object with specified days
-     *      to next payment
+     *      to next schedule
      * @param days A valid integer
      */
     Recurrence(int days) {
@@ -24,17 +22,5 @@ public enum Recurrence {
 
     public int getDays() {
         return days;
-    }
-
-    /**
-     * Returns next due date
-     * @param lastPaidDate A valid date
-     * @return next due date
-     */
-    public LocalDate nextDueDate(LocalDate lastPaidDate) {
-        if (lastPaidDate == null || this == NONE) {
-            return null;
-        }
-        return lastPaidDate.plusDays(days);
     }
 }

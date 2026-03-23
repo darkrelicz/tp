@@ -169,9 +169,9 @@ public class EditParentCommand extends EditCommand {
         @Override
         public String toString() {
             return new ToStringBuilder(this)
-                    .add("parentName", parentName)
-                    .add("parentPhone", parentPhone)
-                    .add("parentEmail", parentEmail)
+                    .add("parentName", parentName.orElse(null))
+                    .add("parentPhone", parentPhone.orElse(null))
+                    .add("parentEmail", parentEmail.orElse(null))
                     .toString();
         }
     }

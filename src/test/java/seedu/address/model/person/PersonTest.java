@@ -13,8 +13,8 @@ import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -234,8 +234,8 @@ public class PersonTest {
                 + ", parentPhone=" + ALICE.getParentPhone().orElse(null)
                 + ", parentEmail=" + ALICE.getParentEmail().orElse(null)
                 + ", appointmentStart=" + ALICE.getAppointmentStart()
-                + ", billing=" + ALICE.getBilling()
                 + ", appointmentStarts=" + ALICE.getAppointmentStarts()
+                + ", billing=" + ALICE.getBilling()
                 + ", lastAttendance=" + ALICE.getLastAttendance()
                 + "}";
 

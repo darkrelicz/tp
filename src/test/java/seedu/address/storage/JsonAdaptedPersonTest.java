@@ -205,7 +205,7 @@ public class JsonAdaptedPersonTest {
     public void toModelType_invalidParentName_throwsIllegalValueException() {
         JsonAdaptedPerson person =
                 new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
-                        VALID_TAGS, VALID_SUBJECTS,
+                        VALID_TAGS, VALID_ACADEMICS,
                         INVALID_NAME, VALID_PARENT_PHONE, VALID_PARENT_EMAIL,
                         VALID_APPOINTMENT_START, VALID_PAYMENT_DATE, VALID_LAST_ATTENDANCE);
         String expectedMessage = Name.MESSAGE_CONSTRAINTS;
@@ -216,7 +216,7 @@ public class JsonAdaptedPersonTest {
     public void toModelType_invalidParentPhone_throwsIllegalValueException() {
         JsonAdaptedPerson person =
                 new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
-                        VALID_TAGS, VALID_SUBJECTS,
+                        VALID_TAGS, VALID_ACADEMICS,
                         VALID_PARENT_NAME, INVALID_PHONE, VALID_PARENT_EMAIL,
                         VALID_APPOINTMENT_START, VALID_PAYMENT_DATE, VALID_LAST_ATTENDANCE);
         String expectedMessage = Phone.MESSAGE_CONSTRAINTS;
@@ -227,7 +227,7 @@ public class JsonAdaptedPersonTest {
     public void toModelType_invalidParentEmail_throwsIllegalValueException() {
         JsonAdaptedPerson person =
                 new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
-                        VALID_TAGS, VALID_SUBJECTS,
+                        VALID_TAGS, VALID_ACADEMICS,
                         VALID_PARENT_NAME, VALID_PARENT_PHONE, INVALID_EMAIL,
                         VALID_APPOINTMENT_START, VALID_PAYMENT_DATE, VALID_LAST_ATTENDANCE);
         String expectedMessage = Email.MESSAGE_CONSTRAINTS;

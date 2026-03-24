@@ -14,6 +14,7 @@ import static seedu.address.testutil.TypicalPersons.BOB;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -136,6 +137,23 @@ public class PersonTest {
     }
 
     @Test
+    public void getAppointmentStarts_modifySet_throwsUnsupportedOperationException() {
+        Person person = new PersonBuilder().withAppointmentStart("2026-01-13T08:00:00").build();
+        assertThrows(UnsupportedOperationException.class, () -> person.getAppointmentStarts()
+                .add(LocalDateTime.parse("2026-01-14T08:00:00")));
+    }
+
+    @Test
+    public void getAppointmentStart_multipleAppointments_returnsEarliest() {
+        Person person = new Person(ALICE.getName(), ALICE.getPhone(), ALICE.getEmail(), ALICE.getAddress(),
+                ALICE.getTags(), ALICE.getAcademics(), ALICE.getParentName(), ALICE.getParentPhone(),
+                ALICE.getParentEmail(),
+                Set.of(LocalDateTime.parse("2026-01-15T08:00:00"), LocalDateTime.parse("2026-01-13T08:00:00")),
+                ALICE.getBilling(), ALICE.getLastAttendance());
+        assertEquals(LocalDateTime.parse("2026-01-13T08:00:00"), person.getAppointmentStart().orElseThrow());
+    }
+
+    @Test
     public void isSamePerson() {
         assertTrue(ALICE.isSamePerson(ALICE));
         assertFalse(ALICE.isSamePerson(null));
@@ -217,6 +235,7 @@ public class PersonTest {
                 + ", parentEmail=" + ALICE.getParentEmail().orElse(null)
                 + ", appointmentStart=" + ALICE.getAppointmentStart()
                 + ", billing=" + ALICE.getBilling()
+                + ", appointmentStarts=" + ALICE.getAppointmentStarts()
                 + ", lastAttendance=" + ALICE.getLastAttendance()
                 + "}";
 

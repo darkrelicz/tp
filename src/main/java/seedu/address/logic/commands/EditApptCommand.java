@@ -5,7 +5,6 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
@@ -47,7 +46,7 @@ public class EditApptCommand extends EditCommand {
     public CommandResult execute(Model model) throws CommandException {
         Person personToEdit = getTargetPerson(model);
         Person editedPerson = new PersonBuilder(personToEdit)
-                .withAppointmentStart(appointmentStart)
+                .withAppointmentStarts(appointmentStart)
                 .build();
 
         replacePerson(model, personToEdit, editedPerson);

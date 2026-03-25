@@ -38,6 +38,8 @@ public class ParserUtilTest {
     private static final String VALID_DATE = "2026-01-13";
     private static final String VALID_APPOINTMENT_START = "2026-01-13T08:00:00";
     private static final String VALID_APPOINTMENT_START_NO_SECONDS = "2026-01-13T08:00";
+    private static final String VALID_APPOINTMENT_START_WITH_SECONDS = "2026-01-13T08:00:59";
+    private static final String VALID_APPOINTMENT_START_WITH_NANOSECONDS = "2026-01-13T08:00:59.123456";
     private static final String VALID_TAG_1 = "friend";
     private static final String VALID_TAG_2 = "neighbour";
 
@@ -199,6 +201,13 @@ public class ParserUtilTest {
     public void parseIsoDateTime_validValueWithoutSeconds_returnsAppointmentStart() throws Exception {
         LocalDateTime expectedAppointmentStart = LocalDateTime.parse(VALID_APPOINTMENT_START);
         assertEquals(expectedAppointmentStart, ParserUtil.parseIsoDateTime(VALID_APPOINTMENT_START_NO_SECONDS));
+    }
+
+    @Test
+    public void parseIsoDateTime_validValueWithSecondsAndNanoseconds_returnsMinutePrecision() throws Exception {
+        LocalDateTime expectedAppointmentStart = LocalDateTime.parse(VALID_APPOINTMENT_START_NO_SECONDS);
+        assertEquals(expectedAppointmentStart, ParserUtil.parseIsoDateTime(VALID_APPOINTMENT_START_WITH_SECONDS));
+        assertEquals(expectedAppointmentStart, ParserUtil.parseIsoDateTime(VALID_APPOINTMENT_START_WITH_NANOSECONDS));
     }
 
     @Test

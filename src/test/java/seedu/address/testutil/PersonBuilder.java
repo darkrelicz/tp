@@ -13,6 +13,7 @@ import seedu.address.model.person.Guardian;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.session.Attendance;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
 
@@ -36,9 +37,9 @@ public class PersonBuilder {
     private Name parentName;
     private Phone parentPhone;
     private Email parentEmail;
-    private LocalDateTime appointmentStart;
+    private Set<LocalDateTime> appointmentStarts;
     private Billing billing;
-    private LocalDateTime lastAttendance;
+    private Attendance attendance;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -53,9 +54,9 @@ public class PersonBuilder {
         parentName = null;
         parentPhone = null;
         parentEmail = null;
-        appointmentStart = null;
+        appointmentStarts = new HashSet<>();
         billing = Billing.defaultBilling();
-        lastAttendance = null;
+        attendance = Attendance.EMPTY;
     }
 
     /**
@@ -72,9 +73,9 @@ public class PersonBuilder {
         parentName = guardianToCopy != null ? guardianToCopy.getName() : null;
         parentPhone = guardianToCopy != null ? guardianToCopy.getPhone().orElse(null) : null;
         parentEmail = guardianToCopy != null ? guardianToCopy.getEmail().orElse(null) : null;
-        appointmentStart = personToCopy.getAppointmentStart().orElse(null);
+        appointmentStarts = new HashSet<>(personToCopy.getAppointmentStarts());
         billing = personToCopy.getBilling();
-        lastAttendance = personToCopy.getLastAttendance().orElse(null);
+        attendance = personToCopy.getAttendance();
     }
 
     /**
@@ -150,18 +151,21 @@ public class PersonBuilder {
     }
 
     /**
-     * Sets the appointment start date-time of the {@code Person} that we are building.
+     * Sets the appointment start date-times of the {@code Person} that we are building.
      */
-    public PersonBuilder withAppointmentStart(String appointmentStart) {
-        this.appointmentStart = LocalDateTime.parse(appointmentStart);
+    public PersonBuilder withAppointmentStart(String... appointmentStartTimes) {
+        this.appointmentStarts.clear();
+        for (String dateTime : appointmentStartTimes) {
+            this.appointmentStarts.add(LocalDateTime.parse(dateTime));
+        }
         return this;
     }
 
     /**
-     * Sets the last attendance date-time of the {@code Person} that we are building.
+     * Adds an attendance date-time to the {@code Person} that we are building.
      */
-    public PersonBuilder withLastAttendance(String lastAttendance) {
-        this.lastAttendance = LocalDateTime.parse(lastAttendance);
+    public PersonBuilder addAttendance(String attendanceDateTime) {
+        this.attendance = this.attendance.addAttendance(LocalDateTime.parse(attendanceDateTime));
         return this;
     }
 
@@ -177,18 +181,13 @@ public class PersonBuilder {
      * Builds a {@code Person} with the current builder state.
      */
     public Person build() {
-        Guardian guardian = null;
-        if (parentName != null) {
-            guardian = new Guardian(parentName, parentPhone, parentEmail);
-        }
+        Guardian guardian = parentName != null ? new Guardian(parentName, parentPhone, parentEmail) : null;
         return new seedu.address.model.person.PersonBuilder(name, phone, email, address, tags)
                 .withAcademics(academics)
                 .withGuardian(guardian)
-                .withAppointmentStarts(appointmentStart == null
-                        ? new java.time.LocalDateTime[0]
-                        : new java.time.LocalDateTime[]{appointmentStart})
+                .withAppointmentStarts(appointmentStarts.toArray(new java.time.LocalDateTime[0]))
                 .withBilling(billing)
-                .withLastAttendance(lastAttendance)
+                .withAttendance(attendance)
                 .build();
     }
 }

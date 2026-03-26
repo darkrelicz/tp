@@ -8,6 +8,7 @@ import java.util.Set;
 
 import seedu.address.model.academic.Academics;
 import seedu.address.model.billing.Billing;
+import seedu.address.model.session.Attendance;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -23,7 +24,7 @@ public class PersonBuilder {
     private Academics academics;
     private Optional<Guardian> guardian;
     private Set<LocalDateTime> appointmentStarts;
-    private Optional<LocalDateTime> lastAttendance;
+    private Attendance attendance;
     private Billing billing;
 
     /**
@@ -39,7 +40,7 @@ public class PersonBuilder {
         this.academics = new Academics();
         this.guardian = Optional.empty();
         this.appointmentStarts = new HashSet<>();
-        this.lastAttendance = Optional.empty();
+        this.attendance = Attendance.EMPTY;
         this.billing = Billing.defaultBilling();
     }
 
@@ -55,7 +56,7 @@ public class PersonBuilder {
         this.academics = personToCopy.getAcademics();
         this.guardian = personToCopy.getGuardian();
         this.appointmentStarts = new HashSet<>(personToCopy.getAppointmentStarts());
-        this.lastAttendance = personToCopy.getLastAttendance();
+        this.attendance = personToCopy.getAttendance();
         this.billing = personToCopy.getBilling();
     }
 
@@ -159,12 +160,12 @@ public class PersonBuilder {
     }
 
     /**
-     * Sets the last attendance time of the {@code Person} being built.
-     * @param lastAttendance the optional last attendance time
+     * Sets the attendance history of the {@code Person} being built.
+     * @param attendance attendance history value object
      * @return this {@code PersonBuilder} instance for method chaining
      */
-    public PersonBuilder withLastAttendance(LocalDateTime lastAttendance) {
-        this.lastAttendance = Optional.ofNullable(lastAttendance);
+    public PersonBuilder withAttendance(Attendance attendance) {
+        this.attendance = attendance;
         return this;
     }
 
@@ -182,6 +183,6 @@ public class PersonBuilder {
                 guardian,
                 appointmentStarts,
                 billing,
-                lastAttendance);
+                attendance);
     }
 }

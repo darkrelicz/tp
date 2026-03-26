@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import seedu.address.commons.util.DateTimeUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.academic.Academics;
 import seedu.address.model.billing.Billing;
@@ -88,7 +89,9 @@ public class Person {
         this.parentPhone = parentPhone;
         this.parentEmail = parentEmail;
         appointmentStarts.forEach(Objects::requireNonNull);
-        this.appointmentStarts.addAll(appointmentStarts);
+        appointmentStarts.stream()
+            .map(DateTimeUtil::normalizeToMinute)
+            .forEach(this.appointmentStarts::add);
         this.attendance = attendance;
         this.billing = billing;
     }

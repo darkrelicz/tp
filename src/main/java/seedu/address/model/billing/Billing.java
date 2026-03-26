@@ -52,7 +52,7 @@ public class Billing {
         return recurrence;
     }
 
-    public LocalDate getLastDueDate() {
+    public LocalDate getCurrentDueDate() {
         return paymentDueDate;
     }
 

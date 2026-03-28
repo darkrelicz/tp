@@ -19,6 +19,7 @@ import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.recurrence.Recurrence;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -32,6 +33,8 @@ public class ParserUtil {
     public static final String MESSAGE_INVALID_DATE_TIME =
             "Date-time must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
     public static final String MESSAGE_INVALID_AMOUNT = "Amount must be a non-negative number.";
+    public static final String MESSAGE_INVALID_RECURRENCE =
+            "Recurrence must be one of: WEEKLY, BIWEEKLY, MONTHLY, NONE";
     private static final DateTimeFormatter ISO_LOCAL_DATE_FORMATTER =
             DateTimeFormatter.ISO_LOCAL_DATE.withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter ISO_LOCAL_DATE_TIME_FORMATTER =
@@ -198,6 +201,19 @@ public class ParserUtil {
             return parsedAmount;
         } catch (NumberFormatException e) {
             throw new ParseException(MESSAGE_INVALID_AMOUNT);
+        }
+    }
+
+    /**
+     * Parses a {@code String recurrence} into a {@code Recurrence}.
+     */
+    public static Recurrence parseRecurrence(String recurrence) throws ParseException {
+        requireNonNull(recurrence);
+        String trimmedRecurrence = recurrence.trim();
+        try {
+            return Recurrence.valueOf(trimmedRecurrence.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(MESSAGE_INVALID_RECURRENCE);
         }
     }
 

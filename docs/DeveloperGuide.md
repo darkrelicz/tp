@@ -176,6 +176,22 @@ How the `edit` command works:
 1. The command updates the `Model`, which replaces the target `Person` in the `AddressBook` while preserving the active filter.
 1. `LogicManager` detects that the address book changed and persists the updated state through `Storage`.
 
+### View appointments command
+
+The `viewappt` command is simpler than `edit`, so a single sequence diagram is enough. The example below uses `viewappt d/2026-02-13`.
+
+<img src="images/ViewApptSequenceDiagram.png" width="760" />
+
+How the `viewappt` command works:
+
+1. `AddressBookParser` recognizes `viewappt` and delegates the arguments to `ViewApptCommandParser`.
+1. `ViewApptCommandParser` parses the optional `d/DATE` value. If the date is omitted, it uses the current local date instead.
+1. `ViewApptCommand` constructs an `AppointmentInWeekPredicate`, which computes the Monday-Sunday week containing the target date.
+1. During execution, the command updates the filtered person list using that predicate so that only students with appointments in the target week remain visible.
+1. The command switches the `Model` display mode to `APPOINTMENT`, allowing the UI to show appointment details for the filtered students.
+1. The command returns a `CommandResult` containing the number of matching appointments and the computed week range.
+1. Unlike `edit`, `viewappt` does not modify the address book, so `LogicManager` does not save any data to storage after execution.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation

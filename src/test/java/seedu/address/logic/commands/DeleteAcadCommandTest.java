@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
+import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
@@ -110,6 +112,82 @@ public class DeleteAcadCommandTest {
     }
 
     @Test
+    public void execute_messageFormat_noTrailingComma() throws Exception {
+        Person personToEdit = model.getFilteredPersonList().get(0);
+
+        Subject math = new Subject("Math", null);
+        Subject physics = new Subject("Physics", null);
+
+        Academics academics = new Academics(
+                Set.of(math, physics),
+                personToEdit.getAcademics().getNotes()
+        );
+
+        Person updatedPerson = new PersonBuilder(personToEdit)
+                .withAcademics(academics)
+                .build();
+
+        model.setPerson(personToEdit, updatedPerson);
+
+        DeleteAcadCommand command = new DeleteAcadCommand(
+                Index.fromZeroBased(0),
+                List.of(Index.fromZeroBased(0), Index.fromZeroBased(1)));
+
+        CommandResult result = command.execute(model);
+
+        org.junit.jupiter.api.Assertions.assertFalse(
+                result.getFeedbackToUser().endsWith(", "));
+    }
+
+    @Test
+    public void execute_invalidSubjectIndex_throwsCommandException() {
+        Person personToEdit = model.getFilteredPersonList().get(0);
+
+        Subject math = new Subject("Math", null);
+
+        Academics academics = new Academics(
+                Set.of(math),
+                personToEdit.getAcademics().getNotes()
+        );
+
+        Person updatedPerson = new PersonBuilder(personToEdit)
+                .withAcademics(academics)
+                .build();
+
+        model.setPerson(personToEdit, updatedPerson);
+
+        DeleteAcadCommand command = new DeleteAcadCommand(
+                Index.fromZeroBased(0),
+                List.of(Index.fromZeroBased(1)));
+
+        assertThrows(CommandException.class, () -> command.execute(model));
+    }
+
+    @Test
+    public void execute_subjectIndexEqualToSize_throwsCommandException() {
+        Person personToEdit = model.getFilteredPersonList().get(0);
+
+        Subject math = new Subject("Math", null);
+
+        Academics academics = new Academics(
+                Set.of(math),
+                personToEdit.getAcademics().getNotes()
+        );
+
+        Person updatedPerson = new PersonBuilder(personToEdit)
+                .withAcademics(academics)
+                .build();
+
+        model.setPerson(personToEdit, updatedPerson);
+
+        DeleteAcadCommand command = new DeleteAcadCommand(
+                Index.fromZeroBased(0),
+                List.of(Index.fromZeroBased(1)));
+
+        assertThrows(CommandException.class, () -> command.execute(model));
+    }
+
+    @Test
     public void equals() {
         Index index = Index.fromOneBased(1);
         List<Index> subjectIndices = List.of(Index.fromOneBased(1));
@@ -137,5 +215,18 @@ public class DeleteAcadCommandTest {
         assertEquals(false,
                 command1.equals(new DeleteAcadCommand(index,
                         List.of(Index.fromOneBased(2)))));
+    }
+
+    @Test
+    public void toStringMethod() {
+        Index index = Index.fromOneBased(1);
+        List<Index> subjectIndices = List.of(Index.fromOneBased(2), Index.fromOneBased(3));
+
+        DeleteAcadCommand command = new DeleteAcadCommand(index, subjectIndices);
+
+        String expected = DeleteAcadCommand.class.getCanonicalName()
+                + "{index=" + index + ", subjectIndices=" + subjectIndices + "}";
+
+        org.junit.jupiter.api.Assertions.assertEquals(expected, command.toString());
     }
 }

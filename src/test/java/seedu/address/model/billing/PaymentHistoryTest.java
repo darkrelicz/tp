@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-public class PaymentTest {
+public class PaymentHistoryTest {
 
     private static final LocalDate DATE_1 = LocalDate.of(2026, 1, 1);
     private static final LocalDate DATE_2 = LocalDate.of(2026, 2, 1);

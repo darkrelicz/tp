@@ -7,7 +7,6 @@ import seedu.address.logic.commands.EditAcademicsCommand;
 import seedu.address.logic.commands.EditBillingCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditParentCommand;
-import seedu.address.logic.commands.EditPaymentCommand;
 import seedu.address.logic.commands.EditPersonCommand;
 import seedu.address.logic.commands.EditTagCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -28,7 +27,6 @@ public class EditCommandParser implements Parser<EditCommand> {
         parsers.put(EditTagCommand.SUB_COMMAND_WORD, new EditTagCommandParser());
         parsers.put(EditAcademicsCommand.SUB_COMMAND_WORD, new EditAcademicsCommandParser());
         parsers.put(EditParentCommand.SUB_COMMAND_WORD, new EditParentCommandParser());
-        parsers.put(EditPaymentCommand.SUB_COMMAND_WORD, new EditPaymentCommandParser());
         parsers.put(EditBillingCommand.SUB_COMMAND_WORD, new EditBillingCommandParser());
         this.dispatcher = new SubcommandDispatcherParser<>(parsers, EditCommand.MESSAGE_USAGE);
     }

@@ -26,24 +26,24 @@ import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
 /**
- * Contains integration tests (interaction with the Model) and unit tests for EditPaymentCommand.
+ * Contains integration tests (interaction with the Model) and unit tests for AddPaymentCommand.
  */
-public class EditPaymentCommandTest {
+public class AddPaymentCommandTest {
 
-    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
     public void execute_validIndexUnfilteredList_success() {
         Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         LocalDate paymentDate = LocalDate.parse(VALID_PAYMENT_DATE);
-        EditPaymentCommand editCommand = new EditPaymentCommand(INDEX_FIRST_PERSON, paymentDate);
+        AddPaymentCommand addCommand = new AddPaymentCommand(INDEX_FIRST_PERSON, paymentDate);
 
         Billing updatedBilling = personToEdit.recordFeesPaidAndAdvanceBilling(paymentDate);
         Person editedPerson = new PersonBuilder(personToEdit)
                 .withBilling(updatedBilling)
                 .build();
 
-        String expectedMessage = String.format(EditPaymentCommand.MESSAGE_EDIT_PAYMENT_SUCCESS,
+        String expectedMessage = String.format(AddPaymentCommand.MESSAGE_ADD_PAYMENT_SUCCESS,
                 editedPerson.getBilling().getTuitionFee(),
                 Messages.format(editedPerson),
                 paymentDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -52,42 +52,35 @@ public class EditPaymentCommandTest {
         expectedModel.setPerson(personToEdit, editedPerson);
 
         CommandResult expectedCommandResult = new CommandResult(expectedMessage, editedPerson);
-        assertCommandSuccess(editCommand, model, expectedCommandResult, expectedModel);
+        assertCommandSuccess(addCommand, model, expectedCommandResult, expectedModel);
     }
 
     @Test
     public void execute_invalidIndexUnfilteredList_failure() {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         LocalDate paymentDate = LocalDate.parse(VALID_PAYMENT_DATE);
-        EditPaymentCommand editCommand = new EditPaymentCommand(outOfBoundIndex, paymentDate);
+        AddPaymentCommand addCommand = new AddPaymentCommand(outOfBoundIndex, paymentDate);
 
-        assertCommandFailure(editCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandFailure(addCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
     @Test
     public void equals() {
         LocalDate paymentDate = LocalDate.parse(VALID_PAYMENT_DATE);
-        EditPaymentCommand standardCommand = new EditPaymentCommand(INDEX_FIRST_PERSON, paymentDate);
+        AddPaymentCommand standardCommand = new AddPaymentCommand(INDEX_FIRST_PERSON, paymentDate);
 
         // same values -> returns true
-        EditPaymentCommand commandWithSameValues = new EditPaymentCommand(INDEX_FIRST_PERSON, paymentDate);
+        AddPaymentCommand commandWithSameValues = new AddPaymentCommand(INDEX_FIRST_PERSON, paymentDate);
         assertTrue(standardCommand.equals(commandWithSameValues));
-
-        // same object -> returns true
         assertTrue(standardCommand.equals(standardCommand));
-
-        // null -> returns false
         assertFalse(standardCommand.equals(null));
-
-        // different type -> returns false
         assertFalse(standardCommand.equals(new ClearCommand()));
 
         // different index -> returns false
-        assertFalse(standardCommand.equals(new EditPaymentCommand(INDEX_SECOND_PERSON, paymentDate)));
+        assertFalse(standardCommand.equals(new AddPaymentCommand(INDEX_SECOND_PERSON, paymentDate)));
 
-        // different payment date -> returns false
         LocalDate differentPaymentDate = LocalDate.parse("2026-02-01");
-        assertFalse(standardCommand.equals(new EditPaymentCommand(
+        assertFalse(standardCommand.equals(new AddPaymentCommand(
                 INDEX_FIRST_PERSON, differentPaymentDate)));
     }
 
@@ -95,8 +88,8 @@ public class EditPaymentCommandTest {
     public void toStringMethod() {
         Index index = Index.fromOneBased(1);
         LocalDate paymentDate = LocalDate.parse(VALID_PAYMENT_DATE);
-        EditPaymentCommand editCommand = new EditPaymentCommand(index, paymentDate);
-        String expected = EditPaymentCommand.class.getCanonicalName()
+        AddPaymentCommand editCommand = new AddPaymentCommand(index, paymentDate);
+        String expected = AddPaymentCommand.class.getCanonicalName()
                 + "{index=" + index
                 + ", paymentDate=" + paymentDate + "}";
         assertEquals(expected, editCommand.toString());

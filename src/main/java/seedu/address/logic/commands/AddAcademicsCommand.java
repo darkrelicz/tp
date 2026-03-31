@@ -76,14 +76,13 @@ public class AddAcademicsCommand extends AddCommand {
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
 
-        // 🔥 merge existing academics with new ones
         Set<Subject> updatedSubjects = new HashSet<>(
                 personToEdit.getAcademics().getSubjects()
         );
         updatedSubjects.addAll(subjectsToAdd);
 
         Academics updatedAcademics = new Academics(updatedSubjects,
-                personToEdit.getAcademics().getNotes());
+                personToEdit.getAcademics().getDescription());
 
         Person editedPerson = new PersonBuilder(personToEdit)
                 .withAcademics(updatedAcademics)

@@ -73,11 +73,13 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a student: `add`
+### Adding a student: `add student`
 
 Adds a student to the address book.
 
 Format: `add student n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+
+`add` is a command family that supports subcommands such as `student` and `payment`.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A student can have any number of tags (including 0)
@@ -86,6 +88,19 @@ A student can have any number of tags (including 0)
 Examples:
 * `add student n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
 * `add student n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+
+### Recording payment date : `add payment`
+
+Records a tuition payment date for an existing student contact.
+
+Format: `add payment INDEX d/DATE`
+
+* Records payment for the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, ...
+* `d/` accepts ISO 8601 local date (`YYYY-MM-DD`).
+* This command records payment history and advances the billing due date based on recurrence.
+
+Examples:
+* `add payment 1 d/2026-03-05`
 
 ### Listing all persons : `list`
 
@@ -106,19 +121,6 @@ Format: `edit student INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS]`
 Examples:
 * `edit student 1 p/91234567 e/johndoe@example.com` edits the phone number and email address of the 1st person.
 * `edit student 2 n/Betsy Crower` edits the name of the 2nd person.
-
-### Recording payment date : `edit payment`
-
-Records a tuition payment date for an existing student contact.
-
-Format: `edit payment INDEX d/DATE`
-
-* Records payment for the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, ...
-* `d/` accepts ISO 8601 local date (`YYYY-MM-DD`).
-* This command records payment history and advances the billing due date based on recurrence.
-
-Examples:
-* `edit payment 1 d/2026-03-05`
 
 ### Editing billing amount : `edit billing`
 
@@ -336,11 +338,11 @@ Action | Format, Examples
 **Add** | `add student n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add student n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
 **Add Appointment** | `add appt INDEX d/ISO8601_DATETIME [r/RECURRENCE] dsc/DESCRIPTION`<br> e.g., `add appt 1 d/2026-01-29T08:00:00 dsc/Weekly algebra practice`
 **Add Attendance** | `add attd INDEX [y\|n] [d/DATE]`<br> e.g., `add attd 1`, `add attd 1 n`, `add attd 1 d/2026-01-29`
+**Add Payment** | `add payment INDEX d/ISO8601_DATE`<br> e.g., `add payment 1 d/2026-03-05`
 **Clear** | `clear`
 **Delete Student** | `delete student INDEX`<br> e.g., `delete student 3`
 **Delete Payment** | `delete payment INDEX d/ISO8601_DATE`<br> e.g., `delete payment 1 d/2026-03-01`
 **Edit Student** | `edit student INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS]`<br> e.g., `edit student 2 n/James Lee e/jameslee@example.com`
-**Edit Payment** | `edit payment INDEX d/ISO8601_DATE`<br> e.g., `edit payment 1 d/2026-03-05`
 **Edit Billing** | `edit billing INDEX a/AMOUNT`<br> e.g., `edit billing 1 a/250`
 **Find** | `find person KEYWORD [MORE_KEYWORDS]`<br> e.g., `find person James Jake`
 **Find Payment** | `find payment d/YYYY-MM`<br> e.g., `find payment d/2026-03`

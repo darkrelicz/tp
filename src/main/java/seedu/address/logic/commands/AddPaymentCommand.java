@@ -16,9 +16,9 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
 
 /**
- * Edits the date tuition fees were paid by an existing person in the address book.
+ * Adds a payment record date for an existing student in the address book.
  */
-public class EditPaymentCommand extends EditCommand {
+public class AddPaymentCommand extends AddCommand {
 
     public static final String SUB_COMMAND_WORD = "payment";
 
@@ -30,32 +30,36 @@ public class EditPaymentCommand extends EditCommand {
             + "Example: " + COMMAND_WORD + " " + SUB_COMMAND_WORD + " 1 "
             + PREFIX_DATE + "2026-01-13";
 
-    public static final String DATE_NOT_PROVIDED = "Please enter a valid payment date!";
-    public static final String MESSAGE_EDIT_PAYMENT_SUCCESS = "%1$s paid by %2$s on %3$s";
+    public static final String MESSAGE_ADD_PAYMENT_SUCCESS = "%1$s paid by %2$s on %3$s";
 
+    private final Index index;
     private final LocalDate paymentDate;
 
     /**
-     * @param index of the person in the filtered person list to edit
-     * @param paymentDate the payment date to set
+     * @param index of the person in the filtered person list to update
+     * @param paymentDate the payment date to record
      */
-    public EditPaymentCommand(Index index, LocalDate paymentDate) {
-        super(index);
+    public AddPaymentCommand(Index index, LocalDate paymentDate) {
+        requireNonNull(index);
         requireNonNull(paymentDate);
+        this.index = index;
         this.paymentDate = paymentDate;
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        Person personToEdit = getTargetPerson(model);
+        requireNonNull(model);
+
+        Person personToEdit = IndexedPersonResolver.getTargetPerson(model, index);
         Billing updatedBilling = personToEdit.recordFeesPaidAndAdvanceBilling(paymentDate);
+
         Person editedPerson = new PersonBuilder(personToEdit)
                 .withBilling(updatedBilling)
                 .build();
+        model.setPerson(personToEdit, editedPerson);
 
-        replacePerson(model, personToEdit, editedPerson);
         String formattedDate = paymentDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
-        return new CommandResult(String.format(MESSAGE_EDIT_PAYMENT_SUCCESS,
+        return new CommandResult(String.format(MESSAGE_ADD_PAYMENT_SUCCESS,
                 editedPerson.getBilling().getTuitionFee(),
                 Messages.format(editedPerson),
                 formattedDate),
@@ -68,13 +72,18 @@ public class EditPaymentCommand extends EditCommand {
             return true;
         }
 
-        if (!(other instanceof EditPaymentCommand)) {
+        if (!(other instanceof AddPaymentCommand)) {
             return false;
         }
 
-        EditPaymentCommand otherCommand = (EditPaymentCommand) other;
+        AddPaymentCommand otherCommand = (AddPaymentCommand) other;
         return index.equals(otherCommand.index)
             && paymentDate.equals(otherCommand.paymentDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(index, paymentDate);
     }
 
     @Override

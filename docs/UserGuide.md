@@ -251,19 +251,38 @@ Examples:
 * `viewappt`
 * `viewappt d/2026-02-13`
 
-### Deleting a person : `delete`
+### Deleting a person : `delete student`
 
 Deletes the specified person from the address book.
 
-Format: `delete INDEX`
+Format: `delete student INDEX`
 
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find person Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete student 2` deletes the 2nd person in the address book.
+* `find person Betsy` followed by `delete student 1` deletes the 1st person in the results of the `find` command.
+
+### Deleting a recorded payment date : `delete payment`
+
+Deletes a recorded payment date for an existing student contact.
+
+Format: `delete payment INDEX d/DATE`
+
+* Deletes the payment date for the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, ...
+* Exactly one `d/` prefix must be provided.
+* `DATE` must be in ISO 8601 local date format (`YYYY-MM-DD`).
+* The date cannot be later than today.
+* If the date is not recorded for the student, the command fails with an error.
+* If the deleted date is the latest recorded payment date, the billing due date is rolled back by one recurrence cycle.
+* If the deleted date is not the latest recorded payment date, the billing due date remains unchanged.
+
+Examples:
+* `delete payment 1 d/2026-03-01`
+* `delete payment 2 d/2025-12-15`
 
 ### Clearing all entries : `clear`
 
@@ -318,7 +337,8 @@ Action | Format, Examples
 **Add Appointment** | `add appt INDEX d/ISO8601_DATETIME [r/RECURRENCE] dsc/DESCRIPTION`<br> e.g., `add appt 1 d/2026-01-29T08:00:00 dsc/Weekly algebra practice`
 **Add Attendance** | `add attd INDEX [y\|n] [d/DATE]`<br> e.g., `add attd 1`, `add attd 1 n`, `add attd 1 d/2026-01-29`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete Student** | `delete student INDEX`<br> e.g., `delete student 3`
+**Delete Payment** | `delete payment INDEX d/ISO8601_DATE`<br> e.g., `delete payment 1 d/2026-03-01`
 **Edit Student** | `edit student INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS]`<br> e.g., `edit student 2 n/James Lee e/jameslee@example.com`
 **Edit Payment** | `edit payment INDEX d/ISO8601_DATE`<br> e.g., `edit payment 1 d/2026-03-05`
 **Edit Billing** | `edit billing INDEX a/AMOUNT`<br> e.g., `edit billing 1 a/250`

@@ -108,6 +108,28 @@ public class Billing {
         return new Billing(recurrence, paymentDueDate, tuitionFee, updatedPaymentHistory);
     }
 
+    /**
+     * Deletes a previously recorded payment date and conditionally rolls back due date
+     * Rolls back one recurrence cycle only when deleting the latest chronological payment date
+     * @param paymentDate a valid {@code LocalDate}
+     * @return new {@code Billing} with updated payment history (and due date when applicable)
+     * @throws IllegalArgumentException if payment date is not recorded
+     */
+    public Billing deleteRecordedPayment(LocalDate paymentDate) {
+        requireNonNull(paymentDate);
+        boolean shouldRollbackDueDate = paymentHistory.getLatestPaidDate()
+                .map(paymentDate::equals)
+                .orElse(false);
+
+        PaymentHistory updatedPaymentHistory = paymentHistory.removePayment(paymentDate);
+        LocalDate updatedDueDate = shouldRollbackDueDate ? getPreviousDueDate() : paymentDueDate;
+        return new Billing(recurrence, updatedDueDate, tuitionFee, updatedPaymentHistory);
+    }
+
+    private LocalDate getPreviousDueDate() {
+        return recurrence.previous(paymentDueDate);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {

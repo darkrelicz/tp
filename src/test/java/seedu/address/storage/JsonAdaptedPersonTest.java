@@ -7,7 +7,7 @@ import static seedu.address.testutil.TypicalPersons.BENSON;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,10 +19,15 @@ import org.junit.jupiter.api.Test;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.academic.Academics;
 import seedu.address.model.academic.Subject;
+import seedu.address.model.attendance.AttendanceRecords;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.recurrence.Recurrence;
+import seedu.address.model.session.Appointment;
+import seedu.address.testutil.PersonBuilder;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -71,7 +76,7 @@ public class JsonAdaptedPersonTest {
             List<String> paymentDates, String paymentDueDate, String paymentRecurrence,
             Double tuitionFee, List<String> attendanceHistory) {
         return new JsonAdaptedPerson(name, phone, email, address, tags, academics, parentName, parentPhone,
-                parentEmail, appointmentStart, null, null, null, null, paymentDates, paymentDueDate,
+                parentEmail, null, appointmentStart, null, null, null, null, paymentDates, paymentDueDate,
                 paymentRecurrence, tuitionFee, attendanceHistory);
     }
 
@@ -325,10 +330,12 @@ public class JsonAdaptedPersonTest {
                 VALID_PAYMENT_DATES, VALID_PAYMENT_DUE_DATE,
                 VALID_PAYMENT_RECURRENCE, VALID_TUITION_FEE,
                 VALID_ATTENDANCE_HISTORY);
+        Person modelPerson = person.toModelType();
 
-        assertEquals(2, person.toModelType().getAttendance().getRecords().size());
-        assertEquals(LocalDate.parse("2026-01-29"),
-                person.toModelType().getAttendance().getLastRecord().orElseThrow().getRecordedDate());
+        assertEquals(2, modelPerson.getNextAppointment().orElseThrow().getAttendance().getRecords().size());
+        assertEquals(LocalDateTime.parse("2026-01-29T08:00:00"),
+                modelPerson.getNextAppointment().orElseThrow().getAttendance().getLastRecord().orElseThrow()
+                        .getRecordedAt());
     }
 
     @Test
@@ -340,10 +347,12 @@ public class JsonAdaptedPersonTest {
                 VALID_PAYMENT_DATES, VALID_PAYMENT_DUE_DATE,
                 VALID_PAYMENT_RECURRENCE, VALID_TUITION_FEE,
                 VALID_ATTENDANCE_HISTORY);
+        Person modelPerson = person.toModelType();
 
-        assertEquals(2, person.toModelType().getAttendance().getRecords().size());
-        assertEquals(LocalDate.parse("2026-01-29"),
-                person.toModelType().getAttendance().getLastRecord().orElseThrow().getRecordedDate());
+        assertEquals(2, modelPerson.getNextAppointment().orElseThrow().getAttendance().getRecords().size());
+        assertEquals(LocalDateTime.parse("2026-01-29T08:00:00"),
+                modelPerson.getNextAppointment().orElseThrow().getAttendance().getLastRecord().orElseThrow()
+                        .getRecordedAt());
     }
 
     @Test
@@ -432,5 +441,19 @@ public class JsonAdaptedPersonTest {
                         List.of(VALID_ATTENDANCE_ENTRY));
 
         assertEquals(new JsonAdaptedPerson(person.toModelType()).toModelType(), person.toModelType());
+    }
+
+    @Test
+    public void toModelType_multipleAppointments_roundTripsSuccessfully() throws Exception {
+        seedu.address.model.person.Person person = new PersonBuilder(BENSON)
+                .withAppointment("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
+                .addAppointment(new Appointment(Recurrence.WEEKLY,
+                        LocalDateTime.parse("2026-02-03T09:00:00"),
+                        LocalDateTime.parse("2026-02-03T09:00:00"),
+                        AttendanceRecords.EMPTY,
+                        "Physics"))
+                .build();
+
+        assertEquals(person, new JsonAdaptedPerson(person).toModelType());
     }
 }

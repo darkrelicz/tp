@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ATTENDANCE_DATE;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_ATTENDANCE_DATE_TIME;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -43,13 +44,14 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.empty());
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.empty());
 
         Person editedPerson = new PersonBuilder(personToEdit)
                 .withAppointment(new Appointment(Recurrence.NONE,
                         LocalDateTime.parse("2026-01-13T08:00:00"),
                         LocalDateTime.parse("2026-01-13T08:00:00"),
-                        personToEdit.getAppointment().orElseThrow().getAttendance()
+                        personToEdit.getNextAppointment().orElseThrow().getAttendance()
                                 .addAttendance(new Attendance(true, LocalDate.parse("2026-01-13"))),
                         "Algebra"))
                 .build();
@@ -70,16 +72,35 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true,
-                Optional.of(LocalDate.parse(VALID_ATTENDANCE_DATE)));
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON, true,
+                Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00")));
 
         addCommand.execute(model);
 
         Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        Attendance recordedAttendance = editedPerson.getAppointment().orElseThrow()
+        Attendance recordedAttendance = editedPerson.getNextAppointment().orElseThrow()
                 .getAttendance().getLastRecord().orElseThrow();
         assertTrue(recordedAttendance.hasAttended());
-        assertEquals(LocalDate.parse(VALID_ATTENDANCE_DATE), recordedAttendance.getRecordedDate());
+        assertEquals(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00"), recordedAttendance.getRecordedAt());
+    }
+
+    @Test
+    public void execute_presentWithDateTime_usesProvidedDateTime() throws Exception {
+        Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
+                .withAppointment("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
+                .build();
+        model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
+
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON, true,
+                Optional.of(LocalDateTime.parse("2026-01-29T08:30:00")));
+
+        addCommand.execute(model);
+
+        Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Attendance recordedAttendance = editedPerson.getNextAppointment().orElseThrow()
+                .getAttendance().getLastRecord().orElseThrow();
+        assertTrue(recordedAttendance.hasAttended());
+        assertEquals(LocalDateTime.parse("2026-01-29T08:30:00"), recordedAttendance.getRecordedAt());
     }
 
     @Test
@@ -89,14 +110,15 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, false, Optional.empty());
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                false, Optional.empty());
         addCommand.execute(model);
 
         Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        Attendance recordedAttendance = editedPerson.getAppointment().orElseThrow()
+        Attendance recordedAttendance = editedPerson.getNextAppointment().orElseThrow()
                 .getAttendance().getLastRecord().orElseThrow();
         assertFalse(recordedAttendance.hasAttended());
-        assertEquals(LocalDate.parse("2026-01-13"), recordedAttendance.getRecordedDate());
+        assertEquals(LocalDateTime.parse("2026-01-13T00:00:00"), recordedAttendance.getRecordedAt());
     }
 
     @Test
@@ -107,7 +129,8 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.empty());
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.empty());
 
         assertCommandFailure(addCommand, model, AddAttdCommand.MESSAGE_NON_RECURRING_ATTENDANCE_ALREADY_RECORDED);
     }
@@ -120,15 +143,15 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true,
-                Optional.of(LocalDate.parse(VALID_ATTENDANCE_DATE)));
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON, true,
+                Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00")));
 
         addCommand.execute(model);
 
         Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        assertEquals(2, editedPerson.getAppointment().orElseThrow().getAttendance().getRecords().size());
-        assertEquals(LocalDate.parse(VALID_ATTENDANCE_DATE), editedPerson.getAppointment().orElseThrow()
-                .getAttendance().getLastRecord().orElseThrow().getRecordedDate());
+        assertEquals(2, editedPerson.getNextAppointment().orElseThrow().getAttendance().getRecords().size());
+        assertEquals(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00"), editedPerson.getNextAppointment()
+                .orElseThrow().getAttendance().getLastRecord().orElseThrow().getRecordedAt());
     }
 
     @Test
@@ -141,7 +164,8 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.empty());
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.empty());
 
         assertCommandFailure(addCommand, model, AddAttdCommand.MESSAGE_FUTURE_ATTENDANCE_NOT_ALLOWED);
     }
@@ -154,45 +178,94 @@ public class AddAttdCommandTest {
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.of(futureDate));
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.of(futureDate.atStartOfDay()));
 
         assertCommandFailure(addCommand, model, AddAttdCommand.MESSAGE_FUTURE_ATTENDANCE_NOT_ALLOWED);
     }
 
     @Test
-    public void execute_noCurrentAppointment_failure() {
-        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.empty());
-        assertCommandFailure(addCommand, model, AddAttdCommand.MESSAGE_NO_CURRENT_APPOINTMENT);
+    public void execute_invalidAppointmentIndex_failure() {
+        Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
+                .withAppointment("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
+                .build();
+        model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
+
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON,
+                true, Optional.empty());
+        assertCommandFailure(addCommand, model, AddAttdCommand.MESSAGE_INVALID_APPOINTMENT_INDEX);
     }
 
     @Test
     public void execute_invalidIndex_failure() {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
-        AddAttdCommand addCommand = new AddAttdCommand(outOfBoundIndex, true, Optional.empty());
+        AddAttdCommand addCommand = new AddAttdCommand(outOfBoundIndex, INDEX_FIRST_PERSON,
+                true, Optional.empty());
         assertCommandFailure(addCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
     @Test
+    public void execute_specificAppointmentIndex_updatesSelectedAppointment() throws Exception {
+        Appointment firstAppointment = new Appointment(Recurrence.NONE,
+                LocalDateTime.parse("2026-01-13T08:00:00"),
+                LocalDateTime.parse("2026-01-13T08:00:00"),
+                AttendanceRecords.EMPTY,
+                "Algebra");
+        Appointment secondAppointment = new Appointment(Recurrence.NONE,
+                LocalDateTime.parse("2026-01-20T08:00:00"),
+                LocalDateTime.parse("2026-01-20T08:00:00"),
+                AttendanceRecords.EMPTY,
+                "Physics");
+        Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
+                .withAppointment(firstAppointment)
+                .addAppointment(secondAppointment)
+                .build();
+        model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
+
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON,
+                true, Optional.empty());
+
+        addCommand.execute(model);
+
+        Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertTrue(editedPerson.getAppointments().get(0).getAttendance().isEmpty());
+        assertEquals(LocalDateTime.parse("2026-01-20T00:00:00"),
+                editedPerson.getAppointments().get(1).getAttendance().getLastRecord().orElseThrow()
+                        .getRecordedAt());
+    }
+
+    @Test
     public void equals() {
-        AddAttdCommand standardCommand = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.empty());
-        AddAttdCommand sameValues = new AddAttdCommand(INDEX_FIRST_PERSON, true, Optional.empty());
+        AddAttdCommand standardCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.empty());
+        AddAttdCommand sameValues = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.empty());
 
         assertTrue(standardCommand.equals(sameValues));
         assertTrue(standardCommand.equals(standardCommand));
         assertFalse(standardCommand.equals(null));
         assertFalse(standardCommand.equals(new ClearCommand()));
-        assertFalse(standardCommand.equals(new AddAttdCommand(INDEX_SECOND_PERSON, true, Optional.empty())));
+        assertFalse(standardCommand.equals(new AddAttdCommand(INDEX_SECOND_PERSON, INDEX_FIRST_PERSON,
+                true, Optional.empty())));
+        assertFalse(standardCommand.equals(new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON,
+                true, Optional.empty())));
         assertFalse(standardCommand.equals(
-                new AddAttdCommand(INDEX_FIRST_PERSON, false, Optional.of(LocalDate.parse(VALID_ATTENDANCE_DATE)))));
+                new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON, false,
+                        Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00")))));
+        assertFalse(standardCommand.equals(
+                new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON, true,
+                        Optional.of(LocalDateTime.parse("2026-01-29T08:30:00")))));
     }
 
     @Test
     public void toStringMethod() {
-        Index index = Index.fromOneBased(1);
-        AddAttdCommand addCommand = new AddAttdCommand(index, true,
-                Optional.of(LocalDate.parse(VALID_ATTENDANCE_DATE)));
+        Index personIndex = Index.fromOneBased(1);
+        Index appointmentIndex = Index.fromOneBased(2);
+        AddAttdCommand addCommand = new AddAttdCommand(personIndex, appointmentIndex, true,
+                Optional.of(LocalDateTime.parse("2026-01-29T08:30:00")));
         String expected = AddAttdCommand.class.getCanonicalName()
-                + "{index=" + index + ", hasAttended=true, recordedDateOverride=" + VALID_ATTENDANCE_DATE + "}";
+                + "{personIndex=" + personIndex + ", appointmentIndex=" + appointmentIndex
+                + ", hasAttended=true, recordedAt=" + VALID_ATTENDANCE_DATE_TIME + "}";
         assertEquals(expected, addCommand.toString());
     }
 }

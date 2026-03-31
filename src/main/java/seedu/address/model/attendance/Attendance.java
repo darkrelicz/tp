@@ -3,6 +3,7 @@ package seedu.address.model.attendance;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -11,23 +12,30 @@ import java.util.Objects;
 public final class Attendance {
 
     private final boolean hasAttended;
-    private final LocalDate recordedDate;
+    private final LocalDateTime recordedAt;
 
     /**
      * Creates an attendance record.
      */
     public Attendance(boolean hasAttended, LocalDate recordedDate) {
-        requireAllNonNull(recordedDate);
+        this(hasAttended, recordedDate.atStartOfDay());
+    }
+
+    /**
+     * Creates an attendance record.
+     */
+    public Attendance(boolean hasAttended, LocalDateTime recordedAt) {
+        requireAllNonNull(recordedAt);
         this.hasAttended = hasAttended;
-        this.recordedDate = recordedDate;
+        this.recordedAt = recordedAt;
     }
 
     public boolean hasAttended() {
         return hasAttended;
     }
 
-    public LocalDate getRecordedDate() {
-        return recordedDate;
+    public LocalDateTime getRecordedAt() {
+        return recordedAt;
     }
 
     @Override
@@ -42,19 +50,19 @@ public final class Attendance {
 
         Attendance otherAttendance = (Attendance) other;
         return hasAttended == otherAttendance.hasAttended
-                && recordedDate.equals(otherAttendance.recordedDate);
+                && recordedAt.equals(otherAttendance.recordedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hasAttended, recordedDate);
+        return Objects.hash(hasAttended, recordedAt);
     }
 
     @Override
     public String toString() {
         return "Attendance{"
                 + "hasAttended=" + hasAttended
-                + ", recordedDate=" + recordedDate
+                + ", recordedAt=" + recordedAt
                 + "}";
     }
 }

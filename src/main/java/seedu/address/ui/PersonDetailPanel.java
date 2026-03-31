@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import seedu.address.model.academic.Subject;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.person.Person;
+import seedu.address.model.session.Appointment;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -54,7 +56,7 @@ public class PersonDetailPanel extends UiPart<Region> {
     private Label parentEmailLabel;
 
     @FXML
-    private Label lessonStartLabel;
+    private VBox appointmentListContainer;
 
     @FXML
     private Label paymentAmountLabel;
@@ -64,9 +66,6 @@ public class PersonDetailPanel extends UiPart<Region> {
 
     @FXML
     private FlowPane paymentHistoryFlowPane;
-
-    @FXML
-    private FlowPane attendanceHistoryFlowPane;
 
     @FXML
     private FlowPane tagsFlowPane;
@@ -106,14 +105,13 @@ public class PersonDetailPanel extends UiPart<Region> {
                 .flatMap(g -> g.getPhone()).map(p -> p.value).orElse("-"));
         parentEmailLabel.setText(person.getGuardian()
                 .flatMap(g -> g.getEmail()).map(e -> e.value).orElse("-"));
-        lessonStartLabel.setText(formatDateTime(person.getAppointmentStart().orElse(null)));
         paymentAmountLabel.setText(formatAmount(person.getBilling().getTuitionFee()));
         paymentDueDateLabel.setText(formatDate(person.getBilling().getCurrentDueDate()));
 
+        appointmentListContainer.getChildren().clear();
         tagsFlowPane.getChildren().clear();
         subjectsFlowPane.getChildren().clear();
         paymentHistoryFlowPane.getChildren().clear();
-        attendanceHistoryFlowPane.getChildren().clear();
 
         if (person.getTags().isEmpty()) {
             Label noTagsLabel = new Label("-");
@@ -151,6 +149,17 @@ public class PersonDetailPanel extends UiPart<Region> {
         String description = person.getAcademics().getDescription().orElse("");
         academicsNotesLabel.setText(description.isEmpty() ? "-" : description);
 
+        if (person.getAppointments().isEmpty()) {
+            Label noAppointmentsLabel = new Label("No appointments");
+            noAppointmentsLabel.getStyleClass().add("detail-field-value");
+            appointmentListContainer.getChildren().add(noAppointmentsLabel);
+        } else {
+            for (int index = 0; index < person.getAppointments().size(); index++) {
+                appointmentListContainer.getChildren().add(
+                        createAppointmentSection(index + 1, person.getAppointments().get(index)));
+            }
+        }
+
         // Display payment history
         if (person.getPaymentHistory().getPaidDates().isEmpty()) {
             Label noPaymentsLabel = new Label("No payment history");
@@ -166,19 +175,6 @@ public class PersonDetailPanel extends UiPart<Region> {
                     });
         }
 
-        if (person.getAttendance().isEmpty()) {
-            Label noAttendanceLabel = new Label("No attendance history");
-            noAttendanceLabel.getStyleClass().add("detail-field-value");
-            attendanceHistoryFlowPane.getChildren().add(noAttendanceLabel);
-        } else {
-            java.util.List<Attendance> attendanceRecords = person.getAttendance().getRecords();
-            for (int index = attendanceRecords.size() - 1; index >= 0; index--) {
-                Label attendanceLabel = new Label(formatAttendance(attendanceRecords.get(index)));
-                attendanceLabel.getStyleClass().add("detail-attendance-date");
-                attendanceHistoryFlowPane.getChildren().add(attendanceLabel);
-            }
-        }
-
         contentContainer.setManaged(true);
         contentContainer.setVisible(true);
         emptyStateLabel.setManaged(false);
@@ -186,10 +182,10 @@ public class PersonDetailPanel extends UiPart<Region> {
     }
 
     private void showEmptyState() {
+        appointmentListContainer.getChildren().clear();
         tagsFlowPane.getChildren().clear();
         subjectsFlowPane.getChildren().clear();
         paymentHistoryFlowPane.getChildren().clear();
-        attendanceHistoryFlowPane.getChildren().clear();
         contentContainer.setManaged(false);
         contentContainer.setVisible(false);
         emptyStateLabel.setManaged(true);
@@ -216,6 +212,45 @@ public class PersonDetailPanel extends UiPart<Region> {
 
     private String formatAttendance(Attendance attendance) {
         String status = attendance.hasAttended() ? "Present" : "Absent";
-        return status + ": " + formatDate(attendance.getRecordedDate());
+        LocalDateTime recordedAt = attendance.getRecordedAt();
+        return status + ": " + (recordedAt.toLocalTime().equals(LocalTime.MIDNIGHT)
+                ? formatDate(recordedAt.toLocalDate())
+                : formatDateTime(recordedAt));
+    }
+
+    private String formatAppointment(int appointmentIndex, Appointment appointment) {
+        return appointmentIndex + ". " + formatDateTime(appointment.getNext()) + " - " + appointment.getDescription();
+    }
+
+    private VBox createAppointmentSection(int appointmentIndex, Appointment appointment) {
+        VBox appointmentSection = new VBox(6);
+
+        Label appointmentLabel = new Label(formatAppointment(appointmentIndex, appointment));
+        appointmentLabel.getStyleClass().add("detail-section-title");
+        appointmentLabel.setWrapText(true);
+
+        Label attendanceTitle = new Label("Attendance");
+        attendanceTitle.getStyleClass().add("detail-field-label");
+
+        FlowPane attendancePane = new FlowPane();
+        attendancePane.setHgap(6);
+        attendancePane.setVgap(6);
+        attendancePane.setPrefWrapLength(320);
+
+        if (appointment.getAttendance().isEmpty()) {
+            Label noAttendanceLabel = new Label("No attendance history");
+            noAttendanceLabel.getStyleClass().add("detail-field-value");
+            attendancePane.getChildren().add(noAttendanceLabel);
+        } else {
+            java.util.List<Attendance> attendanceRecords = appointment.getAttendance().getRecords();
+            for (int index = attendanceRecords.size() - 1; index >= 0; index--) {
+                Label attendanceLabel = new Label(formatAttendance(attendanceRecords.get(index)));
+                attendanceLabel.getStyleClass().add("detail-attendance-date");
+                attendancePane.getChildren().add(attendanceLabel);
+            }
+        }
+
+        appointmentSection.getChildren().addAll(appointmentLabel, attendanceTitle, attendancePane);
+        return appointmentSection;
     }
 }

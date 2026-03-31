@@ -59,6 +59,7 @@ public class CommandTestUtil {
     public static final String VALID_PAYMENT_AMOUNT = "25";
     public static final String VALID_LAST_ATTENDANCE = "2026-01-29T08:00:00";
     public static final String VALID_ATTENDANCE_DATE = "2026-01-29";
+    public static final String VALID_ATTENDANCE_DATE_TIME = "2026-01-29T08:30:00";
 
     public static final String NAME_DESC_AMY = " " + PREFIX_NAME + VALID_NAME_AMY;
     public static final String NAME_DESC_BOB = " " + PREFIX_NAME + VALID_NAME_BOB;
@@ -90,6 +91,7 @@ public class CommandTestUtil {
     public static final String APPOINTMENT_RECURRENCE_DESC = " " + PREFIX_RECURRENCE + VALID_APPOINTMENT_RECURRENCE;
     public static final String LAST_ATTENDANCE_DESC = " " + PREFIX_DATE + VALID_LAST_ATTENDANCE;
     public static final String ATTENDANCE_DATE_DESC = " " + PREFIX_DATE + VALID_ATTENDANCE_DATE;
+    public static final String ATTENDANCE_DATE_TIME_DESC = " " + PREFIX_DATE + VALID_ATTENDANCE_DATE_TIME;
 
     public static final String INVALID_NAME_DESC = " " + PREFIX_NAME + "James&"; // '&' not allowed in names
     public static final String INVALID_PHONE_DESC = " " + PREFIX_PHONE + "911a"; // 'a' not allowed in phones

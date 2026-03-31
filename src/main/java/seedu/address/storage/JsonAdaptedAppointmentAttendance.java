@@ -1,7 +1,10 @@
 package seedu.address.storage;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +18,12 @@ import seedu.address.model.attendance.Attendance;
 class JsonAdaptedAppointmentAttendance {
 
     private static final String ATTENDANCE_DATE_MESSAGE_CONSTRAINTS =
-            "Appointment attendance date must be in ISO 8601 local date format, e.g. 2026-01-29";
+            "Appointment attendance date must be in ISO 8601 local date or date-time format, "
+                    + "e.g. 2026-01-29 or 2026-01-29T08:00:00";
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ISO_LOCAL_DATE.withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME.withResolverStyle(ResolverStyle.STRICT);
 
     private final boolean hasAttended;
     private final String recordedDate;
@@ -29,7 +37,7 @@ class JsonAdaptedAppointmentAttendance {
 
     public JsonAdaptedAppointmentAttendance(Attendance source) {
         this.hasAttended = source.hasAttended();
-        this.recordedDate = source.getRecordedDate().toString();
+        this.recordedDate = source.getRecordedAt().format(DATE_TIME_FORMATTER);
     }
 
     public Attendance toModelType() throws IllegalValueException {
@@ -39,9 +47,14 @@ class JsonAdaptedAppointmentAttendance {
         }
 
         try {
-            return new Attendance(hasAttended, LocalDate.parse(recordedDate));
-        } catch (DateTimeParseException e) {
-            throw new IllegalValueException(ATTENDANCE_DATE_MESSAGE_CONSTRAINTS);
+            LocalDateTime parsedDateTime = LocalDateTime.parse(recordedDate, DATE_TIME_FORMATTER);
+            return new Attendance(hasAttended, parsedDateTime);
+        } catch (DateTimeParseException ignored) {
+            try {
+                return new Attendance(hasAttended, LocalDate.parse(recordedDate, DATE_FORMATTER));
+            } catch (DateTimeParseException e) {
+                throw new IllegalValueException(ATTENDANCE_DATE_MESSAGE_CONSTRAINTS);
+            }
         }
     }
 }

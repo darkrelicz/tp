@@ -55,9 +55,7 @@ public class PersonTest {
 
         // optionals default
         assertTrue(person.getGuardian().isEmpty());
-        assertTrue(person.getAppointment().isEmpty());
-        assertTrue(person.getAppointmentStart().isEmpty());
-        assertTrue(person.getAttendance().isEmpty());
+        assertTrue(person.getNextAppointment().isEmpty());
     }
 
     @Test
@@ -141,9 +139,9 @@ public class PersonTest {
         Person person = new PersonBuilder()
                 .withAppointment("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
                 .build();
-        assertEquals(LocalDateTime.parse("2026-01-13T08:00:00"), person.getAppointmentStart().orElseThrow());
-        assertEquals(LocalDateTime.parse("2026-01-13T08:00:00"), person.getAppointmentNext().orElseThrow());
-        assertEquals("Algebra", person.getAppointmentDescription().orElseThrow());
+        assertEquals(LocalDateTime.parse("2026-01-13T08:00:00"), person.getNextAppointment().orElseThrow().getStart());
+        assertEquals(LocalDateTime.parse("2026-01-13T08:00:00"), person.getNextAppointment().orElseThrow().getNext());
+        assertEquals("Algebra", person.getNextAppointment().orElseThrow().getDescription());
     }
 
     @Test
@@ -152,8 +150,14 @@ public class PersonTest {
                 .withAppointment("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
                 .addAttendance("2026-01-29T08:00:00")
                 .build();
-        assertEquals(LocalDate.parse("2026-01-29"),
-                person.getAttendance().getLastRecord().orElseThrow().getRecordedDate());
+        assertEquals(LocalDateTime.parse("2026-01-29T08:00:00"),
+                person.getNextAppointment()
+                        .orElseThrow()
+                        .getAttendance()
+                        .getLastRecord()
+                        .orElseThrow()
+                        .getRecordedAt()
+        );
     }
 
     @Test
@@ -239,7 +243,7 @@ public class PersonTest {
                 + ", tags=" + ALICE.getTags()
                 + ", academics=" + ALICE.getAcademics()
                 + ", guardian=" + ALICE.getGuardian().orElse(null)
-                + ", appointment=" + ALICE.getAppointment().orElse(null)
+                + ", appointments=" + ALICE.getAppointments()
                 + ", billing=" + ALICE.getBilling()
                 + "}";
 

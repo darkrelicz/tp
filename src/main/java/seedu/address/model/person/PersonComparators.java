@@ -3,6 +3,8 @@ package seedu.address.model.person;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
+import seedu.address.model.session.Appointment;
+
 /**
  * Common comparators used for person list ordering.
  */
@@ -13,7 +15,9 @@ public final class PersonComparators {
      * Persons without an appointment are ordered last.
      */
     public static final Comparator<Person> APPOINTMENT_ORDER =
-            Comparator.comparing((Person person) -> person.getAppointmentNext().orElse(LocalDateTime.MAX))
+            Comparator.comparing((Person person) -> person.getNextAppointment()
+                    .map(Appointment::getNext)
+                    .orElse(LocalDateTime.MAX))
                     .thenComparing(person -> person.getName().fullName.toLowerCase());
 
     private PersonComparators() {}

@@ -3,7 +3,9 @@ package seedu.address.model.academic;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -52,6 +54,12 @@ public class Academics {
 
     public Optional<String> getDescription() {
         return description;
+    }
+
+    public List<Subject> getSortedSubjects() {
+        return subjects.stream()
+                .sorted(Comparator.comparing(s -> s.getName().toLowerCase()))
+                .toList();
     }
 
     @Override

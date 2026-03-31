@@ -6,7 +6,9 @@ import java.util.Map;
 import seedu.address.logic.commands.AddApptCommand;
 import seedu.address.logic.commands.AddAttdCommand;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AddPaymentCommand;
 import seedu.address.logic.commands.AddPersonCommand;
+import seedu.address.logic.commands.AddTagCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -24,6 +26,8 @@ public class AddCommandParser implements Parser<AddCommand> {
         parsers.put(AddPersonCommand.SUB_COMMAND_WORD, new AddPersonCommandParser());
         parsers.put(AddApptCommand.SUB_COMMAND_WORD, new AddApptCommandParser());
         parsers.put(AddAttdCommand.SUB_COMMAND_WORD, new AddAttdCommandParser());
+        parsers.put(AddTagCommand.SUB_COMMAND_WORD, new AddTagCommandParser());
+        parsers.put(AddPaymentCommand.SUB_COMMAND_WORD, new AddPaymentCommandParser());
         this.dispatcher = new SubcommandDispatcherParser<>(parsers, AddCommand.MESSAGE_USAGE);
     }
 

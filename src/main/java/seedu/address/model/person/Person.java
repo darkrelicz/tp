@@ -5,7 +5,9 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -141,6 +143,12 @@ public class Person {
         return Collections.unmodifiableSet(tags);
     }
 
+    public List<Tag> getSortedTags() {
+        return tags.stream()
+                .sorted(Comparator.comparing(tag -> tag.tagName.toLowerCase()))
+                .toList();
+    }
+
     public Academics getAcademics() {
         return academics;
     }
@@ -166,13 +174,25 @@ public class Person {
 
     /**
      * Returns an immutable {@code Billing} object with updated payment history
-     * and advanced billing cycle
+     * and advanced billing cycle if paymentDate is before or on today's date in SG timezone
      * @param paymentDate A valid {@code LocalDate}
      * @return {@code Billing} object
      */
     public Billing recordFeesPaidAndAdvanceBilling(LocalDate paymentDate) {
         Billing updatedBilling = billing.recordTuitionPaid(paymentDate);
         return updatedBilling.advanceDueDate();
+    }
+
+    /**
+     * Returns an immutable {@code Billing} object with updated payment history after deleting
+     * a recorded payment date. Due date is rolled back one recurrence cycle only when deleting
+     * the latest chronological payment date.
+     * @param paymentDate A valid {@code LocalDate}
+     * @return updated {@code Billing} object
+     * @throws IllegalArgumentException if paymentDate is not recorded
+     */
+    public Billing deleteRecordedPayment(LocalDate paymentDate) {
+        return billing.deleteRecordedPayment(paymentDate);
     }
 
     /**

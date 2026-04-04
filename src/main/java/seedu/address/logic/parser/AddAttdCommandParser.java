@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SESSION;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -26,23 +27,27 @@ public class AddAttdCommandParser implements Parser<AddAttdCommand> {
     @Override
     public AddAttdCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_DATE);
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_DATE);
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_SESSION, PREFIX_DATE);
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_SESSION, PREFIX_DATE);
 
         String trimmedPreamble = argMultimap.getPreamble().trim();
         if (trimmedPreamble.isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddAttdCommand.MESSAGE_USAGE));
         }
         String[] preambleParts = trimmedPreamble.split("\\s+");
-        if (preambleParts.length < 2 || preambleParts.length > 3) {
+        if (preambleParts.length < 1 || preambleParts.length > 2) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddAttdCommand.MESSAGE_USAGE));
         }
 
         Index personIndex = ParserUtil.parseIndex(preambleParts[0], AddAttdCommand.MESSAGE_USAGE);
-        Index appointmentIndex = ParserUtil.parseIndex(preambleParts[1], AddAttdCommand.MESSAGE_USAGE);
+        if (argMultimap.getValue(PREFIX_SESSION).isEmpty()) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddAttdCommand.MESSAGE_USAGE));
+        }
+        Index sessionIndex = ParserUtil.parseIndex(
+            argMultimap.getValue(PREFIX_SESSION).get(), AddAttdCommand.MESSAGE_USAGE);
         boolean hasAttended = true;
-        if (preambleParts.length == 3) {
-            String attendanceStatus = preambleParts[2].toLowerCase();
+        if (preambleParts.length == 2) {
+            String attendanceStatus = preambleParts[1].toLowerCase();
             if (!attendanceStatus.equals("y") && !attendanceStatus.equals("n")) {
                 throw new ParseException(MESSAGE_INVALID_ATTENDANCE_STATUS);
             }
@@ -56,7 +61,7 @@ public class AddAttdCommandParser implements Parser<AddAttdCommand> {
             recordedAt = Optional.of(parseRecordedAt(argMultimap.getValue(PREFIX_DATE).get()));
         }
 
-        return new AddAttdCommand(personIndex, appointmentIndex, hasAttended, recordedAt);
+        return new AddAttdCommand(personIndex, sessionIndex, hasAttended, recordedAt);
     }
 
     private LocalDateTime parseRecordedAt(String value) throws ParseException {

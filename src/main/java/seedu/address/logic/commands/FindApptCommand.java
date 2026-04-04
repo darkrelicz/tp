@@ -12,16 +12,16 @@ import seedu.address.model.Model;
 import seedu.address.model.person.AppointmentInWeekPredicate;
 
 /**
- * Shows all appointments that fall within a target week.
+ * Finds and lists all appointments that fall within a target week.
  */
-public class ViewApptCommand extends Command {
+public class FindApptCommand extends FindCommand {
 
-    public static final String COMMAND_WORD = "viewappt";
+    public static final String SUB_COMMAND_WORD = "appt";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Shows appointments for the week containing the given date.\n"
+    public static final String MESSAGE_USAGE = FindCommand.COMMAND_WORD + " " + SUB_COMMAND_WORD
+            + ": Finds appointments for the week containing the given date.\n"
             + "Parameters: [" + PREFIX_DATE + "DATE]\n"
-            + "Example: " + COMMAND_WORD + " " + PREFIX_DATE + "2026-02-13";
+            + "Example: " + FindCommand.COMMAND_WORD + " " + SUB_COMMAND_WORD + " " + PREFIX_DATE + "2026-02-13";
 
     public static final String MESSAGE_SUCCESS = "%1$d appointments listed for week %2$s to %3$s";
 
@@ -29,9 +29,9 @@ public class ViewApptCommand extends Command {
     private final AppointmentInWeekPredicate predicate;
 
     /**
-     * Creates a command that shows appointments for the week containing {@code targetDate}.
+     * Creates a command that finds appointments for the week containing {@code targetDate}.
      */
-    public ViewApptCommand(LocalDate targetDate) {
+    public FindApptCommand(LocalDate targetDate) {
         requireNonNull(targetDate);
         this.targetDate = targetDate;
         this.predicate = new AppointmentInWeekPredicate(targetDate);
@@ -40,7 +40,7 @@ public class ViewApptCommand extends Command {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
-        model.updateFilteredPersonList(predicate);
+        model.updateFilteredPersonListWithAnd(predicate);
         model.setListDisplayMode(ListDisplayMode.APPOINTMENT);
 
         String weekStart = predicate.getWeekStart().format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -54,10 +54,10 @@ public class ViewApptCommand extends Command {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof ViewApptCommand)) {
+        if (!(other instanceof FindApptCommand)) {
             return false;
         }
-        ViewApptCommand otherCommand = (ViewApptCommand) other;
+        FindApptCommand otherCommand = (FindApptCommand) other;
         return targetDate.equals(otherCommand.targetDate);
     }
 

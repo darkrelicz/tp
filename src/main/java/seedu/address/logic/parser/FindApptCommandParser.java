@@ -6,29 +6,29 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 import java.time.LocalDate;
 
 import seedu.address.commons.util.AppClock;
-import seedu.address.logic.commands.ViewApptCommand;
+import seedu.address.logic.commands.FindApptCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
- * Parses input arguments and creates a new {@code ViewApptCommand} object.
+ * Parses input arguments and creates a new {@code FindApptCommand} object.
  */
-public class ViewApptCommandParser implements Parser<ViewApptCommand> {
+public class FindApptCommandParser implements Parser<FindApptCommand> {
 
     @Override
-    public ViewApptCommand parse(String args) throws ParseException {
+    public FindApptCommand parse(String args) throws ParseException {
         String trimmedArgs = args.trim();
         if (trimmedArgs.isEmpty()) {
-            return new ViewApptCommand(LocalDate.now(AppClock.getClock()));
+            return new FindApptCommand(LocalDate.now(AppClock.getClock()));
         }
 
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(" " + trimmedArgs, PREFIX_DATE);
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_DATE);
 
         if (!argMultimap.getPreamble().isEmpty() || argMultimap.getValue(PREFIX_DATE).isEmpty()) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewApptCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindApptCommand.MESSAGE_USAGE));
         }
 
         LocalDate targetDate = ParserUtil.parseIsoDate(argMultimap.getValue(PREFIX_DATE).get());
-        return new ViewApptCommand(targetDate);
+        return new FindApptCommand(targetDate);
     }
 }

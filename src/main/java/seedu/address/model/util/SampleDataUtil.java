@@ -13,7 +13,7 @@ import seedu.address.model.academic.Academics;
 import seedu.address.model.academic.Level;
 import seedu.address.model.academic.Subject;
 import seedu.address.model.attendance.Attendance;
-import seedu.address.model.attendance.AttendanceRecords;
+import seedu.address.model.attendance.AttendanceHistory;
 import seedu.address.model.billing.Billing;
 import seedu.address.model.billing.PaymentHistory;
 import seedu.address.model.person.Address;
@@ -25,6 +25,7 @@ import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.person.Phone;
 import seedu.address.model.recurrence.Recurrence;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -41,11 +42,11 @@ public class SampleDataUtil {
                     .withGuardian(new Guardian(
                             new Name("Janet Yeoh"), new Phone("98765432"),
                             new Email("janet@example.com")))
-                    .withAppointment(new Appointment(Recurrence.NONE,
+                    .withAppointment(Appointment.defaultAppointment().addSession(new ScheduledSession(Recurrence.NONE,
                             LocalDateTime.of(2026, 3, 21, 15, 30),
                             LocalDateTime.of(2026, 3, 21, 15, 30),
-                            new AttendanceRecords(new Attendance(true, LocalDate.of(2026, 3, 18))),
-                            "Mathematics and English"))
+                            new AttendanceHistory(new Attendance(true, LocalDate.of(2026, 3, 18))),
+                            "Mathematics and English")))
                     .withBilling(new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 3, 15), 25.0,
                             new PaymentHistory(LocalDate.of(2026, 3, 15))))
                     .build(),
@@ -58,11 +59,11 @@ public class SampleDataUtil {
                     .withGuardian(new Guardian(
                             new Name("Ming Yu"), new Phone("97654321"),
                             new Email("ming@example.com")))
-                    .withAppointment(new Appointment(Recurrence.NONE,
+                    .withAppointment(Appointment.defaultAppointment().addSession(new ScheduledSession(Recurrence.NONE,
                             LocalDateTime.of(2026, 3, 22, 16, 0),
                             LocalDateTime.of(2026, 3, 22, 16, 0),
-                            new AttendanceRecords(new Attendance(true, LocalDate.of(2026, 3, 17))),
-                            "Physics and Chemistry"))
+                            new AttendanceHistory(new Attendance(true, LocalDate.of(2026, 3, 17))),
+                            "Physics and Chemistry")))
                     .withBilling(new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 3, 10), 25.0,
                             new PaymentHistory(LocalDate.of(2026, 3, 10))))
                     .build(),
@@ -75,11 +76,11 @@ public class SampleDataUtil {
                     .withGuardian(new Guardian(
                             new Name("Patricia Oliveiro"), new Phone("96543210"),
                             new Email("patricia@example.com")))
-                    .withAppointment(new Appointment(Recurrence.NONE,
+                    .withAppointment(Appointment.defaultAppointment().addSession(new ScheduledSession(Recurrence.NONE,
                             LocalDateTime.of(2026, 3, 23, 14, 30),
                             LocalDateTime.of(2026, 3, 23, 14, 30),
-                            new AttendanceRecords(new Attendance(true, LocalDate.of(2026, 3, 16))),
-                            "English and Literature"))
+                            new AttendanceHistory(new Attendance(true, LocalDate.of(2026, 3, 16))),
+                            "English and Literature")))
                     .withBilling(new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 3, 5), 25.0,
                             new PaymentHistory(LocalDate.of(2026, 3, 5))))
                     .build(),
@@ -91,11 +92,11 @@ public class SampleDataUtil {
                     .withGuardian(new Guardian(
                             new Name("Mary Li"), new Phone("95432109"),
                             new Email("mary@example.com")))
-                    .withAppointment(new Appointment(Recurrence.NONE,
+                    .withAppointment(Appointment.defaultAppointment().addSession(new ScheduledSession(Recurrence.NONE,
                             LocalDateTime.of(2026, 3, 24, 10, 0),
                             LocalDateTime.of(2026, 3, 24, 10, 0),
-                            new AttendanceRecords(new Attendance(true, LocalDate.of(2026, 3, 19))),
-                            "Mathematics and Economics"))
+                            new AttendanceHistory(new Attendance(true, LocalDate.of(2026, 3, 19))),
+                            "Mathematics and Economics")))
                     .withBilling(new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 3, 1), 25.0,
                             new PaymentHistory(LocalDate.of(2026, 3, 1))))
                     .build(),
@@ -107,11 +108,11 @@ public class SampleDataUtil {
                     .withGuardian(new Guardian(
                             new Name("Zahra Ibrahim"), new Phone("94321098"),
                             new Email("zahra@example.com")))
-                    .withAppointment(new Appointment(Recurrence.NONE,
+                    .withAppointment(Appointment.defaultAppointment().addSession(new ScheduledSession(Recurrence.NONE,
                             LocalDateTime.of(2026, 3, 25, 11, 30),
                             LocalDateTime.of(2026, 3, 25, 11, 30),
-                            new AttendanceRecords(new Attendance(true, LocalDate.of(2026, 3, 15))),
-                            "Science and Mathematics"))
+                            new AttendanceHistory(new Attendance(true, LocalDate.of(2026, 3, 15))),
+                            "Science and Mathematics")))
                     .withBilling(new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 2, 28), 25.0,
                             new PaymentHistory(LocalDate.of(2026, 2, 27))))
                     .build(),
@@ -123,11 +124,11 @@ public class SampleDataUtil {
                     .withGuardian(new Guardian(
                             new Name("Priya Balakrishnan"), new Phone("93210987"),
                             new Email("priya@example.com")))
-                    .withAppointment(new Appointment(Recurrence.NONE,
+                    .withAppointment(Appointment.defaultAppointment().addSession(new ScheduledSession(Recurrence.NONE,
                             LocalDateTime.of(2026, 3, 26, 17, 0),
                             LocalDateTime.of(2026, 3, 26, 17, 0),
-                            new AttendanceRecords(new Attendance(true, LocalDate.of(2026, 3, 20))),
-                            "Physics and Mathematics"))
+                            new AttendanceHistory(new Attendance(true, LocalDate.of(2026, 3, 20))),
+                            "Physics and Mathematics")))
                     .withBilling(new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 2, 25), 25.0,
                         new PaymentHistory(LocalDate.of(2026, 2, 24))))
                     .build()

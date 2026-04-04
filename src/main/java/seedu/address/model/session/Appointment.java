@@ -3,62 +3,183 @@ package seedu.address.model.session;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import seedu.address.commons.util.DateTimeUtil;
+import seedu.address.commons.core.index.Index;
+import seedu.address.model.attendance.Attendance;
+import seedu.address.model.attendance.AttendanceHistory;
 import seedu.address.model.attendance.AttendanceRecords;
 import seedu.address.model.recurrence.Recurrence;
 
 /**
- * Immutable appointment value object.
+ * Immutable appointment container for a person's scheduled sessions.
  */
 public final class Appointment {
 
-    private final Recurrence recurrence;
-    private final LocalDateTime start;
-    private final LocalDateTime next;
-    private final AttendanceRecords attendance;
-    private final String description;
+    private final List<ScheduledSession> sessions;
 
     /**
-     * Creates an {@code Appointment}.
+     * Creates an empty appointment container.
+     */
+    public Appointment() {
+        this.sessions = List.of();
+    }
+
+    /**
+     * Creates an {@code Appointment} from the provided sessions.
+     */
+    public Appointment(List<ScheduledSession> sessions) {
+        requireAllNonNull(sessions);
+        List<ScheduledSession> copiedSessions = new ArrayList<>(sessions);
+        copiedSessions.sort(Comparator.comparing(ScheduledSession::getNext)
+                .thenComparing(ScheduledSession::getStart)
+                .thenComparing(ScheduledSession::getDescription));
+        this.sessions = List.copyOf(copiedSessions);
+    }
+
+    /**
+     * Backward-compatible constructor for a single session.
      */
     public Appointment(Recurrence recurrence, LocalDateTime start, LocalDateTime next,
-                       AttendanceRecords attendance, String description) {
-        requireAllNonNull(recurrence, start, next, attendance, description);
-        this.recurrence = recurrence;
-        this.start = DateTimeUtil.normalizeToMinute(start);
-        this.next = DateTimeUtil.normalizeToMinute(next);
-        this.attendance = attendance;
-        this.description = description.trim();
-    }
-
-    public Recurrence getRecurrence() {
-        return recurrence;
-    }
-
-    public LocalDateTime getStart() {
-        return start;
-    }
-
-    public LocalDateTime getNext() {
-        return next;
-    }
-
-    public AttendanceRecords getAttendance() {
-        return attendance;
-    }
-
-    public String getDescription() {
-        return description;
+                       AttendanceHistory attendanceHistory, String description) {
+        this(List.of(new ScheduledSession(recurrence, start, next, attendanceHistory, description)));
     }
 
     /**
-     * Returns a copy with updated attendance.
+     * Backward-compatible constructor accepting legacy attendance records type.
+     */
+    public Appointment(Recurrence recurrence, LocalDateTime start, LocalDateTime next,
+                       AttendanceRecords attendanceRecords, String description) {
+        this(recurrence, start, next,
+                new AttendanceHistory(attendanceRecords.getRecords().toArray(Attendance[]::new)),
+                description);
+    }
+
+    public static Appointment defaultAppointment() {
+        return new Appointment();
+    }
+
+    public List<ScheduledSession> getSessions() {
+        return sessions;
+    }
+
+    /**
+     * Returns a copy with session appended.
+     */
+    public Appointment addSession(ScheduledSession session) {
+        requireAllNonNull(session);
+        List<ScheduledSession> updatedSessions = new ArrayList<>(sessions);
+        updatedSessions.add(session);
+        return new Appointment(updatedSessions);
+    }
+
+    /**
+     * Returns a copy with session at {@code index} removed.
+     */
+    public Appointment removeSession(int index) {
+        if (index < 0 || index >= sessions.size()) {
+            throw new IndexOutOfBoundsException("Session index out of range: " + index);
+        }
+        List<ScheduledSession> updatedSessions = new ArrayList<>(sessions);
+        updatedSessions.remove(index);
+        return new Appointment(updatedSessions);
+    }
+
+    /**
+     * Returns a copy with all sessions at the given 1-based indices removed.
+     */
+    public Appointment removeSessions(List<Index> sessionIndices) {
+        requireAllNonNull(sessionIndices);
+        List<Integer> uniqueZeroBased = sessionIndices.stream()
+                .map(Index::getZeroBased)
+                .distinct()
+                .sorted(Comparator.reverseOrder())
+                .toList();
+        List<ScheduledSession> updatedSessions = new ArrayList<>(sessions);
+        for (int zeroBased : uniqueZeroBased) {
+            if (zeroBased < 0 || zeroBased >= updatedSessions.size()) {
+                throw new IndexOutOfBoundsException("Session index out of range: " + (zeroBased + 1));
+            }
+            updatedSessions.remove(zeroBased);
+        }
+        return new Appointment(updatedSessions);
+    }
+
+    /**
+     * Returns the next upcoming session for this person.
+     * If all sessions are in the past, returns the most recent past session.
+     */
+    public Optional<ScheduledSession> getNextSession() {
+        if (sessions.isEmpty()) {
+            return Optional.empty();
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        return sessions.stream()
+                .filter(session -> !session.getNext().isBefore(now))
+                .findFirst()
+                .or(() -> Optional.of(sessions.get(sessions.size() - 1)));
+    }
+
+    private ScheduledSession getSingleSession() {
+        if (sessions.size() != 1) {
+            throw new IllegalStateException("Single-session accessor used on appointment container");
+        }
+        return sessions.get(0);
+    }
+
+    /**
+     * Backward-compatible single-session accessor.
+     */
+    public Recurrence getRecurrence() {
+        return getSingleSession().getRecurrence();
+    }
+
+    /**
+     * Backward-compatible single-session accessor.
+     */
+    public LocalDateTime getStart() {
+        return getSingleSession().getStart();
+    }
+
+    /**
+     * Backward-compatible single-session accessor.
+     */
+    public LocalDateTime getNext() {
+        return getSingleSession().getNext();
+    }
+
+    /**
+     * Backward-compatible single-session accessor.
+     */
+    public AttendanceHistory getAttendance() {
+        return getSingleSession().getAttendanceHistory();
+    }
+
+    /**
+     * Backward-compatible single-session accessor.
+     */
+    public String getDescription() {
+        return getSingleSession().getDescription();
+    }
+
+    /**
+     * Backward-compatible single-session mutation.
+     */
+    public Appointment withAttendance(AttendanceHistory updatedAttendance) {
+        ScheduledSession current = getSingleSession();
+        return new Appointment(List.of(current.withAttendance(updatedAttendance)));
+    }
+
+    /**
+     * Backward-compatible single-session mutation.
      */
     public Appointment withAttendance(AttendanceRecords updatedAttendance) {
-        requireAllNonNull(updatedAttendance);
-        return new Appointment(recurrence, start, next, updatedAttendance, description);
+        return withAttendance(new AttendanceHistory(updatedAttendance.getRecords().toArray(Attendance[]::new)));
     }
 
     @Override
@@ -72,26 +193,18 @@ public final class Appointment {
         }
 
         Appointment otherAppointment = (Appointment) other;
-        return recurrence.equals(otherAppointment.recurrence)
-                && start.equals(otherAppointment.start)
-                && next.equals(otherAppointment.next)
-                && attendance.equals(otherAppointment.attendance)
-                && description.equals(otherAppointment.description);
+        return sessions.equals(otherAppointment.sessions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(recurrence, start, next, attendance, description);
+        return Objects.hash(sessions);
     }
 
     @Override
     public String toString() {
         return "Appointment{"
-                + "recurrence=" + recurrence
-                + ", start=" + start
-                + ", next=" + next
-                + ", attendance=" + attendance
-                + ", description='" + description + '\''
+                + "sessions=" + sessions
                 + "}";
     }
 }

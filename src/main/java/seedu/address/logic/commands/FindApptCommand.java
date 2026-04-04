@@ -40,7 +40,7 @@ public class FindApptCommand extends FindCommand {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
-        model.updateFilteredPersonList(predicate);
+        model.updateFilteredPersonListWithAnd(predicate);
 
         String weekStart = predicate.getWeekStart().format(DateTimeFormatter.ISO_LOCAL_DATE);
         String weekEnd = predicate.getWeekEnd().format(DateTimeFormatter.ISO_LOCAL_DATE);

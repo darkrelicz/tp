@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.commons.util.AppClock;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.attendance.AttendanceHistory;
 import seedu.address.model.attendance.AttendanceRecords;
@@ -131,7 +132,7 @@ public final class Appointment {
             return Optional.empty();
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = AppClock.now();
         return sessions.stream()
                 .filter(session -> !session.getNext().isBefore(now))
                 .findFirst()

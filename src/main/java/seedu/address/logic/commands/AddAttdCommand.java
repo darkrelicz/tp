@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.commons.util.AppClock;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -71,7 +72,7 @@ public class AddAttdCommand extends AddCommand {
 
         LocalDateTime effectiveRecordedAt = recordedAt
                 .orElseGet(() -> session.getNext().toLocalDate().atStartOfDay());
-        if (effectiveRecordedAt.isAfter(LocalDateTime.now())) {
+        if (effectiveRecordedAt.isAfter(AppClock.now())) {
             throw new CommandException(MESSAGE_FUTURE_ATTENDANCE_NOT_ALLOWED);
         }
         Attendance attendanceRecord = new Attendance(hasAttended, effectiveRecordedAt);

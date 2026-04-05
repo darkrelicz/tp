@@ -56,12 +56,6 @@ class JsonAdaptedPerson {
     private final String email;
     private final String address;
     private final JsonAdaptedAppointment appointment;
-    private final String appointmentStart;
-    private final String appointmentNext;
-    private final String appointmentRecurrence;
-    private final String appointmentDescription;
-    private final List<JsonAdaptedAppointmentAttendance> appointmentAttendanceRecords;
-    private final List<String> attendanceHistory;
     private final String parentName; // optional, may be null
     private final String parentPhone; // optional, may be null
     private final String parentEmail; // optional, may be null
@@ -84,17 +78,10 @@ class JsonAdaptedPerson {
             @JsonProperty("parentPhone") String parentPhone,
             @JsonProperty("parentEmail") String parentEmail,
             @JsonProperty("appointment") JsonAdaptedAppointment appointment,
-            @JsonProperty("appointmentStart") String appointmentStart,
-            @JsonProperty("appointmentNext") String appointmentNext,
-            @JsonProperty("appointmentRecurrence") String appointmentRecurrence,
-            @JsonProperty("appointmentDescription") String appointmentDescription,
-            @JsonProperty("appointmentAttendanceRecords")
-            List<JsonAdaptedAppointmentAttendance> appointmentAttendanceRecords,
             @JsonProperty("paymentDates") List<String> paymentDates,
             @JsonProperty("paymentDueDate") String paymentDueDate,
             @JsonProperty("paymentRecurrence") String paymentRecurrence,
-            @JsonProperty("billingMonthlyRate") double tuitionFee,
-            @JsonProperty("attendanceHistory") List<String> attendanceHistory) {
+            @JsonProperty("billingMonthlyRate") double tuitionFee) {
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -103,16 +90,10 @@ class JsonAdaptedPerson {
         this.parentPhone = parentPhone;
         this.parentEmail = parentEmail;
         this.appointment = appointment;
-        this.appointmentStart = appointmentStart;
-        this.appointmentNext = appointmentNext;
-        this.appointmentRecurrence = appointmentRecurrence;
-        this.appointmentDescription = appointmentDescription;
-        this.appointmentAttendanceRecords = appointmentAttendanceRecords;
         this.paymentDates = paymentDates;
         this.paymentDueDate = paymentDueDate;
         this.paymentRecurrence = paymentRecurrence;
         this.tuitionFee = tuitionFee;
-        this.attendanceHistory = attendanceHistory;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -128,12 +109,6 @@ class JsonAdaptedPerson {
         email = source.getEmail().value;
         address = source.getAddress().value;
         appointment = new JsonAdaptedAppointment(source.getAppointment());
-        appointmentStart = null;
-        appointmentNext = null;
-        appointmentRecurrence = null;
-        appointmentDescription = null;
-        appointmentAttendanceRecords = null;
-        attendanceHistory = null;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));

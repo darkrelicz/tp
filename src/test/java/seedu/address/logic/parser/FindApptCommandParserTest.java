@@ -15,13 +15,13 @@ public class FindApptCommandParserTest {
     private final FindApptCommandParser parser = new FindApptCommandParser();
 
     @Test
-    public void parse_emptyArgs_returnsCommandWithCurrentDate() {
-        assertParseSuccess(parser, "   ", new FindApptCommand(AppClock.today()));
+    public void parse_validDate_success() {
+        assertParseSuccess(parser, " d/2026-02-13", new FindApptCommand(LocalDate.parse("2026-02-13")));
     }
 
     @Test
-    public void parse_validDate_success() {
-        assertParseSuccess(parser, " d/2026-02-13", new FindApptCommand(LocalDate.parse("2026-02-13")));
+    public void parse_emptyArgs_returnsCommandWithCurrentDate() {
+        assertParseSuccess(parser, "   ", new FindApptCommand(AppClock.today()));
     }
 
     @Test

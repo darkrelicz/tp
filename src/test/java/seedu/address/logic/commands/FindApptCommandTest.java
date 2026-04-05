@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.AddressBook;
-import seedu.address.model.ListDisplayMode;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
@@ -34,8 +33,7 @@ public class FindApptCommandTest {
     public void execute_validDate_success() {
         FindApptCommand command = new FindApptCommand(TARGET_DATE);
         AppointmentInWeekPredicate predicate = new AppointmentInWeekPredicate(TARGET_DATE);
-        expectedModel.updateFilteredPersonListWithAnd(predicate);
-        expectedModel.setListDisplayMode(ListDisplayMode.APPOINTMENT);
+        expectedModel.updateFilteredPersonList(predicate);
 
         String expectedMessage = String.format(FindApptCommand.MESSAGE_SUCCESS,
                 expectedModel.getFilteredPersonList().size(), "2026-02-09", "2026-02-15");

@@ -3,8 +3,6 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 
-import java.time.LocalDate;
-
 import seedu.address.commons.util.AppClock;
 import seedu.address.logic.commands.FindApptCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -18,7 +16,7 @@ public class FindApptCommandParser implements Parser<FindApptCommand> {
     public FindApptCommand parse(String args) throws ParseException {
         String trimmedArgs = args.trim();
         if (trimmedArgs.isEmpty()) {
-            return new FindApptCommand(LocalDate.now(AppClock.getClock()));
+            return new FindApptCommand(AppClock.today());
         }
 
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(" " + trimmedArgs, PREFIX_DATE);
@@ -28,7 +26,6 @@ public class FindApptCommandParser implements Parser<FindApptCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindApptCommand.MESSAGE_USAGE));
         }
 
-        LocalDate targetDate = ParserUtil.parseIsoDate(argMultimap.getValue(PREFIX_DATE).get());
-        return new FindApptCommand(targetDate);
+        return new FindApptCommand(ParserUtil.parseIsoDate(argMultimap.getValue(PREFIX_DATE).get()));
     }
 }

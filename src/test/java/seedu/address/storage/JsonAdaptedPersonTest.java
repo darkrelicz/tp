@@ -77,8 +77,7 @@ public class JsonAdaptedPersonTest {
             Double tuitionFee, List<String> attendanceHistory) {
         JsonAdaptedAppointment appointment = makeJsonAdaptedAppointment(appointmentStart, attendanceHistory);
         return new JsonAdaptedPerson(name, phone, email, address, tags, academics, parentName, parentPhone,
-                parentEmail, appointment, null, null, null, null, null, paymentDates, paymentDueDate,
-                paymentRecurrence, tuitionFee, attendanceHistory);
+                parentEmail, appointment, paymentDates, paymentDueDate, paymentRecurrence, tuitionFee);
     }
 
     private static JsonAdaptedAppointment makeJsonAdaptedAppointment(String appointmentStart,

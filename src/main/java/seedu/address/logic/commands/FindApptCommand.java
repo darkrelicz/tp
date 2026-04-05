@@ -7,29 +7,29 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.ListDisplayMode;
 import seedu.address.model.Model;
 import seedu.address.model.person.AppointmentInWeekPredicate;
 
 /**
- * Finds and lists all appointments that fall within a target week.
+ * Finds and lists all students whose appointments fall within the week containing the given date.
  */
 public class FindApptCommand extends FindCommand {
 
     public static final String SUB_COMMAND_WORD = "appt";
 
     public static final String MESSAGE_USAGE = FindCommand.COMMAND_WORD + " " + SUB_COMMAND_WORD
-            + ": Finds appointments for the week containing the given date.\n"
+            + ": Finds all students whose appointments fall within the Monday-Sunday week containing the given "
+            + "date.\n"
             + "Parameters: [" + PREFIX_DATE + "DATE]\n"
             + "Example: " + FindCommand.COMMAND_WORD + " " + SUB_COMMAND_WORD + " " + PREFIX_DATE + "2026-02-13";
 
-    public static final String MESSAGE_SUCCESS = "%1$d appointments listed for week %2$s to %3$s";
+    public static final String MESSAGE_SUCCESS = "%1$d students listed for week %2$s to %3$s";
 
     private final LocalDate targetDate;
     private final AppointmentInWeekPredicate predicate;
 
     /**
-     * Creates a command that finds appointments for the week containing {@code targetDate}.
+     * Creates a command that filters students with appointments in the week containing {@code targetDate}.
      */
     public FindApptCommand(LocalDate targetDate) {
         requireNonNull(targetDate);
@@ -41,7 +41,6 @@ public class FindApptCommand extends FindCommand {
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.updateFilteredPersonListWithAnd(predicate);
-        model.setListDisplayMode(ListDisplayMode.APPOINTMENT);
 
         String weekStart = predicate.getWeekStart().format(DateTimeFormatter.ISO_LOCAL_DATE);
         String weekEnd = predicate.getWeekEnd().format(DateTimeFormatter.ISO_LOCAL_DATE);

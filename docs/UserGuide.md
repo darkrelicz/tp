@@ -379,11 +379,11 @@ Examples:
 * `delete payment 1 d/2026-03-01` deletes the payment recorded on 1 March 2026 for student 1.
 * `delete payment 2 d/2025-12-15` deletes the payment recorded on 15 December 2025 for student 2.
 
-### Finding students by payment due date : `find payment`
+### Finding students by payment due date : `find billing`
 
 Finds all students whose billing payment due date falls within the specified year-month.
 
-Format: `find payment d/YYYY-MM`
+Format: `find billing d/YYYY-MM`
 
 * Exactly one `d/` prefix must be provided.
 * Duplicate `d/` prefixes are invalid (e.g., `d/2026-03 d/2026-04`).
@@ -391,8 +391,8 @@ Format: `find payment d/YYYY-MM`
 * The search matches any displayed payment due month (ignores day of month).
 
 Examples:
-* `find payment d/2026-03` returns all students in the currently displayed list with payment due dates in March 2026.
-* `find payment d/2025-12` returns students with due dates in December 2025.
+* `find billing d/2026-03` returns all students in the currently displayed list with payment due dates in March 2026.
+* `find billing d/2025-12` returns students with due dates in December 2025.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -449,21 +449,21 @@ Examples:
 * `edit appt 1 s/2 d/2026-02-12T09:00:00`
 * `edit appt 1 s/2 r/MONTHLY dsc/Physics consultation`
 
-### Viewing appointments for a week : `viewappt`
+### Finding students with appointments for a week : `find appt`
 
 Shows all students whose next appointment date falls within the Monday-to-Sunday week containing the given date.
 
-Format: `viewappt [d/DATE]`
+Format: `find appt [d/DATE]`
 
 * If `d/DATE` is omitted, the current local date is used.
 * `DATE` must be in ISO format (`YYYY-MM-DD`).
 * At most one `d/` prefix may be provided.
 * Text outside the optional `d/` prefix is invalid.
-* The displayed list switches to appointment view and shows the recorded appointment for each matching student.
+* The standard student list remains in use; only the displayed students are filtered.
 
 Examples:
-* `viewappt` shows appointments for the current week.
-* `viewappt d/2026-02-13` shows appointments for the week containing 13 February 2026.
+* `find appt` shows students with appointments in the current week.
+* `find appt d/2026-02-13` shows students with appointments in the week containing 13 February 2026.
 
 ### Recording appointment attendance : `add attd`
 
@@ -611,7 +611,7 @@ Action | Format | Example
 **Edit billing** | `edit billing INDEX [a/AMOUNT] [d/DATE]` | `edit billing 1 a/250 d/2026-03-20`
 **Add payment** | `add payment INDEX d/DATE` | `add payment 1 d/2026-03-05`
 **Delete payment** | `delete payment INDEX d/DATE` | `delete payment 1 d/2026-03-01`
-**Find by payment due** | `find payment d/YYYY-MM` | `find payment d/2026-03`
+**Find by payment due** | `find billing d/YYYY-MM` | `find billing d/2026-03`
 
 ### Appointment & Attendance Management
 
@@ -619,7 +619,7 @@ Action | Format | Example
 -------|--------|--------
 **Add appointment** | `add appt INDEX d/DATETIME [r/RECURRENCE] dsc/DESCRIPTION` | `add appt 1 d/2026-01-29T08:00:00 dsc/Weekly algebra practice`
 **Delete appointment** | `delete appt PERSON_INDEX APPT_INDEX` | `delete appt 1 2`
-**View weekly appointments** | `viewappt [d/DATE]` | `viewappt d/2026-02-13`
+**Find weekly appointments** | `find appt [d/DATE]` | `find appt d/2026-02-13`
 **Add attendance** | `add attd PERSON_INDEX APPT_INDEX [y\|n] [d/DATE]` | `add attd 1 2 y d/2026-01-29`
 
 ### General

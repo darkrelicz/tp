@@ -27,7 +27,7 @@ TutorFlow keeps your student list, parent / guardian details, academics, tuition
 
    `java -jar tutorflow.jar`
 
-1. TutorFlow starts with sample data so that you can try the commands immediately.
+1. On first launch, or when no existing data file is present, TutorFlow starts with sample data so that you can try the commands immediately.
 
 1. Type a command into the command box and press Enter to run it. Try these first:
 
@@ -76,7 +76,8 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 
 * Whenever a command uses `INDEX`, it must be a positive integer such as `1`, `2`, or `3`.
 
-* `INDEX` always refers to the **currently displayed student list**, not to a permanent student ID.
+* Unless stated otherwise, `INDEX` refers to the **currently displayed student list**, not to a permanent student ID.
+  Some commands also use sub-item indexes such as `TAG_INDEX`, `SUBJECT_INDEX`, or `APPT_INDEX`; those come from the selected student's detail panel.
 
 * Commands without parameters, such as `help`, `list`, `clear`, and `exit`, ignore extra text after the command word.
 
@@ -351,7 +352,10 @@ Details:
   Example: `n/Susan Meier`
 * Parent name matching is case-insensitive and based on full words.
 * Parent phone and email matching are case-insensitive and based on partial text.
-* If you supply more than one field, the student must match **every supplied field**.
+* Within a single field, multiple keywords behave as an `OR` search.  
+  Example: `n/Susan Meier` matches a parent name containing either `Susan` or `Meier`.
+* If you supply more than one field, the student must match **every supplied field**.  
+  Example: `n/Susan p/9999` requires both a matching name keyword and a matching phone keyword.
 
 Examples:
 * `find parent n/Susan`

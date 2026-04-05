@@ -35,7 +35,7 @@ public class ParserUtil {
             "Date cannot be later than today.";
     public static final String MESSAGE_INVALID_DATE_TIME =
             "Date-time must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
-    public static final String MESSAGE_INVALID_AMOUNT = "Amount must be a non-negative number.";
+    public static final String MESSAGE_INVALID_AMOUNT = "Amount must be a positive number greater than 0.";
     public static final String MESSAGE_INVALID_RECURRENCE =
             "Recurrence must be one of: WEEKLY, BIWEEKLY, MONTHLY, NONE";
     private static final DateTimeFormatter ISO_LOCAL_DATE_FORMATTER =
@@ -198,7 +198,7 @@ public class ParserUtil {
         String trimmedAmount = amount.trim();
         try {
             double parsedAmount = Double.parseDouble(trimmedAmount);
-            if (!Double.isFinite(parsedAmount) || parsedAmount < 0) {
+            if (!Double.isFinite(parsedAmount) || parsedAmount <= 0) {
                 throw new ParseException(MESSAGE_INVALID_AMOUNT);
             }
             return parsedAmount;

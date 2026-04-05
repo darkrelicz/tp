@@ -37,6 +37,7 @@ public class PaymentHistory {
      * Record payment made on {@code date}
      * @param date A valid date
      * @return {@code PaymentHistory} object with updated payment history
+     * @throws IllegalArgumentException if {@code date} is already in payment history
      */
     public PaymentHistory recordPayment(LocalDate date) {
         requireNonNull(date);

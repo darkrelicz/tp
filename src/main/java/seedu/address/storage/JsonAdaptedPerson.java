@@ -254,10 +254,8 @@ class JsonAdaptedPerson {
      */
     private Set<Tag> parseTags() throws IllegalValueException {
         List<Tag> personTags = new ArrayList<>();
-        if (tags != null) {
-            for (JsonAdaptedTag tag : tags) {
-                personTags.add(tag.toModelType());
-            }
+        for (JsonAdaptedTag tag : tags) {
+            personTags.add(tag.toModelType());
         }
         return new HashSet<>(personTags);
     }

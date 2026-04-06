@@ -48,10 +48,7 @@ public class AddressBookParser {
         final String commandWord = matcher.group("commandWord").toLowerCase(Locale.ROOT);
         final String arguments = matcher.group("arguments");
 
-        // Note to developers: Change the log level in config.json to enable lower level (i.e., FINE, FINER and lower)
-        // log messages such as the one below.
-        // Lower level log messages are used sparingly to minimize noise in the code.
-        logger.fine("Command word: " + commandWord + "; Arguments: " + arguments);
+        logger.info("Parsing command word: " + commandWord);
 
         switch (commandWord) {
 
@@ -83,7 +80,7 @@ public class AddressBookParser {
             return new HelpCommand();
 
         default:
-            logger.finer("This user input caused a ParseException: " + userInput);
+            logger.warning("Unknown command from user input: " + userInput);
             throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
         }
     }

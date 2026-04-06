@@ -46,20 +46,39 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
-        Command command = addressBookParser.parseCommand(commandText);
+        Command command;
+        try {
+            command = addressBookParser.parseCommand(commandText);
+        } catch (ParseException pe) {
+            logger.warning("Failed to parse command: " + commandText);
+            throw pe;
+        }
 
         ReadOnlyAddressBook beforeSnapshot = model.getAddressBook();
         int hashBefore = beforeSnapshot.hashCode();
 
-        commandResult = command.execute(model);
+        CommandResult commandResult;
+        try {
+            commandResult = command.execute(model);
+        } catch (CommandException ce) {
+            logger.warning("Command " + command.getClass().getSimpleName() + " failed: " + ce.getMessage());
+            throw ce;
+        }
+
+        logger.info("Command " + command.getClass().getSimpleName()
+                + " completed: " + commandResult.getFeedbackToUser());
 
         if (model.getAddressBook().hashCode() != hashBefore) {
+            logger.info("Detected address book changes after " + command.getClass().getSimpleName()
+                    + "; saving to " + storage.getAddressBookFilePath());
             try {
                 storage.saveAddressBook(model.getAddressBook());
             } catch (AccessDeniedException e) {
+                logger.warning("Unable to save address book due to insufficient permissions at "
+                        + storage.getAddressBookFilePath());
                 throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
             } catch (IOException ioe) {
+                logger.warning("Unable to save address book: " + ioe.getMessage());
                 throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
             }
         }

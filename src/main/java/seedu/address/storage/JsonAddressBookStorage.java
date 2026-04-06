@@ -44,17 +44,20 @@ public class JsonAddressBookStorage implements AddressBookStorage {
      */
     public Optional<ReadOnlyAddressBook> readAddressBook(Path filePath) throws DataLoadingException {
         requireNonNull(filePath);
+        logger.info("Loading address book JSON from " + filePath);
 
         Optional<JsonSerializableAddressBook> jsonAddressBook = JsonUtil.readJsonFile(
                 filePath, JsonSerializableAddressBook.class);
         if (!jsonAddressBook.isPresent()) {
+            logger.warning("Address book file not found or empty at " + filePath);
             return Optional.empty();
         }
 
         try {
+            logger.info("Successfully deserialized address book from " + filePath);
             return Optional.of(jsonAddressBook.get().toModelType());
         } catch (IllegalValueException ive) {
-            logger.info("Illegal values found in " + filePath + ": " + ive.getMessage());
+            logger.warning("Illegal values found in " + filePath + ": " + ive.getMessage());
             throw new DataLoadingException(ive);
         }
     }
@@ -73,6 +76,7 @@ public class JsonAddressBookStorage implements AddressBookStorage {
         requireNonNull(addressBook);
         requireNonNull(filePath);
 
+        logger.info("Writing address book JSON to " + filePath);
         FileUtil.createIfMissing(filePath);
         JsonUtil.saveJsonFile(new JsonSerializableAddressBook(addressBook), filePath);
     }

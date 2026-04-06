@@ -7,7 +7,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -17,6 +19,7 @@ import seedu.address.logic.parser.exceptions.ParseException;
  * @param <T> command base type for the subcommand family
  */
 public class SubcommandDispatcherParser<T extends Command> implements Parser<T> {
+    private static final Logger logger = LogsCenter.getLogger(SubcommandDispatcherParser.class);
 
     private final Map<String, Parser<? extends T>> subcommandParsers;
     private final String usageMessage;
@@ -41,6 +44,7 @@ public class SubcommandDispatcherParser<T extends Command> implements Parser<T> 
 
         String trimmedArgs = args.trim();
         if (trimmedArgs.isEmpty()) {
+            logger.warning("Missing subcommand. Expected format: " + usageMessage);
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, usageMessage));
         }
 
@@ -50,6 +54,7 @@ public class SubcommandDispatcherParser<T extends Command> implements Parser<T> 
 
         Parser<? extends T> subcommandParser = subcommandParsers.get(subcommand);
         if (subcommandParser == null) {
+            logger.warning("Unknown subcommand '" + subcommand + "'. Known subcommands: " + subcommandParsers.keySet());
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, usageMessage));
         }
 

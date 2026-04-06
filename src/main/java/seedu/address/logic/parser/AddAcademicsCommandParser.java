@@ -50,7 +50,8 @@ public class AddAcademicsCommandParser implements Parser<AddAcademicsCommand> {
 
         String remainder = split[1];
 
-        List<Subject> subjects = AcademicsParserUtil.parseSubjectLevelSequence(remainder);
+        List<Subject> subjects = AcademicsParserUtil.parseSubjectLevelSequence(
+                remainder, AddAcademicsCommand.MESSAGE_USAGE);
 
         // Must have at least one subject
         if (subjects.isEmpty()) {

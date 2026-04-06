@@ -1,10 +1,12 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_LEVEL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SUBJECT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.academic.Level;
@@ -19,13 +21,32 @@ public class AcademicsParserUtil {
     /**
      * Parses a string containing subject and level prefixes into a list of subjects.
      * Enforces: level must immediately follow subject, each subject has at most one level.
-     * Does not check for duplicate subject names (caller should handle).
+     * Format errors are wrapped with MESSAGE_INVALID_COMMAND_FORMAT using the given commandUsage.
      *
      * @param input The string to parse (e.g., "s/Math l/Basic s/English")
+     * @param commandUsage The command usage string for wrapping format errors
      * @return List of parsed subjects
      * @throws ParseException if parsing fails
      */
-    public static List<Subject> parseSubjectLevelSequence(String input) throws ParseException {
+    public static List<Subject> parseSubjectLevelSequence(String input, String commandUsage)
+            throws ParseException {
+        Optional<List<Subject>> result = parseSequence(input, commandUsage, false);
+        return result.orElse(new ArrayList<>());
+    }
+
+    /**
+     * Like {@link #parseSubjectLevelSequence} but also supports the clear-subjects semantics.
+     * An empty subject name (s/ with no content before the next prefix) triggers a clear.
+     *
+     * @return Optional.empty() if a clear was triggered, Optional.of(subjects) otherwise.
+     */
+    public static Optional<List<Subject>> parseSubjectLevelSequenceAllowClear(
+            String input, String commandUsage) throws ParseException {
+        return parseSequence(input, commandUsage, true);
+    }
+
+    private static Optional<List<Subject>> parseSequence(
+            String input, String commandUsage, boolean allowClear) throws ParseException {
         List<Subject> subjects = new ArrayList<>();
         Subject current = null;
 
@@ -36,6 +57,13 @@ public class AcademicsParserUtil {
                 int next = findNextPrefix(input, start);
 
                 String name = input.substring(start, next).trim();
+
+                if (name.isEmpty()) {
+                    if (allowClear) {
+                        return Optional.empty();
+                    }
+                    throw new ParseException(Subject.MESSAGE_CONSTRAINTS);
+                }
 
                 if (!Subject.isValidSubjectName(name)) {
                     throw new ParseException(Subject.MESSAGE_CONSTRAINTS);
@@ -72,14 +100,15 @@ public class AcademicsParserUtil {
 
                 i = next;
             } else {
-                throw new ParseException("Invalid format in subject-level sequence.");
+                throw new ParseException(
+                        String.format(MESSAGE_INVALID_COMMAND_FORMAT, commandUsage));
             }
         }
 
-        return subjects;
+        return Optional.of(subjects);
     }
 
-    private static int findNextPrefix(String input, int start) {
+    static int findNextPrefix(String input, int start) {
         int nextSubject = input.indexOf(PREFIX_SUBJECT.getPrefix(), start);
         int nextLevel = input.indexOf(PREFIX_LEVEL.getPrefix(), start);
 

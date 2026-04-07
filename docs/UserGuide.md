@@ -78,7 +78,6 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
   This means you can combine multiple `find` commands to refine results step by step.
   Use `list` if you want to reset the view and search from the full student list again.
 
-
 * Whenever a command uses `INDEX`, it must be a positive integer such as `1`, `2`, or `3`.
 
 * Unless stated otherwise, `INDEX` refers to the **currently displayed student list**, not to a permanent student ID.

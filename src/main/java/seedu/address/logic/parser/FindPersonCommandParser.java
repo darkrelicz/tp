@@ -20,6 +20,7 @@ public class FindPersonCommandParser implements Parser<FindPersonCommand> {
      *
      * @throws ParseException if the user input does not conform the expected format
      */
+    @Override
     public FindPersonCommand parse(String args) throws ParseException {
         requireNonNull(args);
 

@@ -14,6 +14,7 @@ public class DeletePersonCommandParser implements Parser<DeletePersonCommand> {
      * and returns a DeleteCommand object for execution.
      * @throws ParseException if the user input does not conform the expected format
      */
+    @Override
     public DeletePersonCommand parse(String args) throws ParseException {
         Index index = ParserUtil.parseIndex(args, DeletePersonCommand.MESSAGE_USAGE);
         return new DeletePersonCommand(index);

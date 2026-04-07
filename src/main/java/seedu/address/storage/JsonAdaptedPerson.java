@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
@@ -20,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.AppClock;
 import seedu.address.model.academic.Academics;
-import seedu.address.model.attendance.Attendance;
-import seedu.address.model.attendance.AttendanceRecords;
 import seedu.address.model.billing.Billing;
 import seedu.address.model.billing.PaymentHistory;
 import seedu.address.model.person.Address;
@@ -41,10 +38,6 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
-    private static final String APPOINTMENT_START_MESSAGE_CONSTRAINTS =
-            "Appointment start date-time must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
-    private static final String ATTENDANCE_HISTORY_MESSAGE_CONSTRAINTS =
-            "Attendance history date-time must be in ISO 8601 local format, e.g. 2026-01-29T08:00:00";
     private static final String PAYMENT_DATE_MESSAGE_CONSTRAINTS =
             "Payment date must be in ISO 8601 local date format, e.g. 2026-01-13";
     private static final String PAYMENT_DATE_AFTER_TODAY_MESSAGE_CONSTRAINTS =
@@ -56,21 +49,13 @@ class JsonAdaptedPerson {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE
             .withResolverStyle(ResolverStyle.STRICT);
-    private static final DateTimeFormatter DATETIME_FORMATTER =
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME.withResolverStyle(ResolverStyle.STRICT);
 
 
     private final String name;
     private final String phone;
     private final String email;
     private final String address;
-    private final List<JsonAdaptedAppointment> appointments;
-    private final String appointmentStart;
-    private final String appointmentNext;
-    private final String appointmentRecurrence;
-    private final String appointmentDescription;
-    private final List<JsonAdaptedAppointmentAttendance> appointmentAttendanceRecords;
-    private final List<String> attendanceHistory;
+    private final JsonAdaptedAppointment appointment;
     private final String parentName; // optional, may be null
     private final String parentPhone; // optional, may be null
     private final String parentEmail; // optional, may be null
@@ -92,18 +77,11 @@ class JsonAdaptedPerson {
             @JsonProperty("parentName") String parentName,
             @JsonProperty("parentPhone") String parentPhone,
             @JsonProperty("parentEmail") String parentEmail,
-            @JsonProperty("appointments") List<JsonAdaptedAppointment> appointments,
-            @JsonProperty("appointmentStart") String appointmentStart,
-            @JsonProperty("appointmentNext") String appointmentNext,
-            @JsonProperty("appointmentRecurrence") String appointmentRecurrence,
-            @JsonProperty("appointmentDescription") String appointmentDescription,
-            @JsonProperty("appointmentAttendanceRecords")
-            List<JsonAdaptedAppointmentAttendance> appointmentAttendanceRecords,
+            @JsonProperty("appointment") JsonAdaptedAppointment appointment,
             @JsonProperty("paymentDates") List<String> paymentDates,
             @JsonProperty("paymentDueDate") String paymentDueDate,
             @JsonProperty("paymentRecurrence") String paymentRecurrence,
-            @JsonProperty("billingMonthlyRate") double tuitionFee,
-            @JsonProperty("attendanceHistory") List<String> attendanceHistory) {
+            @JsonProperty("billingMonthlyRate") double tuitionFee) {
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -111,17 +89,11 @@ class JsonAdaptedPerson {
         this.parentName = parentName;
         this.parentPhone = parentPhone;
         this.parentEmail = parentEmail;
-        this.appointments = appointments;
-        this.appointmentStart = appointmentStart;
-        this.appointmentNext = appointmentNext;
-        this.appointmentRecurrence = appointmentRecurrence;
-        this.appointmentDescription = appointmentDescription;
-        this.appointmentAttendanceRecords = appointmentAttendanceRecords;
+        this.appointment = appointment;
         this.paymentDates = paymentDates;
         this.paymentDueDate = paymentDueDate;
         this.paymentRecurrence = paymentRecurrence;
         this.tuitionFee = tuitionFee;
-        this.attendanceHistory = attendanceHistory;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -136,15 +108,7 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
-        appointments = source.getAppointments().stream()
-                .map(JsonAdaptedAppointment::new)
-                .collect(Collectors.toList());
-        appointmentStart = null;
-        appointmentNext = null;
-        appointmentRecurrence = null;
-        appointmentDescription = null;
-        appointmentAttendanceRecords = null;
-        attendanceHistory = null;
+        appointment = new JsonAdaptedAppointment(source.getAppointment());
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -261,17 +225,10 @@ class JsonAdaptedPerson {
             modelGuardian = new Guardian(modelParentName, modelParentPhone, modelParentEmail);
         }
 
-        // ---------- Appointments ----------
-        List<Appointment> modelAppointments = new ArrayList<>();
-        if (appointments != null && !appointments.isEmpty()) {
-            for (JsonAdaptedAppointment appointment : appointments) {
-                modelAppointments.add(appointment.toModelType());
-            }
-        } else {
-            Appointment legacyAppointment = parseLegacyAppointment();
-            if (legacyAppointment != null) {
-                modelAppointments.add(legacyAppointment);
-            }
+        // ---------- Appointment ----------
+        Appointment modelAppointment = Appointment.defaultAppointment();
+        if (appointment != null) {
+            modelAppointment = appointment.toModelType();
         }
 
         // ---------- Payment ----------
@@ -330,64 +287,8 @@ class JsonAdaptedPerson {
             .withAcademics(modelAcademics)
             .withGuardian(modelGuardian)
             .withBilling(modelBilling)
-            .withAppointments(modelAppointments);
+            .withAppointment(modelAppointment);
 
         return personBuilder.build();
-    }
-
-    private Appointment parseLegacyAppointment() throws IllegalValueException {
-        LocalDateTime modelAppointmentStart = null;
-        if (appointmentStart != null) {
-            try {
-                modelAppointmentStart = LocalDateTime.parse(appointmentStart, DATETIME_FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalValueException(APPOINTMENT_START_MESSAGE_CONSTRAINTS);
-            }
-        }
-        if (modelAppointmentStart == null) {
-            return null;
-        }
-
-        LocalDateTime modelAppointmentNext = modelAppointmentStart;
-        if (appointmentNext != null) {
-            try {
-                modelAppointmentNext = LocalDateTime.parse(appointmentNext, DATETIME_FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalValueException(APPOINTMENT_START_MESSAGE_CONSTRAINTS);
-            }
-        }
-
-        Recurrence modelAppointmentRecurrence = Recurrence.NONE;
-        if (appointmentRecurrence != null) {
-            try {
-                modelAppointmentRecurrence = Recurrence.valueOf(appointmentRecurrence);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalValueException(
-                        "Appointment recurrence must be one of: WEEKLY, BIWEEKLY, MONTHLY, NONE");
-            }
-        }
-
-        AttendanceRecords modelAppointmentAttendanceRecords = AttendanceRecords.EMPTY;
-        if (appointmentAttendanceRecords != null && !appointmentAttendanceRecords.isEmpty()) {
-            for (JsonAdaptedAppointmentAttendance attendanceRecord : appointmentAttendanceRecords) {
-                modelAppointmentAttendanceRecords = modelAppointmentAttendanceRecords
-                        .addAttendance(attendanceRecord.toModelType());
-            }
-        } else if (attendanceHistory != null && !attendanceHistory.isEmpty()) {
-            for (String attendanceDateTime : attendanceHistory) {
-                try {
-                    modelAppointmentAttendanceRecords = modelAppointmentAttendanceRecords.addAttendance(
-                            new Attendance(true, LocalDateTime.parse(attendanceDateTime, DATETIME_FORMATTER)));
-                } catch (DateTimeParseException e) {
-                    throw new IllegalValueException(ATTENDANCE_HISTORY_MESSAGE_CONSTRAINTS);
-                }
-            }
-        }
-
-        return new Appointment(modelAppointmentRecurrence,
-                modelAppointmentStart,
-                modelAppointmentNext,
-                modelAppointmentAttendanceRecords,
-                appointmentDescription == null ? "" : appointmentDescription);
     }
 }

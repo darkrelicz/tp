@@ -80,8 +80,8 @@ public class AddressBookParserTest {
         DeleteApptCommand command = (DeleteApptCommand) parser.parseCommand(
                 DeletePersonCommand.COMMAND_WORD + " "
                         + DeleteApptCommand.SUB_COMMAND_WORD + " "
-                        + INDEX_FIRST_PERSON.getOneBased() + " "
-                        + INDEX_FIRST_PERSON.getOneBased());
+                + INDEX_FIRST_PERSON.getOneBased() + " s/"
+                + INDEX_FIRST_PERSON.getOneBased());
         assertEquals(new DeleteApptCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON), command);
     }
 

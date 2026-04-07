@@ -74,4 +74,5 @@ public class PersonCard extends UiPart<Region> {
             subjects.getChildren().add(subjectLabel);
         }
     }
+
 }

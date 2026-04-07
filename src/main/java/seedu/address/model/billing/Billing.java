@@ -23,7 +23,10 @@ public class Billing {
 
     /**
      * Creates a billing record with a tuition fee
+     * @param recurrence a {@code Recurrence} object stating how long each billing cycle is
+     * @param paymentDueDate a valid date
      * @param tuitionFee A non-negative amount
+     * @param paymentHistory a {@code PaymentHistory} object with recorded payment history dates
      */
     public Billing(Recurrence recurrence, LocalDate paymentDueDate, double tuitionfee, PaymentHistory paymentHistory) {
         requireNonNull(recurrence);

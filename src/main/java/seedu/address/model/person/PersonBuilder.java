@@ -8,6 +8,7 @@ import java.util.Set;
 import seedu.address.model.academic.Academics;
 import seedu.address.model.billing.Billing;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -22,7 +23,7 @@ public class PersonBuilder {
     private Set<Tag> tags;
     private Academics academics;
     private Optional<Guardian> guardian;
-    private List<Appointment> appointments;
+    private Appointment appointment;
     private Billing billing;
 
     /**
@@ -37,7 +38,7 @@ public class PersonBuilder {
         this.tags = new HashSet<>(tags);
         this.academics = new Academics();
         this.guardian = Optional.empty();
-        this.appointments = List.of();
+        this.appointment = Appointment.defaultAppointment();
         this.billing = Billing.defaultBilling();
     }
 
@@ -52,7 +53,7 @@ public class PersonBuilder {
         this.tags = new HashSet<>(personToCopy.getTags());
         this.academics = personToCopy.getAcademics();
         this.guardian = personToCopy.getGuardian();
-        this.appointments = personToCopy.getAppointments();
+        this.appointment = personToCopy.getAppointment();
         this.billing = personToCopy.getBilling();
     }
 
@@ -135,40 +136,36 @@ public class PersonBuilder {
     }
 
     /**
-     * Replaces the appointments of the {@code Person} being built with a single appointment.
+     * Replaces the appointment container of the {@code Person} being built.
      *
-     * @param appointment the new appointment
+     * @param appointment the new appointment container
      * @return this {@code PersonBuilder} instance for method chaining
      */
     public PersonBuilder withAppointment(Appointment appointment) {
-        this.appointments = appointment == null ? List.of() : List.of(appointment);
+        this.appointment = appointment == null ? Appointment.defaultAppointment() : appointment;
         return this;
     }
 
     /**
-     * Replaces the appointments of the {@code Person} being built.
-     *
-     * @param appointments the new appointments
-     * @return this {@code PersonBuilder} instance for method chaining
+     * Backward-compatible setter using session list.
      */
-    public PersonBuilder withAppointments(List<Appointment> appointments) {
-        this.appointments = List.copyOf(appointments);
+    public PersonBuilder withAppointments(List<ScheduledSession> sessions) {
+        this.appointment = sessions == null ? Appointment.defaultAppointment() : new Appointment(sessions);
         return this;
     }
 
     /**
-     * Adds an appointment to the {@code Person} being built.
-     *
-     * @param appointment the appointment to add
-     * @return this {@code PersonBuilder} instance for method chaining
+     * Backward-compatible adder for a session container.
      */
     public PersonBuilder addAppointment(Appointment appointment) {
         if (appointment == null) {
             return this;
         }
-        java.util.ArrayList<Appointment> updatedAppointments = new java.util.ArrayList<>(appointments);
-        updatedAppointments.add(appointment);
-        this.appointments = List.copyOf(updatedAppointments);
+        Appointment updated = this.appointment;
+        for (ScheduledSession session : appointment.getSessions()) {
+            updated = updated.addSession(session);
+        }
+        this.appointment = updated;
         return this;
     }
 
@@ -194,7 +191,7 @@ public class PersonBuilder {
                 tags,
                 academics,
                 guardian,
-                appointments,
+                appointment,
                 billing);
     }
 }

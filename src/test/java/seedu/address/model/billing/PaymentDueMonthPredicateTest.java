@@ -1,6 +1,7 @@
 package seedu.address.model.billing;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.getPersonBuilder;
 
@@ -52,5 +53,33 @@ public class PaymentDueMonthPredicateTest {
 
         PaymentDueMonthPredicate predicate = new PaymentDueMonthPredicate(YearMonth.of(2026, 3));
         assertFalse(predicate.test(person));
+    }
+
+    @Test
+    public void test_monthBoundaryDatesMatch_returnsTrue() {
+        PaymentDueMonthPredicate predicate = new PaymentDueMonthPredicate(YearMonth.of(2026, 3));
+
+        Person firstDayDue = getPersonBuilder().withBilling(
+                new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 3, 1), 0.0, PaymentHistory.EMPTY)).build();
+        Person lastDayDue = getPersonBuilder().withBilling(
+                new Billing(Recurrence.MONTHLY, LocalDate.of(2026, 3, 31), 0.0, PaymentHistory.EMPTY)).build();
+
+        assertTrue(predicate.test(firstDayDue));
+        assertTrue(predicate.test(lastDayDue));
+    }
+
+    @Test
+    public void test_sameMonthDifferentYear_returnsFalse() {
+        Person person = getPersonBuilder().withBilling(
+                new Billing(Recurrence.MONTHLY, LocalDate.of(2027, 3, 1), 0.0, PaymentHistory.EMPTY)).build();
+
+        PaymentDueMonthPredicate predicate = new PaymentDueMonthPredicate(YearMonth.of(2026, 3));
+        assertFalse(predicate.test(person));
+    }
+
+    @Test
+    public void test_nullPerson_throwsNullPointerException() {
+        PaymentDueMonthPredicate predicate = new PaymentDueMonthPredicate(YearMonth.of(2026, 3));
+        assertThrows(NullPointerException.class, () -> predicate.test(null));
     }
 }

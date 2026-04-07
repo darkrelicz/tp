@@ -394,7 +394,9 @@ Format: `add payment INDEX d/DATE`
 Details:
 * `d/DATE` must be in ISO 8601 local date format: `YYYY-MM-DD`.
 * The payment date cannot be later than today.
-* Recording a payment also advances the student's billing due date by one billing cycle.
+* Recording a payment advances the student's billing due date by one billing cycle only when the new payment date
+  is later than the latest recorded payment date.
+* If you add an older (backfilled) payment date, TutorFlow records it but keeps the due date unchanged.
 
 Examples:
 * `add payment 1 d/2026-03-05`
@@ -519,7 +521,9 @@ Details:
 * `d/DATE_OR_DATE_TIME` must be in ISO local date (`YYYY-MM-DD`) or date-time (`YYYY-MM-DDTHH:MM:SS`) format.
 * Attendance cannot be recorded for a future date or time.
 * Recurring sessions allow only one attendance record per calendar date.
-* Recording attendance for a recurring session advances its next scheduled occurrence by one recurrence cycle.
+* Recording attendance for a recurring session advances its next scheduled occurrence by one recurrence cycle only
+  when the new attendance date-time is later than the latest recorded attendance.
+* If you add older (backfilled) attendance, TutorFlow records it but keeps the session's next occurrence unchanged.
 * Non-recurring sessions can only have attendance recorded once.
 
 Examples:

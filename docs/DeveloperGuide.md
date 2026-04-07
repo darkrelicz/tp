@@ -216,6 +216,14 @@ How the subject-related feature works:
 The payment and billing feature covers four related workflows:
 `edit billing`, `add payment`, `delete payment`, and `find billing`.
 
+The first class diagram shows the command and parser structure for these workflows.
+
+<img src="images/PaymentBillingCommandClassDiagram.png" width="720" />
+
+The second class diagram shows the billing model objects used by those commands.
+
+<img src="images/BillingModelClassDiagram.png" width="620" />
+
 How the payment and billing feature works:
 
 1. `EditBillingCommandParser` parses the student index together with optional `a/AMOUNT` and `d/DATE` fields.

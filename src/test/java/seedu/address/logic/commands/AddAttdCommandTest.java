@@ -190,6 +190,25 @@ public class AddAttdCommandTest {
     }
 
     @Test
+    public void execute_recurringAppointmentWithBackfilledAttendance_doesNotAdvanceNext() throws Exception {
+        Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
+                .withAppointment("2026-01-20T08:00:00", "Algebra", Recurrence.WEEKLY)
+                .addAttendance("2026-01-13T08:00:00")
+                .build();
+        model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
+
+        AddAttdCommand addCommand = new AddAttdCommand(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON, true,
+                Optional.of(LocalDateTime.parse("2026-01-06T00:00:00")));
+
+        addCommand.execute(model);
+
+        Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        assertEquals(LocalDateTime.parse("2026-01-20T08:00:00"),
+                editedPerson.getNextAppointment().orElseThrow().getNext());
+        assertEquals(2, editedPerson.getNextAppointment().orElseThrow().getAttendance().getRecords().size());
+    }
+
+    @Test
     public void execute_futureAppointmentDate_failure() {
         LocalDate futureDate = AppClock.today().plusDays(1);
         LocalDateTime futureDateTime = futureDate.atTime(8, 0);

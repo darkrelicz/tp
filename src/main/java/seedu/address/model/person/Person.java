@@ -165,14 +165,18 @@ public class Person {
     }
 
     /**
-     * Returns an immutable {@code Billing} object with updated payment history
-     * and advanced billing cycle if paymentDate is before or on today's date in SG timezone
+     * Returns an immutable {@code Billing} object with updated payment history.
+     * Advances billing by one recurrence cycle only when {@code paymentDate}
+     * is later than the latest previously recorded payment date.
      * @param paymentDate A valid {@code LocalDate}
      * @return {@code Billing} object
      */
     public Billing recordFeesPaidAndAdvanceBilling(LocalDate paymentDate) {
+        boolean shouldAdvanceBillingCycle = billing.getPaymentHistory().getLatestPaidDate()
+                .map(paymentDate::isAfter)
+                .orElse(true);
         Billing updatedBilling = billing.recordTuitionPaid(paymentDate);
-        return updatedBilling.advanceDueDate();
+        return shouldAdvanceBillingCycle ? updatedBilling.advanceDueDate() : updatedBilling;
     }
 
     /**

@@ -82,10 +82,14 @@ public class AddAttdCommand extends AddCommand {
             throw new CommandException(String.format(MESSAGE_RECURRING_ATTENDANCE_ALREADY_RECORDED_ON_DATE,
                 effectiveRecordedAt.toLocalDate()));
         }
+        boolean shouldAdvanceRecurringNext = session.getRecurrence() != Recurrence.NONE
+            && session.getAttendanceHistory().getLatestRecordByRecordedAt()
+            .map(latestRecord -> effectiveRecordedAt.isAfter(latestRecord.getRecordedAt()))
+            .orElse(true);
         Attendance attendanceRecord = new Attendance(hasAttended, effectiveRecordedAt);
         AttendanceHistory updatedAttendance = session.getAttendanceHistory().addAttendance(attendanceRecord);
         ScheduledSession updatedSession = session.withAttendance(updatedAttendance);
-        if (session.getRecurrence() != Recurrence.NONE) {
+        if (shouldAdvanceRecurringNext) {
             updatedSession = updatedSession.withAdvancedNext();
         }
         int currentSessionIndex = sessionIndex.getZeroBased();

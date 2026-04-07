@@ -71,7 +71,7 @@ public final class Appointment {
     }
 
     public List<ScheduledSession> getSessions() {
-        return sessions;
+        return List.copyOf(new ArrayList<>(sessions));
     }
 
     /**

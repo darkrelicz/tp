@@ -1,6 +1,10 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SESSION;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.DeleteApptCommand;
@@ -13,14 +17,20 @@ public class DeleteApptCommandParser implements Parser<DeleteApptCommand> {
 
     @Override
     public DeleteApptCommand parse(String args) throws ParseException {
-        String trimmedArgs = args.trim();
-        String[] parts = trimmedArgs.split("\\s+");
-        if (parts.length != 2) {
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_SESSION);
+
+        Index personIndex = ParserUtil.parseIndex(argMultimap.getPreamble(), DeleteApptCommand.MESSAGE_USAGE);
+
+        List<String> sessionIndexStrings = argMultimap.getAllValues(PREFIX_SESSION);
+        if (sessionIndexStrings.isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteApptCommand.MESSAGE_USAGE));
         }
 
-        Index personIndex = ParserUtil.parseIndex(parts[0], DeleteApptCommand.MESSAGE_USAGE);
-        Index appointmentIndex = ParserUtil.parseIndex(parts[1], DeleteApptCommand.MESSAGE_USAGE);
-        return new DeleteApptCommand(personIndex, appointmentIndex);
+        List<Index> sessionIndices = new ArrayList<>();
+        for (String sessionIndexString : sessionIndexStrings) {
+            sessionIndices.add(ParserUtil.parseIndex(sessionIndexString, DeleteApptCommand.MESSAGE_USAGE));
+        }
+
+        return new DeleteApptCommand(personIndex, sessionIndices);
     }
 }

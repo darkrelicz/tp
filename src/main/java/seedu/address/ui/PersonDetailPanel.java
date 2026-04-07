@@ -2,10 +2,12 @@ package seedu.address.ui;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 
 import javafx.fxml.FXML;
@@ -16,7 +18,7 @@ import javafx.scene.layout.VBox;
 import seedu.address.model.academic.Subject;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.person.Person;
-import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -27,6 +29,8 @@ public class PersonDetailPanel extends UiPart<Region> {
     private static final String FXML = "PersonDetailPanel.fxml";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d MMM uuuu, h:mma");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d MMM uuuu");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma");
+    private static final int MAX_VISIBLE_ATTENDANCE_RECORDS = 3;
 
     @FXML
     private VBox contentContainer;
@@ -149,14 +153,14 @@ public class PersonDetailPanel extends UiPart<Region> {
         String description = person.getAcademics().getDescription().orElse("");
         academicsNotesLabel.setText(description.isEmpty() ? "-" : description);
 
-        if (person.getAppointments().isEmpty()) {
+        if (person.getAppointment().getSessions().isEmpty()) {
             Label noAppointmentsLabel = new Label("No appointments");
             noAppointmentsLabel.getStyleClass().add("detail-field-value");
             appointmentListContainer.getChildren().add(noAppointmentsLabel);
         } else {
-            for (int index = 0; index < person.getAppointments().size(); index++) {
+            for (int index = 0; index < person.getAppointment().getSessions().size(); index++) {
                 appointmentListContainer.getChildren().add(
-                        createAppointmentSection(index + 1, person.getAppointments().get(index)));
+                        createAppointmentSection(index + 1, person.getAppointment().getSessions().get(index)));
             }
         }
 
@@ -210,47 +214,102 @@ public class PersonDetailPanel extends UiPart<Region> {
         return String.format("$%.2f", amount);
     }
 
-    private String formatAttendance(Attendance attendance) {
-        String status = attendance.hasAttended() ? "Present" : "Absent";
-        LocalDateTime recordedAt = attendance.getRecordedAt();
-        return status + ": " + (recordedAt.toLocalTime().equals(LocalTime.MIDNIGHT)
+    private String formatAppointmentTitle(int appointmentIndex, ScheduledSession session) {
+        return appointmentIndex + ". " + session.getDescription();
+    }
+
+    private String formatAppointmentMeta(ScheduledSession session) {
+        return "Next: " + formatDateTime(session.getNext()) + " | " + formatRecurrenceSchedule(session);
+    }
+
+    private String formatAttendanceDate(LocalDateTime recordedAt) {
+        return recordedAt.toLocalTime().equals(LocalTime.MIDNIGHT)
                 ? formatDate(recordedAt.toLocalDate())
-                : formatDateTime(recordedAt));
+                : formatDateTime(recordedAt);
     }
 
-    private String formatAppointment(int appointmentIndex, Appointment appointment) {
-        return appointmentIndex + ". " + formatDateTime(appointment.getNext()) + " - " + appointment.getDescription();
+    private String formatCompactAttendance(Attendance attendance) {
+        String statusPrefix = attendance.hasAttended() ? "P" : "A";
+        return statusPrefix + " " + formatAttendanceDate(attendance.getRecordedAt());
     }
 
-    private VBox createAppointmentSection(int appointmentIndex, Appointment appointment) {
+    private String formatAttendanceSummary(List<Attendance> sortedAttendanceRecords) {
+        long presentCount = sortedAttendanceRecords.stream().filter(Attendance::hasAttended).count();
+        long absentCount = sortedAttendanceRecords.size() - presentCount;
+        String latestAttendance = formatAttendanceDate(sortedAttendanceRecords.get(0).getRecordedAt());
+        return presentCount + " present, " + absentCount + " absent | Latest: " + latestAttendance;
+    }
+
+    private VBox createAppointmentSection(int appointmentIndex, ScheduledSession session) {
         VBox appointmentSection = new VBox(6);
+        appointmentSection.getStyleClass().add("detail-appointment-card");
 
-        Label appointmentLabel = new Label(formatAppointment(appointmentIndex, appointment));
-        appointmentLabel.getStyleClass().add("detail-section-title");
+        Label appointmentLabel = new Label(formatAppointmentTitle(appointmentIndex, session));
+        appointmentLabel.getStyleClass().add("detail-appointment-title");
         appointmentLabel.setWrapText(true);
 
-        Label attendanceTitle = new Label("Attendance");
-        attendanceTitle.getStyleClass().add("detail-field-label");
+        Label scheduleLabel = new Label(formatAppointmentMeta(session));
+        scheduleLabel.getStyleClass().add("detail-appointment-meta");
+        scheduleLabel.setWrapText(true);
 
         FlowPane attendancePane = new FlowPane();
         attendancePane.setHgap(6);
         attendancePane.setVgap(6);
         attendancePane.setPrefWrapLength(320);
 
-        if (appointment.getAttendance().isEmpty()) {
+        if (session.getAttendanceHistory().isEmpty()) {
+            Label attendanceSummary = new Label("0 present, 0 absent");
+            attendanceSummary.getStyleClass().add("detail-attendance-summary");
+
             Label noAttendanceLabel = new Label("No attendance history");
             noAttendanceLabel.getStyleClass().add("detail-field-value");
             attendancePane.getChildren().add(noAttendanceLabel);
+
+            appointmentSection.getChildren().addAll(appointmentLabel, scheduleLabel, attendanceSummary, attendancePane);
         } else {
-            java.util.List<Attendance> attendanceRecords = appointment.getAttendance().getRecords();
-            for (int index = attendanceRecords.size() - 1; index >= 0; index--) {
-                Label attendanceLabel = new Label(formatAttendance(attendanceRecords.get(index)));
+            List<Attendance> attendanceRecords = session.getAttendanceHistory().getRecords().stream()
+                    .sorted(Comparator.comparing(Attendance::getRecordedAt).reversed())
+                    .toList();
+
+            Label attendanceSummary = new Label(formatAttendanceSummary(attendanceRecords));
+            attendanceSummary.getStyleClass().add("detail-attendance-summary");
+
+            int visibleRecords = Math.min(MAX_VISIBLE_ATTENDANCE_RECORDS, attendanceRecords.size());
+            for (int index = 0; index < visibleRecords; index++) {
+                Attendance attendance = attendanceRecords.get(index);
+                Label attendanceLabel = new Label(formatCompactAttendance(attendance));
                 attendanceLabel.getStyleClass().add("detail-attendance-date");
+                attendanceLabel.getStyleClass().add(
+                        attendance.hasAttended() ? "detail-attendance-present" : "detail-attendance-absent");
                 attendancePane.getChildren().add(attendanceLabel);
             }
+
+            int hiddenRecordCount = attendanceRecords.size() - visibleRecords;
+            if (hiddenRecordCount > 0) {
+                Label hiddenRecordsLabel = new Label("+" + hiddenRecordCount + " more");
+                hiddenRecordsLabel.getStyleClass().add("detail-attendance-more");
+                attendancePane.getChildren().add(hiddenRecordsLabel);
+            }
+
+            appointmentSection.getChildren().addAll(appointmentLabel, scheduleLabel, attendanceSummary, attendancePane);
         }
 
-        appointmentSection.getChildren().addAll(appointmentLabel, attendanceTitle, attendancePane);
         return appointmentSection;
+    }
+
+    private String formatRecurrenceSchedule(ScheduledSession session) {
+        LocalDateTime start = session.getStart();
+        String timeText = start.toLocalTime().format(TIME_FORMATTER);
+        return switch (session.getRecurrence()) {
+        case NONE -> "One-time session";
+        case WEEKLY -> "Every " + formatDayOfWeek(start.getDayOfWeek()) + " at " + timeText;
+        case BIWEEKLY -> "Every 2 weeks on " + formatDayOfWeek(start.getDayOfWeek()) + " at " + timeText;
+        case MONTHLY -> "Every month on day " + start.getDayOfMonth() + " at " + timeText;
+        };
+    }
+
+    private String formatDayOfWeek(DayOfWeek dayOfWeek) {
+        String lower = dayOfWeek.name().toLowerCase();
+        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 }

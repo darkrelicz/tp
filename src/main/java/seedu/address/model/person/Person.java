@@ -3,8 +3,6 @@ package seedu.address.model.person;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -18,6 +16,7 @@ import seedu.address.model.academic.Academics;
 import seedu.address.model.billing.Billing;
 import seedu.address.model.billing.PaymentHistory;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -35,7 +34,7 @@ public class Person {
     // Data fields
     private final Set<Tag> tags = new HashSet<>();
     private final Academics academics;
-    private final List<Appointment> appointments;
+    private final Appointment appointment;
     private final Optional<Guardian> guardian;
     private final Billing billing;
 
@@ -55,7 +54,7 @@ public class Person {
 
         this.academics = new Academics();
 
-        this.appointments = List.of();
+        this.appointment = Appointment.defaultAppointment();
         this.guardian = Optional.empty();
         this.billing = Billing.defaultBilling();
     }
@@ -66,11 +65,11 @@ public class Person {
     public Person(Name name, Phone phone, Email email, Address address,
                   Set<Tag> tags, Academics academics,
                   Optional<Guardian> guardian,
-                  List<Appointment> appointments,
+                                    Appointment appointment,
                   Billing billing) {
 
         requireAllNonNull(name, phone, email, address, tags, academics,
-                guardian, appointments, billing);
+                                guardian, appointment, billing);
 
         this.name = name;
         this.phone = phone;
@@ -81,7 +80,7 @@ public class Person {
         this.academics = academics;
 
         this.guardian = guardian;
-        this.appointments = copyAndSortAppointments(appointments);
+        this.appointment = appointment;
         this.billing = billing;
     }
 
@@ -103,22 +102,21 @@ public class Person {
 
     /**
      * Returns the next upcoming appointment for this person.
-     * If all appointments are in the past, returns the most recent past appointment instead.
+     * If all sessions are in the past, returns the most recent past session instead.
      */
-    public Optional<Appointment> getNextAppointment() {
-        if (appointments.isEmpty()) {
-            return Optional.empty();
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        return appointments.stream()
-                .filter(appointment -> !appointment.getNext().isBefore(now))
-                .findFirst()
-                .or(() -> Optional.of(appointments.get(appointments.size() - 1)));
+    public Optional<ScheduledSession> getNextAppointment() {
+        return appointment.getNextSession();
     }
 
-    public List<Appointment> getAppointments() {
-        return Collections.unmodifiableList(appointments);
+    public Appointment getAppointment() {
+        return appointment;
+    }
+
+    /**
+     * Backward-compatible accessor exposing scheduled sessions list.
+     */
+    public List<ScheduledSession> getAppointments() {
+        return appointment.getSessions();
     }
 
     public Billing getBilling() {
@@ -167,14 +165,18 @@ public class Person {
     }
 
     /**
-     * Returns an immutable {@code Billing} object with updated payment history
-     * and advanced billing cycle if paymentDate is before or on today's date in SG timezone
+     * Returns an immutable {@code Billing} object with updated payment history.
+     * Advances billing by one recurrence cycle only when {@code paymentDate}
+     * is later than the latest previously recorded payment date.
      * @param paymentDate A valid {@code LocalDate}
      * @return {@code Billing} object
      */
     public Billing recordFeesPaidAndAdvanceBilling(LocalDate paymentDate) {
+        boolean shouldAdvanceBillingCycle = billing.getPaymentHistory().getLatestPaidDate()
+                .map(paymentDate::isAfter)
+                .orElse(true);
         Billing updatedBilling = billing.recordTuitionPaid(paymentDate);
-        return updatedBilling.advanceDueDate();
+        return shouldAdvanceBillingCycle ? updatedBilling.advanceDueDate() : updatedBilling;
     }
 
     /**
@@ -222,7 +224,7 @@ public class Person {
                 && tags.equals(otherPerson.tags)
                 && academics.equals(otherPerson.academics)
                 && guardian.equals(otherPerson.guardian)
-                && appointments.equals(otherPerson.appointments)
+                && appointment.equals(otherPerson.appointment)
                 && billing.equals(otherPerson.billing);
     }
 
@@ -230,7 +232,7 @@ public class Person {
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, phone, email, address, tags, academics,
-                guardian, appointments, billing);
+            guardian, appointment, billing);
     }
 
     @Override
@@ -243,17 +245,9 @@ public class Person {
                 .add("tags", tags)
                 .add("academics", academics)
                 .add("guardian", guardian.orElse(null))
-                .add("appointments", appointments)
+                .add("appointment", appointment)
                 .add("billing", billing)
                 .toString();
-    }
-
-    private List<Appointment> copyAndSortAppointments(List<Appointment> appointments) {
-        List<Appointment> copiedAppointments = new ArrayList<>(appointments);
-        copiedAppointments.sort(Comparator.comparing(Appointment::getNext)
-                .thenComparing(Appointment::getStart)
-                .thenComparing(Appointment::getDescription));
-        return List.copyOf(copiedAppointments);
     }
 
 }

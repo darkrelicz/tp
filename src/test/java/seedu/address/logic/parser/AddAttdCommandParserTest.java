@@ -34,30 +34,33 @@ public class AddAttdCommandParserTest {
 
     @Test
     public void parse_invalidPreamble_failure() {
-        assertParseFailure(parser, "-1 1 y", MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "0 1 y", MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "1 0 y", MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "1 1 maybe", AddAttdCommandParser.MESSAGE_INVALID_ATTENDANCE_STATUS);
-        assertParseFailure(parser, "1 1 y extra", MESSAGE_INVALID_FORMAT);
+        assertParseFailure(parser, "-1 s/1 y", MESSAGE_INVALID_FORMAT);
+        assertParseFailure(parser, "0 s/1 y", MESSAGE_INVALID_FORMAT);
+        assertParseFailure(parser, "1 s/0 y", MESSAGE_INVALID_FORMAT);
+        assertParseFailure(parser, "1 maybe s/1", AddAttdCommandParser.MESSAGE_INVALID_ATTENDANCE_STATUS);
+        assertParseFailure(parser, "1 s/1 y extra", MESSAGE_INVALID_FORMAT);
     }
 
     @Test
     public void parse_invalidDate_failure() {
-        assertParseFailure(parser, "1 1 y" + INVALID_ATTENDANCE_DATE_DESC,
+        assertParseFailure(parser, "1 y s/1" + INVALID_ATTENDANCE_DATE_DESC,
                 AddAttdCommandParser.MESSAGE_INVALID_ATTENDANCE_DATE_OR_TIME);
     }
 
     @Test
-    public void parse_dateWithAbsence_failure() {
-        assertParseFailure(parser, "1 1 n" + ATTENDANCE_DATE_DESC,
-                AddAttdCommandParser.MESSAGE_DATE_NOT_ALLOWED_FOR_ABSENCE);
+    public void parse_absentWithDate_success() {
+        Index targetPersonIndex = INDEX_FIRST_PERSON;
+        Index targetAppointmentIndex = INDEX_FIRST_PERSON;
+        assertParseSuccess(parser, "1 n s/1" + ATTENDANCE_DATE_DESC,
+                new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, false,
+                        Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00"))));
     }
 
     @Test
     public void parse_presentWithoutDate_success() {
         Index targetPersonIndex = INDEX_FIRST_PERSON;
         Index targetAppointmentIndex = INDEX_FIRST_PERSON;
-        assertParseSuccess(parser, "1 1 y",
+        assertParseSuccess(parser, "1 y s/1",
                 new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, true, Optional.empty()));
     }
 
@@ -65,7 +68,7 @@ public class AddAttdCommandParserTest {
     public void parse_defaultPresentWithoutDate_success() {
         Index targetPersonIndex = INDEX_FIRST_PERSON;
         Index targetAppointmentIndex = INDEX_FIRST_PERSON;
-        assertParseSuccess(parser, "1 1",
+        assertParseSuccess(parser, "1 s/1",
                 new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, true, Optional.empty()));
     }
 
@@ -73,7 +76,7 @@ public class AddAttdCommandParserTest {
     public void parse_defaultPresentWithDate_success() {
         Index targetPersonIndex = INDEX_FIRST_PERSON;
         Index targetAppointmentIndex = INDEX_FIRST_PERSON;
-        assertParseSuccess(parser, "1 1" + ATTENDANCE_DATE_DESC,
+        assertParseSuccess(parser, "1 s/1" + ATTENDANCE_DATE_DESC,
                 new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, true,
                         Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00"))));
     }
@@ -82,7 +85,7 @@ public class AddAttdCommandParserTest {
     public void parse_presentWithDate_success() {
         Index targetPersonIndex = INDEX_FIRST_PERSON;
         Index targetAppointmentIndex = INDEX_FIRST_PERSON;
-        assertParseSuccess(parser, "1 1 y" + ATTENDANCE_DATE_DESC,
+        assertParseSuccess(parser, "1 y s/1" + ATTENDANCE_DATE_DESC,
                 new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, true,
                         Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE + "T00:00:00"))));
     }
@@ -91,7 +94,7 @@ public class AddAttdCommandParserTest {
     public void parse_presentWithDateTime_success() {
         Index targetPersonIndex = INDEX_FIRST_PERSON;
         Index targetAppointmentIndex = INDEX_FIRST_PERSON;
-        assertParseSuccess(parser, "1 1 y" + ATTENDANCE_DATE_TIME_DESC,
+        assertParseSuccess(parser, "1 y s/1" + ATTENDANCE_DATE_TIME_DESC,
                 new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, true,
                         Optional.of(LocalDateTime.parse(VALID_ATTENDANCE_DATE_TIME))));
     }
@@ -100,7 +103,23 @@ public class AddAttdCommandParserTest {
     public void parse_absentWithoutDate_success() {
         Index targetPersonIndex = INDEX_FIRST_PERSON;
         Index targetAppointmentIndex = INDEX_FIRST_PERSON;
-        assertParseSuccess(parser, "1 1 n",
+        assertParseSuccess(parser, "1 n s/1",
+                new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, false, Optional.empty()));
+    }
+
+    @Test
+    public void parse_presentStatusAfterSession_success() {
+        Index targetPersonIndex = INDEX_FIRST_PERSON;
+        Index targetAppointmentIndex = INDEX_FIRST_PERSON;
+        assertParseSuccess(parser, "1 s/1 y",
+                new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, true, Optional.empty()));
+    }
+
+    @Test
+    public void parse_absentStatusAfterSession_success() {
+        Index targetPersonIndex = INDEX_FIRST_PERSON;
+        Index targetAppointmentIndex = INDEX_FIRST_PERSON;
+        assertParseSuccess(parser, "1 s/1 n",
                 new AddAttdCommand(targetPersonIndex, targetAppointmentIndex, false, Optional.empty()));
     }
 }

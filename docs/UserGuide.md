@@ -14,7 +14,7 @@ TutorFlow keeps your student list, parent / guardian details, academics, tuition
 
 ## Quick start
 
-1. Ensure that Java `17` or above is installed on your computer.  
+1. Ensure that Java `17` or above is installed on your computer.
    **Mac users:** follow the setup notes [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
 1. Download the latest `tutorflow.jar` from the [releases page](https://github.com/AY2526S2-CS2103T-T09-3/tp/releases).
@@ -50,7 +50,7 @@ TutorFlow is organized around a few core areas:
 * The **result display** confirms whether a command succeeded or failed.
 * The **command box** is where you type commands.
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**  
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`, the sub-item indexes come from the selected student's detail panel. Use `view INDEX` first if you need to see those numbered items clearly.
 </div>
 
@@ -62,16 +62,16 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 
 **Command format notes**
 
-* Words in `UPPER_CASE` are values you must supply.  
+* Words in `UPPER_CASE` are values you must supply.
   Example: in `add student n/NAME`, replace `NAME` with an actual name such as `John Doe`.
 
-* Items in square brackets are optional.  
+* Items in square brackets are optional.
   Example: `edit billing INDEX [a/AMOUNT] [d/DATE]`
 
-* Items followed by `...` can be repeated.  
+* Items followed by `...` can be repeated.
   Example: `add tag INDEX t/TAG [t/TAG]...`
 
-* For commands that use prefixes, the order of prefixed fields usually does not matter.  
+* For commands that use prefixes, the order of prefixed fields usually does not matter.
   Example: `p/91234567 n/John Doe` is accepted for commands that expect both fields.
 
 * `find` commands narrow the **currently displayed list** instead of always searching all students.
@@ -166,17 +166,17 @@ Finds students whose names contain any of the given keywords.
 Format: `find student KEYWORD [MORE_KEYWORDS]`
 
 Details:
-* The search is case-insensitive.  
+* The search is case-insensitive.
   Example: `alex` matches `Alex`
 * The order of keywords does not matter.
 * Only student names are searched.
-* Matching is by full word, not substring.  
+* Matching is by full word, not substring.
   Example: `Al` does not match `Alex`
 * A student is returned if the name matches **at least one** keyword.
 
 Examples:
 * `find student John`
-* `find student alex david`  
+* `find student alex david`
   ![Result for 'find student alex david'](images/findAlexDavidResult.png)
 
 --------------------------------------------------------------------------------------------------------------------
@@ -240,7 +240,7 @@ Details:
 * At least one `t/` prefix is required.
 * Multiple `t/` prefixes are allowed.
 * Tag matching is case-insensitive.
-* Tag matching is partial.  
+* Tag matching is partial.
   Example: `t/math` matches the tag `Mathematics`
 * A student is returned if any tag matches at least one keyword.
 
@@ -314,7 +314,7 @@ Details:
 * At least one `s/` prefix is required.
 * Multiple `s/` prefixes are allowed.
 * Matching is case-insensitive.
-* Matching is partial.  
+* Matching is partial.
   Example: `s/math` matches `Mathematics`
 * A student is returned if any subject matches at least one keyword.
 
@@ -352,13 +352,13 @@ Format: `find parent [n/NAME_KEYWORDS] [p/PHONE_KEYWORDS] [e/EMAIL_KEYWORDS]`
 Details:
 * At least one of `n/`, `p/`, or `e/` must be provided.
 * Each prefix may be used at most once.
-* You can give multiple keywords inside a single prefix by separating them with spaces.  
+* You can give multiple keywords inside a single prefix by separating them with spaces.
   Example: `n/Susan Meier`
 * Parent name matching is case-insensitive and based on full words.
 * Parent phone and email matching are case-insensitive and based on partial text.
-* Within a single field, multiple keywords behave as an `OR` search.  
+* Within a single field, multiple keywords behave as an `OR` search.
   Example: `n/Susan Meier` matches a parent name containing either `Susan` or `Meier`.
-* If you supply more than one field, the student must match **every supplied field**.  
+* If you supply more than one field, the student must match **every supplied field**.
   Example: `n/Susan p/9999` requires both a matching name keyword and a matching phone keyword.
 
 Examples:
@@ -398,7 +398,9 @@ Format: `add payment INDEX d/DATE`
 Details:
 * `d/DATE` must be in ISO 8601 local date format: `YYYY-MM-DD`.
 * The payment date cannot be later than today.
-* Recording a payment also advances the student's billing due date by one billing cycle.
+* Recording a payment advances the student's billing due date by one billing cycle only when the new payment date
+  is later than the latest recorded payment date.
+* If you add an older (backfilled) payment date, TutorFlow records it but keeps the due date unchanged.
 
 Examples:
 * `add payment 1 d/2026-03-05`
@@ -420,7 +422,7 @@ Examples:
 * `delete payment 1 d/2026-03-01`
 * `delete payment 2 d/2025-12-15`
 
-### Finding students by payment due date : `find billing`
+### Finding students by payment due month : `find billing`
 
 Finds students in the current list whose payment due date falls in a given month.
 
@@ -432,8 +434,8 @@ Details:
 * Matching ignores the day of the month.
 
 Examples:
-* `find billing d/2026-03` 
-* `find billing d/2025-12` 
+* `find billing d/2026-03`
+* `find billing d/2025-12`
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -459,17 +461,38 @@ Examples:
 
 ### Deleting an appointment : `delete appt`
 
-Deletes an appointment from a student.
+Deletes one or more sessions from a student.
 
-Format: `delete appt PERSON_INDEX APPT_INDEX`
+Format: `delete appt INDEX s/SESSION_INDEX [s/SESSION_INDEX]...`
 
 Details:
-* `PERSON_INDEX` is the student index in the current displayed list.
-* `APPT_INDEX` is the numbered appointment index shown in that student's detail panel.
+* Deletes one or more sessions from the student at `INDEX`.
+* `SESSION_INDEX` refers to the numbered session shown for that student in the app.
+* At least one `s/` prefix must be provided.
+* All specified session indices must be valid.
 
 Examples:
-* `delete appt 1 1`
-* `delete appt 2 3`
+* `delete appt 1 s/1`
+* `delete appt 2 s/1 s/3`
+
+### Editing an appointment : `edit appt`
+
+Edits a selected session for an existing student.
+
+Format: `edit appt INDEX s/SESSION_INDEX [d/DATETIME] [r/RECURRENCE] [dsc/DESCRIPTION]`
+
+Details:
+* Edits the selected session for the student at `INDEX`.
+* `SESSION_INDEX` refers to the numbered session shown for that student in the app.
+* At least one of `d/`, `r/`, or `dsc/` must be provided.
+* `d/DATETIME` must be in ISO 8601 local date-time format (`YYYY-MM-DDTHH:MM:SS`).
+* `r/RECURRENCE` supports `NONE`, `WEEKLY`, `BIWEEKLY`, and `MONTHLY`.
+* `dsc/DESCRIPTION` updates the session description.
+* Any field you omit remains unchanged.
+
+Examples:
+* `edit appt 1 s/2 d/2026-02-12T09:00:00`
+* `edit appt 1 s/2 r/MONTHLY dsc/Physics consultation`
 
 ### Finding students with appointments for a week : `find appt`
 
@@ -487,26 +510,50 @@ Examples:
 
 ### Recording appointment attendance : `add attd`
 
-Records attendance for a specific appointment.
+Records attendance for a specific session.
 
-Format: `add attd PERSON_INDEX APPT_INDEX [y|n] [d/DATE_OR_DATE_TIME]`
+Format: `add attd INDEX s/SESSION_INDEX [y|n] [d/DATE_OR_DATE_TIME]`
 
 Details:
-* `PERSON_INDEX` is the student index in the current displayed list.
-* `APPT_INDEX` is the numbered appointment index shown in that student's detail panel.
-* If `y` or `n` is omitted, TutorFlow assumes `y`.
-* `y` records that the student attended. `n` records an absence.
-* `d/` is optional and is allowed only when recording `y`.
-* `d/` accepts either an ISO date (`YYYY-MM-DD`) or an ISO date-time (`YYYY-MM-DDTHH:MM:SS`).
-* If `d/` is omitted, TutorFlow uses the appointment's next scheduled date.
+* Records attendance for the student at `INDEX`.
+* `SESSION_INDEX` refers to the numbered session shown for that student in the app.
+* If `y` or `n` is omitted, `y` (attended) is assumed.
+* `y` records that the student attended the selected session.
+* `n` records that the student was absent for the selected session.
+* If `d/DATE_OR_DATE_TIME` is omitted, the selected session's `next` date is used.
+* `d/DATE_OR_DATE_TIME` can be used with both `y` and `n`.
+* `d/DATE_OR_DATE_TIME` must be in ISO local date (`YYYY-MM-DD`) or date-time (`YYYY-MM-DDTHH:MM:SS`) format.
 * Attendance cannot be recorded for a future date or time.
-* Non-recurring appointments can only have attendance recorded once.
+* Recurring sessions allow only one attendance record per calendar date.
+* Recording attendance for a recurring session advances its next scheduled occurrence by one recurrence cycle only
+  when the new attendance date-time is later than the latest recorded attendance.
+* If you add older (backfilled) attendance, TutorFlow records it but keeps the session's next occurrence unchanged.
+* Non-recurring sessions can only have attendance recorded once.
 
 Examples:
-* `add attd 1 1`
-* `add attd 1 2 y`
-* `add attd 1 2 d/2026-01-29T08:00:00`
-* `add attd 1 3 n`
+* `add attd 1 s/1` records attendance (present) for the 1st session of student 1.
+* `add attd 1 s/2 y` same as above but explicit.
+* `add attd 1 s/2 y d/2026-01-29` records attendance on a specific date.
+* `add attd 1 s/3 n` records an absence for the 3rd session of student 1.
+* `add attd 1 s/3 n d/2026-01-29` records an absence on a specific date.
+
+### Deleting appointment attendance : `delete attd`
+
+Deletes attendance records for a selected session.
+
+Format: `delete attd INDEX s/SESSION_INDEX d/DATE_OR_DATE_TIME`
+
+Details:
+* Deletes attendance for the selected session of the student at `INDEX`.
+* `SESSION_INDEX` refers to the numbered session shown for that student in the app.
+* `d/` accepts either ISO local date (`YYYY-MM-DD`) or local date-time (`YYYY-MM-DDTHH:MM:SS`).
+* If deleting by date, records on that date are removed.
+* If deleting by date-time, only the exact record is removed.
+* If the deleted attendance is the latest attendance for the session, recurring sessions roll back by one cycle.
+
+Examples:
+* `delete attd 1 s/2 d/2026-01-29`
+* `delete attd 1 s/2 d/2026-01-29T08:00:00`
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -526,7 +573,7 @@ Deletes all student records from TutorFlow.
 
 Format: `clear`
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**  
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 This action is irreversible.
 </div>
 
@@ -538,7 +585,7 @@ Format: `exit`
 
 ### Navigating command history
 
-The `up` and `down` arrow keys on your keyboard can be used to navigate through the past commands you have entered. 
+The `up` and `down` arrow keys on your keyboard can be used to navigate through the past commands you have entered.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -556,7 +603,7 @@ TutorFlow stores data in:
 
 Advanced users may edit the JSON file directly.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**  
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If you edit the data file into an invalid format, TutorFlow may fail to load the stored data correctly on the next run. Make a backup first if you plan to edit the file manually.
 </div>
 
@@ -564,7 +611,7 @@ If you edit the data file into an invalid format, TutorFlow may fail to load the
 
 ## FAQ
 
-**Q:** How do I move my TutorFlow data to another computer?  
+**Q:** How do I move my TutorFlow data to another computer?
 **A:** Install TutorFlow on the other computer, run it once, then replace the new `data/tutorflow.json` file with the one from your old TutorFlow folder.
 
 --------------------------------------------------------------------------------------------------------------------
@@ -621,16 +668,18 @@ Action | Format | Example
 **Edit billing** | `edit billing INDEX [a/AMOUNT] [d/DATE]` | `edit billing 1 a/250 d/2026-03-20`
 **Add payment** | `add payment INDEX d/DATE` | `add payment 1 d/2026-03-05`
 **Delete payment** | `delete payment INDEX d/DATE` | `delete payment 1 d/2026-03-01`
-**Find by payment due** | `find billing d/YYYY-MM` | `find billing d/2026-03`
+**Find by due month** | `find billing d/YYYY-MM` | `find billing d/2026-03`
 
 ### Appointment & Attendance Management
 
 Action | Format | Example
 -------|--------|--------
 **Add appointment** | `add appt INDEX d/DATETIME [r/RECURRENCE] dsc/DESCRIPTION` | `add appt 1 d/2026-01-29T08:00:00 dsc/Weekly algebra practice`
-**Delete appointment** | `delete appt PERSON_INDEX APPT_INDEX` | `delete appt 1 2`
+**Delete appointment** | `delete appt INDEX s/SESSION_INDEX [s/SESSION_INDEX]...` | `delete appt 1 s/2 s/3`
+**Edit appointment** | `edit appt INDEX s/SESSION_INDEX [d/DATETIME] [r/RECURRENCE] [dsc/DESCRIPTION]` | `edit appt 1 s/2 r/MONTHLY dsc/Physics consultation`
 **Find weekly appointments** | `find appt [d/DATE]` | `find appt d/2026-02-13`
-**Record attendance** | `add attd PERSON_INDEX APPT_INDEX [y\|n] [d/DATE_OR_DATE_TIME]` | `add attd 1 2 d/2026-01-29T08:00:00`
+**Add attendance** | `add attd INDEX s/SESSION_INDEX [y\|n] [d/DATE_OR_DATE_TIME]` | `add attd 1 s/2 y d/2026-01-29`
+**Delete attendance** | `delete attd INDEX s/SESSION_INDEX d/DATE_OR_DATE_TIME` | `delete attd 1 s/2 d/2026-01-29T08:00:00`
 
 ### General
 

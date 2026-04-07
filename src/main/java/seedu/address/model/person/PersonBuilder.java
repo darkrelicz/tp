@@ -1,14 +1,12 @@
 package seedu.address.model.person;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.model.academic.Academics;
 import seedu.address.model.billing.Billing;
 import seedu.address.model.session.Appointment;
-import seedu.address.model.session.ScheduledSession;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -146,28 +144,6 @@ public class PersonBuilder {
         return this;
     }
 
-    /**
-     * Backward-compatible setter using session list.
-     */
-    public PersonBuilder withAppointments(List<ScheduledSession> sessions) {
-        this.appointment = sessions == null ? Appointment.defaultAppointment() : new Appointment(sessions);
-        return this;
-    }
-
-    /**
-     * Backward-compatible adder for a session container.
-     */
-    public PersonBuilder addAppointment(Appointment appointment) {
-        if (appointment == null) {
-            return this;
-        }
-        Appointment updated = this.appointment;
-        for (ScheduledSession session : appointment.getSessions()) {
-            updated = updated.addSession(session);
-        }
-        this.appointment = updated;
-        return this;
-    }
 
     /**
      * Sets the billing information of the {@code Person} being built.

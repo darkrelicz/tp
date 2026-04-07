@@ -36,26 +36,6 @@ public class Person {
     private final Optional<Guardian> guardian;
     private final Billing billing;
 
-    /**
-     * Creates a {@code Person} with the given core fields and tags.
-     * Fields other than personal details (name, phone, email, and address)
-     * are optional and can be empty.
-     */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
-
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.tags.addAll(tags);
-
-        this.academics = new Academics();
-
-        this.appointment = Appointment.defaultAppointment();
-        this.guardian = Optional.empty();
-        this.billing = Billing.defaultBilling();
-    }
 
     /**
      * Every field must be present and not null.

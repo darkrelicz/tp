@@ -39,7 +39,7 @@ public class DeleteApptCommandTest {
         DeleteApptCommand deleteCommand = new DeleteApptCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON);
 
         Person editedPerson = new PersonBuilder(personToEdit)
-                .withAppointments(personToEdit.getAppointment().getSessions().subList(0, 1))
+                .withAppointment(new Appointment(personToEdit.getAppointment().getSessions().subList(0, 1)))
                 .build();
         String expectedMessage = String.format(DeleteApptCommand.MESSAGE_DELETE_APPT_SUCCESS,
                 Messages.format(editedPerson), "2026-01-20T10:00:00");
@@ -74,7 +74,7 @@ public class DeleteApptCommandTest {
         DeleteApptCommand deleteCommand = new DeleteApptCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON);
 
         Person editedPerson = new PersonBuilder(personToEdit)
-                .withAppointments(personToEdit.getAppointment().getSessions().subList(0, 1))
+                .withAppointment(new Appointment(personToEdit.getAppointment().getSessions().subList(0, 1)))
                 .build();
         String expectedMessage = String.format(DeleteApptCommand.MESSAGE_DELETE_APPT_SUCCESS,
                 Messages.format(editedPerson), "2026-01-20T10:00:00");
@@ -95,7 +95,7 @@ public class DeleteApptCommandTest {
         DeleteApptCommand deleteCommand = new DeleteApptCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON);
 
         Person editedPerson = new PersonBuilder(personToEdit)
-                .withAppointments(personToEdit.getAppointment().getSessions().subList(0, 1))
+                .withAppointment(new Appointment(personToEdit.getAppointment().getSessions().subList(0, 1)))
                 .build();
         String expectedMessage = String.format(DeleteApptCommand.MESSAGE_DELETE_APPT_SUCCESS,
                 Messages.format(editedPerson), "2026-01-20T10:00:00");
@@ -133,11 +133,11 @@ public class DeleteApptCommandTest {
         AddressBook addressBook = new AddressBook();
         Person personWithTwoAppointments = getPersonBuilder("Alex", "90010001",
                 "alex@example.com", "Alex Street 1")
-                .withAppointment(Appointment.of("2026-01-10T10:00:00", "First lesson", Recurrence.NONE))
-                .addAppointment(new Appointment(Recurrence.NONE,
+                .withAppointment(Appointment.of("2026-01-10T10:00:00", "First lesson", Recurrence.NONE)
+                    .addSession(new Appointment(Recurrence.NONE,
                         LocalDateTime.parse("2026-01-20T10:00:00"),
                         LocalDateTime.parse("2026-01-20T10:00:00"),
-                        AttendanceHistory.EMPTY, "Second lesson"))
+                        AttendanceHistory.EMPTY, "Second lesson").getSessions().get(0)))
                 .build();
         Person otherPerson = getPersonBuilder("Blake", "90010002",
                 "blake@example.com", "Blake Street 2")

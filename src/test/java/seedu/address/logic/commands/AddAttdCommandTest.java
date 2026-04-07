@@ -278,8 +278,7 @@ public class AddAttdCommandTest {
                 AttendanceHistory.EMPTY,
                 "Physics");
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
-                .withAppointment(firstAppointment)
-                .addAppointment(secondAppointment)
+                .withAppointment(firstAppointment.addSession(secondAppointment.getSessions().get(0)))
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 

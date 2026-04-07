@@ -465,12 +465,12 @@ public class JsonAdaptedPersonTest {
     @Test
     public void toModelType_multipleAppointments_roundTripsSuccessfully() throws Exception {
         Person person = new PersonBuilder(BENSON)
-                .withAppointment(Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE))
-                .addAppointment(new Appointment(Recurrence.WEEKLY,
+                .withAppointment(Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
+                    .addSession(new Appointment(Recurrence.WEEKLY,
                         LocalDateTime.parse("2026-02-03T09:00:00"),
                         LocalDateTime.parse("2026-02-03T09:00:00"),
                         AttendanceHistory.EMPTY,
-                        "Physics"))
+                        "Physics").getSessions().get(0)))
                 .build();
 
         assertEquals(person, new JsonAdaptedPerson(person).toModelType());

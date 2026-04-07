@@ -16,10 +16,12 @@ import static seedu.address.testutil.TypicalPersons.getPersonBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.academic.Academics;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.attendance.AttendanceHistory;
 import seedu.address.model.billing.Billing;
@@ -40,7 +42,11 @@ public class PersonTest {
                 ALICE.getPhone(),
                 ALICE.getEmail(),
                 ALICE.getAddress(),
-                tags
+                tags,
+                new Academics(),
+                Optional.empty(),
+                Appointment.defaultAppointment(),
+                Billing.defaultBilling()
         );
 
         // basic fields
@@ -71,7 +77,9 @@ public class PersonTest {
                     ALICE.getPhone(),
                     ALICE.getEmail(),
                     ALICE.getAddress(),
-                    tags);
+                    tags,
+                    new Academics(), Optional.empty(),
+                    Appointment.defaultAppointment(), Billing.defaultBilling());
         });
 
         assertThrows(NullPointerException.class, () -> {
@@ -80,7 +88,8 @@ public class PersonTest {
                     null,
                     ALICE.getEmail(),
                     ALICE.getAddress(),
-                    tags);
+                    tags,
+                    new Academics(), Optional.empty(), Appointment.defaultAppointment(), Billing.defaultBilling());
         });
 
         assertThrows(NullPointerException.class, () -> {
@@ -89,7 +98,8 @@ public class PersonTest {
                     ALICE.getPhone(),
                     null,
                     ALICE.getAddress(),
-                    tags);
+                    tags,
+                    new Academics(), Optional.empty(), Appointment.defaultAppointment(), Billing.defaultBilling());
         });
 
         assertThrows(NullPointerException.class, () -> {
@@ -98,7 +108,8 @@ public class PersonTest {
                     ALICE.getPhone(),
                     ALICE.getEmail(),
                     null,
-                    tags);
+                    tags,
+                    new Academics(), Optional.empty(), Appointment.defaultAppointment(), Billing.defaultBilling());
         });
 
         assertThrows(NullPointerException.class, () -> {
@@ -107,7 +118,9 @@ public class PersonTest {
                     ALICE.getPhone(),
                     ALICE.getEmail(),
                     ALICE.getAddress(),
-                    null);
+                    null,
+                    new Academics(), Optional.empty(),
+                    Appointment.defaultAppointment(), Billing.defaultBilling());
         });
     }
 
@@ -121,7 +134,11 @@ public class PersonTest {
                 ALICE.getPhone(),
                 ALICE.getEmail(),
                 ALICE.getAddress(),
-                tags
+                tags,
+                new Academics(),
+                Optional.empty(),
+                Appointment.defaultAppointment(),
+                Billing.defaultBilling()
         );
 
         tags.clear();

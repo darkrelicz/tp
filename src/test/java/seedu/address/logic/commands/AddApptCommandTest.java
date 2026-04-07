@@ -111,7 +111,9 @@ public class AddApptCommandTest {
                 Recurrence.NONE, VALID_APPOINTMENT_DESCRIPTION);
 
         Person editedPerson = new PersonBuilder(laterAppointmentPerson)
-                .addAppointment(Appointment.of(VALID_APPOINTMENT_START, VALID_APPOINTMENT_DESCRIPTION, Recurrence.NONE))
+                .withAppointment(laterAppointmentPerson.getAppointment().addSession(
+                        Appointment.of(VALID_APPOINTMENT_START, VALID_APPOINTMENT_DESCRIPTION, Recurrence.NONE)
+                                .getSessions().get(0)))
                 .build();
         String expectedMessage = String.format(AddApptCommand.MESSAGE_ADD_APPT_SUCCESS,
                 Messages.format(editedPerson), newAppointmentStart.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
@@ -173,7 +175,9 @@ public class AddApptCommandTest {
                 Recurrence.NONE, VALID_APPOINTMENT_DESCRIPTION);
 
         Person editedPerson = new PersonBuilder(laterAppointmentPerson)
-                .addAppointment(Appointment.of("2026-01-22T08:00:00", VALID_APPOINTMENT_DESCRIPTION, Recurrence.NONE))
+                .withAppointment(laterAppointmentPerson.getAppointment().addSession(
+                        Appointment.of("2026-01-22T08:00:00", VALID_APPOINTMENT_DESCRIPTION, Recurrence.NONE)
+                                .getSessions().get(0)))
                 .build();
         String expectedMessage = String.format(AddApptCommand.MESSAGE_ADD_APPT_SUCCESS,
                 Messages.format(editedPerson), newAppointmentStart.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));

@@ -5,7 +5,6 @@ import static seedu.address.logic.commands.CommandTestUtil.INVALID_SUBJECT_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.SUBJECT_DESC_MATH_STRONG;
 import static seedu.address.logic.commands.CommandTestUtil.SUBJECT_DESC_SCIENCE_BASIC;
 import static seedu.address.logic.commands.EditCommand.MESSAGE_NOT_EDITED;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_SUBJECT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -26,8 +25,6 @@ import seedu.address.model.academic.Subject;
  * Tests for EditAcademicsCommandParser.
  */
 public class EditAcademicsCommandParserTest {
-
-    private static final String SUBJECT_EMPTY = " " + PREFIX_SUBJECT;
 
     private static final String MESSAGE_INVALID_SUBJECT_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditAcademicsCommand.MESSAGE_USAGE);
@@ -263,6 +260,14 @@ public class EditAcademicsCommandParserTest {
 
         assertParseSuccess(parser, input,
                 new EditAcademicsCommand(index, descriptor));
+    }
+
+    @Test
+    public void parse_multipleDescriptions_failure() {
+        Index index = INDEX_FIRST_PERSON;
+        String input = index.getOneBased() + " dsc/First dsc/Second";
+
+        assertParseFailure(parser, input, "Multiple description fields are not allowed.");
     }
 
     @Test

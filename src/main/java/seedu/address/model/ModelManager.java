@@ -84,6 +84,7 @@ public class ModelManager implements Model {
 
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
+        logger.info("Resetting address book data.");
         this.addressBook.resetData(addressBook);
         preservedPersons.clear();
         applyEffectiveFilterPredicate();
@@ -102,12 +103,14 @@ public class ModelManager implements Model {
 
     @Override
     public void deletePerson(Person target) {
+        logger.info("Deleting person from model: " + target.getName());
         addressBook.removePerson(target);
         preservedPersons.remove(target);
     }
 
     @Override
     public void addPerson(Person person) {
+        logger.info("Adding person to model: " + person.getName());
         addressBook.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
@@ -116,6 +119,7 @@ public class ModelManager implements Model {
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
 
+        logger.info("Updating person in model: " + target.getName() + " -> " + editedPerson.getName());
         preservedPersons.remove(target);
         if (hasActiveFilter()) {
             preservedPersons.add(editedPerson);
@@ -138,6 +142,7 @@ public class ModelManager implements Model {
     @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
+        logger.info("Updating filtered person list.");
         preservedPersons.clear();
         currentFilterPredicate = predicate;
         applyEffectiveFilterPredicate();
@@ -146,6 +151,7 @@ public class ModelManager implements Model {
     @Override
     public void updateFilteredPersonListWithAnd(Predicate<Person> predicate) {
         requireNonNull(predicate);
+        logger.info("Applying an additional filter to the filtered person list.");
 
         Predicate<? super Person> previousDisplayedPredicate = filteredPersons.getPredicate();
 
@@ -188,6 +194,7 @@ public class ModelManager implements Model {
     private void applyEffectiveFilterPredicate() {
         if (preservedPersons.isEmpty()) {
             filteredPersons.setPredicate(currentFilterPredicate);
+            logger.info("Filtered person list now shows " + filteredPersons.size() + " persons.");
             return;
         }
 
@@ -196,6 +203,8 @@ public class ModelManager implements Model {
         Predicate<Person> effectivePredicate = person -> pinnedSnapshot.contains(person)
                 || basePredicateSnapshot.test(person);
         filteredPersons.setPredicate(effectivePredicate);
+        logger.info("Filtered person list now shows " + filteredPersons.size()
+                + " persons with " + preservedPersons.size() + " preserved persons.");
     }
 
 }

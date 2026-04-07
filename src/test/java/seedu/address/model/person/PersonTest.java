@@ -150,7 +150,7 @@ public class PersonTest {
         Person person = new PersonBuilder(ALICE)
                 .withAppointment(seedu.address.model.session.Appointment.of(
                         "2026-01-13T08:00:00", "Algebra", Recurrence.NONE).withAttendance(
-                                seedu.address.model.attendance.AttendanceRecords.EMPTY.addAttendance(
+                                seedu.address.model.attendance.AttendanceHistory.EMPTY.addAttendance(
                                         new seedu.address.model.attendance.Attendance(
                                                 true, LocalDateTime.parse("2026-01-29T08:00:00")))))
                 .build();
@@ -234,7 +234,7 @@ public class PersonTest {
         editedAlice = new PersonBuilder(ALICE)
                 .withAppointment(seedu.address.model.session.Appointment.of(
                         "2026-01-13T08:00:00", "Algebra", Recurrence.NONE).withAttendance(
-                                seedu.address.model.attendance.AttendanceRecords.EMPTY.addAttendance(
+                                seedu.address.model.attendance.AttendanceHistory.EMPTY.addAttendance(
                                         new seedu.address.model.attendance.Attendance(
                                                 true, LocalDateTime.parse("2026-01-29T08:00:00")))))
                 .build();
@@ -251,7 +251,7 @@ public class PersonTest {
                 + ", tags=" + ALICE.getTags()
                 + ", academics=" + ALICE.getAcademics()
                 + ", guardian=" + ALICE.getGuardian().orElse(null)
-                + ", appointments=" + ALICE.getAppointments()
+                + ", appointment=" + ALICE.getAppointment()
                 + ", billing=" + ALICE.getBilling()
                 + "}";
 

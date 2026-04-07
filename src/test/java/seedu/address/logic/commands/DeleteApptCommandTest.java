@@ -20,7 +20,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.attendance.AttendanceRecords;
+import seedu.address.model.attendance.AttendanceHistory;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.recurrence.Recurrence;
@@ -137,7 +137,7 @@ public class DeleteApptCommandTest {
                 .addAppointment(new Appointment(Recurrence.NONE,
                         LocalDateTime.parse("2026-01-20T10:00:00"),
                         LocalDateTime.parse("2026-01-20T10:00:00"),
-                        AttendanceRecords.EMPTY, "Second lesson"))
+                        AttendanceHistory.EMPTY, "Second lesson"))
                 .build();
         Person otherPerson = getPersonBuilder("Blake", "90010002",
                 "blake@example.com", "Blake Street 2")

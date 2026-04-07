@@ -10,11 +10,12 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.attendance.AttendanceRecords;
+import seedu.address.model.attendance.AttendanceHistory;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.recurrence.Recurrence;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 
 /**
  * Adds an appointment to an existing person in the address book.
@@ -31,6 +32,8 @@ public class AddApptCommand extends AddCommand {
             + "d/2026-01-13T08:00:00 r/NONE dsc/Weekly algebra practice";
 
     public static final String MESSAGE_ADD_APPT_SUCCESS = "Added appointment for %1$s: %2$s";
+    public static final String MESSAGE_DUPLICATE_APPOINTMENT_DESCRIPTION =
+            "Appointment description \"%1$s\" already exists for %2$s";
 
     private final Index index;
     private final LocalDateTime appointmentStart;
@@ -54,11 +57,16 @@ public class AddApptCommand extends AddCommand {
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        Person personToEdit = getTargetPerson(model, index);
-        Appointment appointment = new Appointment(recurrence, appointmentStart, appointmentStart,
-                AttendanceRecords.EMPTY, description);
+        Person personToEdit = IndexedPersonResolver.getTargetPerson(model, index);
+        if (personToEdit.getAppointment().hasSessionWithDescription(description)) {
+            throw new CommandException(String.format(MESSAGE_DUPLICATE_APPOINTMENT_DESCRIPTION,
+                    description.trim(), Messages.format(personToEdit)));
+        }
+        ScheduledSession session = new ScheduledSession(recurrence, appointmentStart, appointmentStart,
+            AttendanceHistory.EMPTY, description);
+        Appointment updatedAppointment = personToEdit.getAppointment().addSession(session);
         Person editedPerson = new PersonBuilder(personToEdit)
-                .addAppointment(appointment)
+            .withAppointment(updatedAppointment)
                 .build();
 
         model.setPerson(personToEdit, editedPerson);

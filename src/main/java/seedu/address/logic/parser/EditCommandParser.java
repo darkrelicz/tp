@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import seedu.address.logic.commands.EditAcademicsCommand;
+import seedu.address.logic.commands.EditApptCommand;
 import seedu.address.logic.commands.EditBillingCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditParentCommand;
@@ -28,6 +29,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         parsers.put(EditAcademicsCommand.SUB_COMMAND_WORD, new EditAcademicsCommandParser());
         parsers.put(EditParentCommand.SUB_COMMAND_WORD, new EditParentCommandParser());
         parsers.put(EditBillingCommand.SUB_COMMAND_WORD, new EditBillingCommandParser());
+        parsers.put(EditApptCommand.SUB_COMMAND_WORD, new EditApptCommandParser());
         this.dispatcher = new SubcommandDispatcherParser<>(parsers, EditCommand.MESSAGE_USAGE);
     }
 

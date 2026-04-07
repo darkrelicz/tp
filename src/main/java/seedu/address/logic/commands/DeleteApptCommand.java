@@ -3,7 +3,6 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import seedu.address.commons.core.index.Index;
@@ -13,7 +12,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
-import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 
 /**
  * Deletes an appointment from an existing person in the address book.
@@ -23,57 +22,66 @@ public class DeleteApptCommand extends DeleteCommand {
     public static final String SUB_COMMAND_WORD = "appt";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + " " + SUB_COMMAND_WORD
-            + ": Deletes the appointment identified by the appointment index from the student identified by the "
-            + "person index used in the displayed student list.\n"
-            + "Parameters: PERSON_INDEX APPT_INDEX (both must be positive integers)\n"
-            + "Example: " + COMMAND_WORD + " " + SUB_COMMAND_WORD + " 1 2";
+            + ": Deletes one or more sessions from the student identified by the index used in the displayed list.\n"
+            + "Parameters: INDEX s/SESSION_INDEX [s/SESSION_INDEX]...\n"
+            + "Example: " + COMMAND_WORD + " " + SUB_COMMAND_WORD + " 1 s/2 s/3";
 
-    public static final String MESSAGE_DELETE_APPT_SUCCESS = "Deleted appointment for %1$s: %2$s";
+    public static final String MESSAGE_DELETE_APPT_SUCCESS = "Deleted session(s) for %1$s: %2$s";
     public static final String MESSAGE_INVALID_APPOINTMENT_INDEX =
-            "The appointment index provided is invalid for the selected student.";
+            "One or more session indices provided are invalid for the selected student.";
 
     private static final DateTimeFormatter APPOINTMENT_DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    private final Index appointmentIndex;
+    private final List<Index> sessionIndices;
 
     /**
      * Creates a {@code DeleteApptCommand}.
      */
-    public DeleteApptCommand(Index personIndex, Index appointmentIndex) {
+    public DeleteApptCommand(Index personIndex, List<Index> sessionIndices) {
         super(personIndex);
-        requireNonNull(appointmentIndex);
-        this.appointmentIndex = appointmentIndex;
+        requireNonNull(sessionIndices);
+        this.sessionIndices = List.copyOf(sessionIndices);
+    }
+
+    /**
+     * Creates a {@code DeleteApptCommand} for a single session index.
+     */
+    public DeleteApptCommand(Index personIndex, Index sessionIndex) {
+        this(personIndex, List.of(sessionIndex));
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        Person personToEdit = getTargetPerson(model);
-        Appointment appointmentToDelete = getTargetAppointment(personToEdit);
-
-        List<Appointment> updatedAppointments = new ArrayList<>(personToEdit.getAppointments());
-        updatedAppointments.remove(appointmentIndex.getZeroBased());
+        Person personToEdit = IndexedPersonResolver.getTargetPerson(model, index);
+        List<ScheduledSession> sessions = personToEdit.getAppointment().getSessions();
+        validateSessionIndices(sessions);
+        String deletedSessionsText = formatSessions(sessions);
 
         Person editedPerson = new PersonBuilder(personToEdit)
-                .withAppointments(updatedAppointments)
+                .withAppointment(personToEdit.getAppointment().removeSessions(sessionIndices))
                 .build();
 
         replacePerson(model, personToEdit, editedPerson);
         return new CommandResult(String.format(MESSAGE_DELETE_APPT_SUCCESS,
-                Messages.format(editedPerson), formatAppointment(appointmentToDelete)), editedPerson);
+                Messages.format(editedPerson), deletedSessionsText), editedPerson);
     }
 
-    private Appointment getTargetAppointment(Person person) throws CommandException {
-        requireNonNull(person);
-        List<Appointment> appointments = person.getAppointments();
-        if (appointmentIndex.getZeroBased() >= appointments.size()) {
-            throw new CommandException(MESSAGE_INVALID_APPOINTMENT_INDEX);
+    private void validateSessionIndices(List<ScheduledSession> sessions) throws CommandException {
+        for (Index sessionIndex : sessionIndices) {
+            if (sessionIndex.getZeroBased() >= sessions.size()) {
+                throw new CommandException(MESSAGE_INVALID_APPOINTMENT_INDEX);
+            }
         }
-
-        return appointments.get(appointmentIndex.getZeroBased());
     }
 
-    private String formatAppointment(Appointment appointment) {
-        return appointment.getStart().format(APPOINTMENT_DATE_TIME_FORMATTER);
+    private String formatSessions(List<ScheduledSession> sessions) {
+        List<String> formattedSessions = sessionIndices.stream()
+                .map(index -> sessions.get(index.getZeroBased()).getStart().format(APPOINTMENT_DATE_TIME_FORMATTER))
+                .toList();
+        if (formattedSessions.size() == 1) {
+            return formattedSessions.get(0);
+        }
+        return formattedSessions.toString();
     }
 
     @Override
@@ -88,14 +96,20 @@ public class DeleteApptCommand extends DeleteCommand {
 
         DeleteApptCommand otherCommand = (DeleteApptCommand) other;
         return index.equals(otherCommand.index)
-                && appointmentIndex.equals(otherCommand.appointmentIndex);
+            && sessionIndices.equals(otherCommand.sessionIndices);
     }
 
     @Override
     public String toString() {
+        if (sessionIndices.size() == 1) {
+            return new ToStringBuilder(this)
+                    .add("personIndex", index)
+                    .add("appointmentIndex", sessionIndices.get(0))
+                    .toString();
+        }
         return new ToStringBuilder(this)
                 .add("personIndex", index)
-                .add("appointmentIndex", appointmentIndex)
+            .add("sessionIndices", sessionIndices)
                 .toString();
     }
 }

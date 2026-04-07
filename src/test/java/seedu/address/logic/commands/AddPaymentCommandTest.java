@@ -22,8 +22,10 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.billing.Billing;
+import seedu.address.model.billing.PaymentHistory;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
+import seedu.address.model.recurrence.Recurrence;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for AddPaymentCommand.
@@ -102,6 +104,40 @@ public class AddPaymentCommandTest {
         Person personAfterDuplicateFailure = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         assertEquals(billingBeforeDuplicateCommand, personAfterDuplicateFailure.getBilling());
         assertEquals(dueDateBeforeDuplicateCommand, personAfterDuplicateFailure.getBilling().getCurrentDueDate());
+    }
+
+    @Test
+    public void execute_backfilledPaymentDate_doesNotAdvanceDueDate() throws Exception {
+        Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Billing initialBilling = new Billing(Recurrence.MONTHLY, LocalDate.parse("2026-04-01"), 25.0,
+            new PaymentHistory(LocalDate.parse("2026-03-15")));
+        Person updatedPerson = new PersonBuilder(personToEdit).withBilling(initialBilling).build();
+        model.setPerson(personToEdit, updatedPerson);
+
+        AddPaymentCommand addCommand = new AddPaymentCommand(INDEX_FIRST_PERSON, LocalDate.parse("2026-03-01"));
+        addCommand.execute(model);
+
+        Billing billingAfterCommand = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased())
+            .getBilling();
+        assertEquals(LocalDate.parse("2026-04-01"), billingAfterCommand.getCurrentDueDate());
+        assertTrue(billingAfterCommand.getPaymentHistory().hasPaidOn(LocalDate.parse("2026-03-01")));
+    }
+
+    @Test
+    public void execute_laterPaymentDate_advancesDueDate() throws Exception {
+        Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Billing initialBilling = new Billing(Recurrence.MONTHLY, LocalDate.parse("2026-04-01"), 25.0,
+            new PaymentHistory(LocalDate.parse("2026-03-15")));
+        Person updatedPerson = new PersonBuilder(personToEdit).withBilling(initialBilling).build();
+        model.setPerson(personToEdit, updatedPerson);
+
+        AddPaymentCommand addCommand = new AddPaymentCommand(INDEX_FIRST_PERSON, LocalDate.parse("2026-03-20"));
+        addCommand.execute(model);
+
+        Billing billingAfterCommand = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased())
+            .getBilling();
+        assertEquals(LocalDate.parse("2026-05-01"), billingAfterCommand.getCurrentDueDate());
+        assertTrue(billingAfterCommand.getPaymentHistory().hasPaidOn(LocalDate.parse("2026-03-20")));
     }
 
     @Test

@@ -247,8 +247,8 @@ How the subject-related feature works:
 
 ### Payment and billing commands
 
-The payment and billing feature covers two related workflows:
-`edit payment`, which records a payment and updates billing data, and `find payment`, which filters students by billing due month.
+The payment and billing feature covers four related workflows:
+`edit billing`, `add payment`, `delete payment`, and `find billing`.
 
 The first class diagram shows the command and parser structure for these workflows.
 
@@ -260,10 +260,12 @@ The second class diagram shows the billing model objects used by those commands.
 
 How the payment and billing feature works:
 
-1. `EditPaymentCommandParser` parses a required `d/DATE` and an optional `a/AMOUNT` from `edit payment`.
-1. `EditPaymentCommand` updates the selected student's `Billing` by recording the payment date, advancing the next due date, and optionally changing the tuition fee.
-1. `FindPaymentCommandParser` parses `d/YYYY-MM` and creates a `PaymentDueMonthPredicate`.
-1. `FindPaymentCommand` applies that predicate to the displayed list so only students with matching billing due months remain visible.
+1. `EditBillingCommandParser` parses the student index together with optional `a/AMOUNT` and `d/DATE` fields.
+1. `EditBillingCommand` updates the selected student's tuition fee, due date, or both, without changing payment history.
+1. `AddPaymentCommandParser` parses `add payment INDEX d/DATE`, and `AddPaymentCommand` records that payment date and advances the due date by one recurrence cycle.
+1. `DeletePaymentCommandParser` parses `delete payment INDEX d/DATE`, and `DeletePaymentCommand` removes that payment date. If the removed date is the latest recorded payment, the due date is rolled back by one recurrence cycle.
+1. `FindBillingCommandParser` parses `find billing d/YYYY-MM` and creates a `PaymentDueMonthPredicate`.
+1. `FindBillingCommand` applies that predicate to the displayed list so only students with matching billing due months remain visible.
 1. `Billing` stores the recurrence schedule, current due date, tuition fee, and `PaymentHistory`, while `PaymentHistory` stores the set of recorded paid dates.
 
 ### \[Proposed\] Undo/redo feature

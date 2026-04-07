@@ -25,6 +25,8 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.recurrence.Recurrence;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
+
 
 /**
  * Contains integration tests and unit tests for {@code DeleteApptCommand}.
@@ -134,10 +136,10 @@ public class DeleteApptCommandTest {
         Person personWithTwoAppointments = getPersonBuilder("Alex", "90010001",
                 "alex@example.com", "Alex Street 1")
                 .withAppointment(Appointment.of("2026-01-10T10:00:00", "First lesson", Recurrence.NONE)
-                    .addSession(new Appointment(Recurrence.NONE,
+                    .addSession(new ScheduledSession(Recurrence.NONE,
                         LocalDateTime.parse("2026-01-20T10:00:00"),
                         LocalDateTime.parse("2026-01-20T10:00:00"),
-                        AttendanceHistory.EMPTY, "Second lesson").getSessions().get(0)))
+                        AttendanceHistory.EMPTY, "Second lesson")))
                 .build();
         Person otherPerson = getPersonBuilder("Blake", "90010002",
                 "blake@example.com", "Blake Street 2")

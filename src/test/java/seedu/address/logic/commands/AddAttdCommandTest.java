@@ -13,6 +13,7 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.recurrence.Recurrence;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
 
 /**
  * Contains integration tests and unit tests for AddAttdCommand.
@@ -49,12 +51,12 @@ public class AddAttdCommandTest {
                 true, Optional.empty());
 
         Person editedPerson = new PersonBuilder(personToEdit)
-                .withAppointment(new Appointment(Recurrence.NONE,
+                .withAppointment(new Appointment(List.of(new ScheduledSession(Recurrence.NONE,
                         LocalDateTime.parse("2026-01-13T08:00:00"),
                         LocalDateTime.parse("2026-01-13T08:00:00"),
                         personToEdit.getNextAppointment().orElseThrow().getAttendanceHistory()
                                 .addAttendance(new Attendance(true, LocalDate.parse("2026-01-13"))),
-                        "Algebra"))
+                        "Algebra"))))
                 .build();
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
@@ -146,9 +148,10 @@ public class AddAttdCommandTest {
     @Test
     public void execute_nonRecurringAppointmentWithExistingAttendance_failure() {
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
-                .withAppointment(Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE).withAttendance(
-                                AttendanceHistory.EMPTY.addAttendance(
-                                        new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))
+                .withAppointment(new Appointment(List.of(
+                        Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE).getSessions().get(0)
+                                .withAttendance(AttendanceHistory.EMPTY.addAttendance(
+                                        new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))))
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
@@ -161,9 +164,10 @@ public class AddAttdCommandTest {
     @Test
     public void execute_recurringAppointmentWithExistingAttendance_success() throws Exception {
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
-                .withAppointment(Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.WEEKLY).withAttendance(
-                                AttendanceHistory.EMPTY.addAttendance(
-                                        new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))
+                .withAppointment(new Appointment(List.of(
+                        Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.WEEKLY).getSessions().get(0)
+                                .withAttendance(AttendanceHistory.EMPTY.addAttendance(
+                                        new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))))
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
@@ -181,9 +185,10 @@ public class AddAttdCommandTest {
     @Test
     public void execute_recurringAppointmentWithSameDateAttendance_failure() {
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
-                .withAppointment(Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.WEEKLY)
-                        .withAttendance(AttendanceHistory.EMPTY.addAttendance(
-                                new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))
+                .withAppointment(new Appointment(List.of(
+                        Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.WEEKLY).getSessions().get(0)
+                                .withAttendance(AttendanceHistory.EMPTY.addAttendance(
+                                        new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))))
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
@@ -198,9 +203,10 @@ public class AddAttdCommandTest {
     @Test
     public void execute_recurringAppointmentWithBackfilledAttendance_doesNotAdvanceNext() throws Exception {
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
-                .withAppointment(Appointment.of("2026-01-20T08:00:00", "Algebra", Recurrence.WEEKLY)
-                        .withAttendance(AttendanceHistory.EMPTY.addAttendance(
-                                new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))
+                .withAppointment(new Appointment(List.of(
+                        Appointment.of("2026-01-20T08:00:00", "Algebra", Recurrence.WEEKLY).getSessions().get(0)
+                                .withAttendance(AttendanceHistory.EMPTY.addAttendance(
+                                        new Attendance(true, LocalDateTime.parse("2026-01-13T08:00:00")))))))
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
@@ -220,8 +226,9 @@ public class AddAttdCommandTest {
         LocalDate futureDate = AppClock.today().plusDays(1);
         LocalDateTime futureDateTime = futureDate.atTime(8, 0);
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
-                .withAppointment(new Appointment(Recurrence.NONE, futureDateTime, futureDateTime,
-                        AttendanceHistory.EMPTY, "Algebra"))
+                .withAppointment(new Appointment(List.of(new ScheduledSession(
+                        Recurrence.NONE, futureDateTime, futureDateTime,
+                        AttendanceHistory.EMPTY, "Algebra"))))
                 .build();
         model.setPerson(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()), personToEdit);
 
@@ -267,16 +274,16 @@ public class AddAttdCommandTest {
 
     @Test
     public void execute_specificAppointmentIndex_updatesSelectedAppointment() throws Exception {
-        Appointment firstAppointment = new Appointment(Recurrence.NONE,
+        Appointment firstAppointment = new Appointment(List.of(new ScheduledSession(Recurrence.NONE,
                 LocalDateTime.parse("2026-01-13T08:00:00"),
                 LocalDateTime.parse("2026-01-13T08:00:00"),
                 AttendanceHistory.EMPTY,
-                "Algebra");
-        Appointment secondAppointment = new Appointment(Recurrence.NONE,
+                "Algebra")));
+        Appointment secondAppointment = new Appointment(List.of(new ScheduledSession(Recurrence.NONE,
                 LocalDateTime.parse("2026-01-20T08:00:00"),
                 LocalDateTime.parse("2026-01-20T08:00:00"),
                 AttendanceHistory.EMPTY,
-                "Physics");
+                "Physics")));
         Person personToEdit = new PersonBuilder(model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased()))
                 .withAppointment(firstAppointment.addSession(secondAppointment.getSessions().get(0)))
                 .build();

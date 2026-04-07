@@ -16,6 +16,7 @@ import static seedu.address.testutil.TypicalPersons.getPersonBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -168,11 +169,10 @@ public class PersonTest {
     @Test
     public void getAttendance_withAppointment_returnsAppointmentAttendance() {
         Person person = new PersonBuilder(ALICE)
-                .withAppointment(Appointment.of(
-                        "2026-01-13T08:00:00", "Algebra", Recurrence.NONE).withAttendance(
-                                AttendanceHistory.EMPTY.addAttendance(
-                                        new Attendance(
-                                                true, LocalDateTime.parse("2026-01-29T08:00:00")))))
+                .withAppointment(new Appointment(List.of(
+                        Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE).getSessions().get(0)
+                                .withAttendance(AttendanceHistory.EMPTY.addAttendance(
+                                        new Attendance(true, LocalDateTime.parse("2026-01-29T08:00:00")))))))
                 .build();
         assertEquals(LocalDateTime.parse("2026-01-29T08:00:00"),
                 person.getNextAppointment()
@@ -252,11 +252,10 @@ public class PersonTest {
         assertFalse(ALICE.equals(editedAlice));
 
         editedAlice = new PersonBuilder(ALICE)
-                .withAppointment(Appointment.of(
-                        "2026-01-13T08:00:00", "Algebra", Recurrence.NONE).withAttendance(
-                                AttendanceHistory.EMPTY.addAttendance(
-                                        new Attendance(
-                                                true, LocalDateTime.parse("2026-01-29T08:00:00")))))
+                .withAppointment(new Appointment(List.of(
+                        Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE).getSessions().get(0)
+                                .withAttendance(AttendanceHistory.EMPTY.addAttendance(
+                                        new Attendance(true, LocalDateTime.parse("2026-01-29T08:00:00")))))))
                 .build();
         assertFalse(ALICE.equals(editedAlice));
     }

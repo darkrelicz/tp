@@ -47,19 +47,12 @@ public final class Appointment {
     }
 
     /**
-     * Backward-compatible constructor for a single session.
-     */
-    public Appointment(Recurrence recurrence, LocalDateTime start, LocalDateTime next,
-                       AttendanceHistory attendanceHistory, String description) {
-        this(List.of(new ScheduledSession(recurrence, start, next, attendanceHistory, description)));
-    }
-
-    /**
      * Creates an {@code Appointment} from an ISO-8601 date-time string.
      */
     public static Appointment of(String startDateTime, String description, Recurrence recurrence) {
         LocalDateTime start = LocalDateTime.parse(startDateTime);
-        return new Appointment(recurrence, start, start, AttendanceHistory.EMPTY, description);
+        return new Appointment(List.of(
+                new ScheduledSession(recurrence, start, start, AttendanceHistory.EMPTY, description)));
     }
 
     public static Appointment defaultAppointment() {
@@ -185,55 +178,7 @@ public final class Appointment {
         }
     }
 
-    private ScheduledSession getSingleSession() {
-        if (sessions.size() != 1) {
-            throw new IllegalStateException("Single-session accessor used on appointment container");
-        }
-        return sessions.get(0);
-    }
 
-    /**
-     * Backward-compatible single-session accessor.
-     */
-    public Recurrence getRecurrence() {
-        return getSingleSession().getRecurrence();
-    }
-
-    /**
-     * Backward-compatible single-session accessor.
-     */
-    public LocalDateTime getStart() {
-        return getSingleSession().getStart();
-    }
-
-    /**
-     * Backward-compatible single-session accessor.
-     */
-    public LocalDateTime getNext() {
-        return getSingleSession().getNext();
-    }
-
-    /**
-     * Backward-compatible single-session accessor.
-     */
-    public AttendanceHistory getAttendance() {
-        return getSingleSession().getAttendanceHistory();
-    }
-
-    /**
-     * Backward-compatible single-session accessor.
-     */
-    public String getDescription() {
-        return getSingleSession().getDescription();
-    }
-
-    /**
-     * Backward-compatible single-session mutation.
-     */
-    public Appointment withAttendance(AttendanceHistory updatedAttendance) {
-        ScheduledSession current = getSingleSession();
-        return new Appointment(List.of(current.withAttendance(updatedAttendance)));
-    }
 
     @Override
     public boolean equals(Object other) {

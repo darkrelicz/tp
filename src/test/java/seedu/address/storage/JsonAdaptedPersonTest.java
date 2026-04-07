@@ -28,6 +28,8 @@ import seedu.address.model.person.PersonBuilder;
 import seedu.address.model.person.Phone;
 import seedu.address.model.recurrence.Recurrence;
 import seedu.address.model.session.Appointment;
+import seedu.address.model.session.ScheduledSession;
+
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -466,11 +468,11 @@ public class JsonAdaptedPersonTest {
     public void toModelType_multipleAppointments_roundTripsSuccessfully() throws Exception {
         Person person = new PersonBuilder(BENSON)
                 .withAppointment(Appointment.of("2026-01-13T08:00:00", "Algebra", Recurrence.NONE)
-                    .addSession(new Appointment(Recurrence.WEEKLY,
+                    .addSession(new ScheduledSession(Recurrence.WEEKLY,
                         LocalDateTime.parse("2026-02-03T09:00:00"),
                         LocalDateTime.parse("2026-02-03T09:00:00"),
                         AttendanceHistory.EMPTY,
-                        "Physics").getSessions().get(0)))
+                        "Physics")))
                 .build();
 
         assertEquals(person, new JsonAdaptedPerson(person).toModelType());

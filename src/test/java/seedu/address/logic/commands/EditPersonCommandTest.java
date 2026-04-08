@@ -160,6 +160,7 @@ public class EditPersonCommandTest {
         EditPersonDescriptor copyDescriptor = new EditPersonDescriptor(DESC_AMY);
         EditPersonCommand commandWithSameValues = new EditPersonCommand(INDEX_FIRST_PERSON, copyDescriptor);
         assertTrue(standardCommand.equals(commandWithSameValues));
+        assertEquals(standardCommand.hashCode(), commandWithSameValues.hashCode());
 
         // same object -> returns true
         assertTrue(standardCommand.equals(standardCommand));

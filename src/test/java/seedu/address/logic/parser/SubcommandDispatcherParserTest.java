@@ -1,4 +1,7 @@
 package seedu.address.logic.parser;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -57,5 +60,16 @@ public class SubcommandDispatcherParserTest {
     public void parse_validSubcommand_success() {
         assertParseSuccess(parser, "sub my args", new DummyCommand("my args"));
         assertParseSuccess(parser, "sub", new DummyCommand(""));
+    }
+
+    @Test
+    public void dummyCommand_equalsAndHashCodeContract() {
+        DummyCommand first = new DummyCommand("args");
+        DummyCommand firstCopy = new DummyCommand("args");
+        DummyCommand second = new DummyCommand("other");
+
+        assertEquals(first, firstCopy);
+        assertEquals(first.hashCode(), firstCopy.hashCode());
+        assertNotEquals(first, second);
     }
 }

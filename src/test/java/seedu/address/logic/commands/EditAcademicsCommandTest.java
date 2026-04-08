@@ -125,6 +125,7 @@ public class EditAcademicsCommandTest {
         EditAcademicsCommand commandWithSameValues =
                 new EditAcademicsCommand(INDEX_FIRST_PERSON, descriptor1);
         assertTrue(standardCommand.equals(commandWithSameValues));
+        assertEquals(standardCommand.hashCode(), commandWithSameValues.hashCode());
 
         // same object
         assertTrue(standardCommand.equals(standardCommand));

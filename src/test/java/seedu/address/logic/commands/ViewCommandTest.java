@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
@@ -86,6 +87,7 @@ public class ViewCommandTest {
         // same values -> returns true
         ViewCommand viewFirstCommandCopy = new ViewCommand(INDEX_FIRST_PERSON);
         assertTrue(viewFirstCommand.equals(viewFirstCommandCopy));
+        assertEquals(viewFirstCommand.hashCode(), viewFirstCommandCopy.hashCode());
 
         // different types -> returns false
         assertFalse(viewFirstCommand.equals(1));

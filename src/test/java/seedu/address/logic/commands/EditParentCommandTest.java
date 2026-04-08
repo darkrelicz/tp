@@ -198,6 +198,7 @@ public class EditParentCommandTest {
         descriptorAmyCopy.setParentName(parentNameAmy);
         EditParentCommand editFirstCommandCopy = new EditParentCommand(INDEX_FIRST_PERSON, descriptorAmyCopy);
         assertTrue(editFirstCommand.equals(editFirstCommandCopy));
+        assertEquals(editFirstCommand.hashCode(), editFirstCommandCopy.hashCode());
 
         // different types -> returns false
         assertFalse(editFirstCommand.equals(1));

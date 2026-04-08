@@ -47,6 +47,7 @@ public class FindBillingCommandTest {
         // same values -> true
         FindBillingCommand findFirstCommandCopy = new FindBillingCommand(firstPredicate);
         assertTrue(findFirstCommand.equals(findFirstCommandCopy));
+        assertEquals(findFirstCommand.hashCode(), findFirstCommandCopy.hashCode());
 
         // different types -> false
         assertFalse(findFirstCommand.equals(1));

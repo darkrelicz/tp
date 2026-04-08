@@ -40,10 +40,12 @@ public class IndexTest {
     @Test
     public void equals() {
         final Index fifthPersonIndex = Index.fromOneBased(5);
+        final Index fifthPersonIndexCopy = Index.fromZeroBased(4);
 
         // same values -> returns true
         assertTrue(fifthPersonIndex.equals(Index.fromOneBased(5)));
-        assertTrue(fifthPersonIndex.equals(Index.fromZeroBased(4)));
+        assertTrue(fifthPersonIndex.equals(fifthPersonIndexCopy));
+        assertEquals(fifthPersonIndex.hashCode(), fifthPersonIndexCopy.hashCode());
 
         // same object -> returns true
         assertTrue(fifthPersonIndex.equals(fifthPersonIndex));

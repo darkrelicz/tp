@@ -247,6 +247,7 @@ public class AddAcademicsCommandTest {
                 new AddAcademicsCommand(INDEX_FIRST_PERSON, differentSubjects);
 
         assertTrue(standardCommand.equals(sameCommand));
+        assertEquals(standardCommand.hashCode(), sameCommand.hashCode());
         assertTrue(standardCommand.equals(standardCommand));
         assertFalse(standardCommand.equals(null));
         assertFalse(standardCommand.equals(new ClearCommand()));

@@ -1,5 +1,6 @@
 package seedu.address.model.academic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.getPersonBuilder;
@@ -26,6 +27,7 @@ public class SubjectContainsKeywordsPredicateTest {
         SubjectContainsKeywordsPredicate firstPredicateCopy =
                 new SubjectContainsKeywordsPredicate(Set.of(new Subject("Math", null)));
         assertTrue(firstPredicate.equals(firstPredicateCopy));
+        assertEquals(firstPredicate.hashCode(), firstPredicateCopy.hashCode());
 
         // symmetric
         assertTrue(firstPredicateCopy.equals(firstPredicate));

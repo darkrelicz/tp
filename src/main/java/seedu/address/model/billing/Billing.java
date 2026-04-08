@@ -28,14 +28,14 @@ public class Billing {
      * @param tuitionFee A non-negative amount
      * @param paymentHistory a {@code PaymentHistory} object with recorded payment history dates
      */
-    public Billing(Recurrence recurrence, LocalDate paymentDueDate, double tuitionfee, PaymentHistory paymentHistory) {
+    public Billing(Recurrence recurrence, LocalDate paymentDueDate, double tuitionFee, PaymentHistory paymentHistory) {
         requireNonNull(recurrence);
         requireNonNull(paymentDueDate);
         requireNonNull(paymentHistory);
-        checkArgument(tuitionfee >= 0, "Tuition fee must be non-negative");
+        checkArgument(tuitionFee >= 0, "Tuition fee must be non-negative");
         this.recurrence = recurrence;
         this.paymentDueDate = paymentDueDate;
-        this.tuitionFee = tuitionfee;
+        this.tuitionFee = tuitionFee;
         this.paymentHistory = paymentHistory;
     }
 
@@ -179,4 +179,3 @@ public class Billing {
                 recurrence, paymentDueDate, tuitionFee, paymentHistory);
     }
 }
-

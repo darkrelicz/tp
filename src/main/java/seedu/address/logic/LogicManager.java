@@ -13,6 +13,7 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
@@ -54,8 +55,7 @@ public class LogicManager implements Logic {
             throw pe;
         }
 
-        ReadOnlyAddressBook beforeSnapshot = model.getAddressBook();
-        int hashBefore = beforeSnapshot.hashCode();
+        ReadOnlyAddressBook beforeSnapshot = new AddressBook(model.getAddressBook());
 
         CommandResult commandResult;
         try {
@@ -68,7 +68,7 @@ public class LogicManager implements Logic {
         logger.info("Command " + command.getClass().getSimpleName()
                 + " completed: " + commandResult.getFeedbackToUser());
 
-        if (model.getAddressBook().hashCode() != hashBefore) {
+        if (!model.getAddressBook().equals(beforeSnapshot)) {
             logger.info("Detected address book changes after " + command.getClass().getSimpleName()
                     + "; saving to " + storage.getAddressBookFilePath());
             try {

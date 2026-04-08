@@ -1,5 +1,6 @@
 package seedu.address.model.billing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,6 +27,7 @@ public class PaymentDueMonthPredicateTest {
         // same values
         PaymentDueMonthPredicate firstCopy = new PaymentDueMonthPredicate(YearMonth.of(2026, 3));
         assertTrue(first.equals(firstCopy));
+        assertEquals(first.hashCode(), firstCopy.hashCode());
 
         // different types
         assertFalse(first.equals(1));

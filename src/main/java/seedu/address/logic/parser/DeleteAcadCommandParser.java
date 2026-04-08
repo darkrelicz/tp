@@ -21,6 +21,7 @@ public class DeleteAcadCommandParser implements Parser<DeleteAcadCommand> {
      *
      * @throws ParseException if the user input does not conform the expected format
      */
+    @Override
     public DeleteAcadCommand parse(String args) throws ParseException {
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_SUBJECT);
 

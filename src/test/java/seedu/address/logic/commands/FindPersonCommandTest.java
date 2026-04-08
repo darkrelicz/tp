@@ -43,6 +43,7 @@ public class FindPersonCommandTest {
         // same values -> returns true
         FindPersonCommand findFirstCommandCopy = new FindPersonCommand(firstPredicate);
         assertTrue(findFirstCommand.equals(findFirstCommandCopy));
+        assertEquals(findFirstCommand.hashCode(), findFirstCommandCopy.hashCode());
 
         // different types -> returns false
         assertFalse(findFirstCommand.equals(1));

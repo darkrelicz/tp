@@ -1,5 +1,6 @@
 package seedu.address.model.tag;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.getPersonBuilder;
@@ -26,6 +27,7 @@ public class TagContainsKeywordsPredicateTest {
         TagContainsKeywordsPredicate firstPredicateCopy =
                 new TagContainsKeywordsPredicate(Set.of(new Tag("JC")));
         assertTrue(firstPredicate.equals(firstPredicateCopy));
+        assertEquals(firstPredicate.hashCode(), firstPredicateCopy.hashCode());
 
         // symmetric
         assertTrue(firstPredicateCopy.equals(firstPredicate));

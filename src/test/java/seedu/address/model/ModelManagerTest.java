@@ -124,6 +124,7 @@ public class ModelManagerTest {
         modelManager = new ModelManager(addressBook, userPrefs);
         ModelManager modelManagerCopy = new ModelManager(addressBook, userPrefs);
         assertTrue(modelManager.equals(modelManagerCopy));
+        assertEquals(modelManager.hashCode(), modelManagerCopy.hashCode());
 
         // same object -> returns true
         assertTrue(modelManager.equals(modelManager));

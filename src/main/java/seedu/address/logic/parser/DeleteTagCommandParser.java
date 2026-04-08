@@ -21,6 +21,7 @@ public class DeleteTagCommandParser implements Parser<DeleteTagCommand> {
      *
      * @throws ParseException if the user input does not conform the expected format
      */
+    @Override
     public DeleteTagCommand parse(String args) throws ParseException {
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_TAG);
 

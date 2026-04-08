@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import seedu.address.commons.util.AppClock;
 import seedu.address.model.academic.Subject;
 import seedu.address.model.attendance.Attendance;
 import seedu.address.model.person.Person;
@@ -82,7 +83,7 @@ public class PersonCard extends UiPart<Region> {
             return "person-payment-neutral";
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = AppClock.today();
         if (dueDate.isBefore(today)) {
             return "person-payment-overdue";
         }
@@ -100,7 +101,7 @@ public class PersonCard extends UiPart<Region> {
             return "No due date";
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = AppClock.today();
         if (dueDate.isEqual(today)) {
             return "Due today";
         }

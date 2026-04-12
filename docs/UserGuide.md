@@ -92,10 +92,6 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 * For commands that use prefixes, the order of prefixed fields usually does not matter.
   Example: `p/91234567 n/John Doe` is accepted for commands that expect both fields.
 
-* `find` commands narrow the **currently displayed list** instead of always searching all students.
-  This means you can combine multiple `find` commands to refine results step by step.
-  Use `list` if you want to reset the view and search from the full student list again.
-
 * Whenever a command uses `INDEX`, it must be a positive integer such as `1`, `2`, or `3`.
 
 * Unless stated otherwise, `INDEX` refers to the **currently displayed student list**, not to a permanent student ID.
@@ -104,6 +100,19 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 * Commands without parameters, such as `help`, `list`, `clear`, and `exit`, ignore extra text after the command word.
 
 * If you are using a PDF version of this guide, be careful when copying multi-line commands. Some PDF viewers may remove spaces around line breaks.
+
+</div>
+
+<div markdown="block" class="alert alert-info">
+
+**How finding works**
+
+* `find` commands search within the **currently displayed list**, not always the full student list.
+* You can run multiple `find` commands one after another to narrow results step by step.
+* Use `list` to reset back to the full student list before searching again.
+* For most `find` commands, TutorFlow looks for your search word anywhere in the text and ignores upper/lower case.
+  Example: `al` can match `Alex`.
+* Date-based `find` commands (`find appt`, `find billing`) search by date or month instead of text.
 
 </div>
 

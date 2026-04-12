@@ -50,6 +50,14 @@ public class EditBillingCommandParserTest {
     }
 
     @Test
+    public void parse_amountMoreThanTwoDecimalPlaces_success() {
+        Index targetIndex = INDEX_FIRST_PERSON;
+        String userInput = targetIndex.getOneBased() + " a/0.19999999";
+        EditBillingCommand expectedCommand = new EditBillingCommand(targetIndex, 0.19999999);
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
     public void parse_amountSpecified_success() {
         Index targetIndex = INDEX_FIRST_PERSON;
         String userInput = targetIndex.getOneBased() + VALID_AMOUNT_DESC;

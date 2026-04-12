@@ -238,6 +238,16 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseAmount_moreThanTwoDecimalPlaces_returnsAmount() throws Exception {
+        assertEquals(Double.parseDouble("0.19999999"), ParserUtil.parseAmount("0.19999999"));
+    }
+
+    @Test
+    public void parseAmount_trailingZeroDecimals_returnsAmount() throws Exception {
+        assertEquals(0.2, ParserUtil.parseAmount("0.2000"));
+    }
+
+    @Test
     public void parseAmount_infiniteValue_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parseAmount("-Infinity"));
         assertThrows(ParseException.class, () -> ParserUtil.parseAmount("Infinity"));

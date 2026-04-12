@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +36,8 @@ public class ParserUtil {
     public static final String MESSAGE_INVALID_DATE_TIME =
             "Date-time must be in ISO 8601 local format, e.g. 2026-01-13T08:00:00";
     public static final String MESSAGE_INVALID_AMOUNT = "Amount must be a non-negative number.";
+    public static final String MESSAGE_INVALID_AMOUNT_PRECISION =
+            "Amount is too large to be represented exactly. Please enter a smaller amount.";
     public static final String MESSAGE_INVALID_RECURRENCE =
             "Recurrence must be one of: WEEKLY, BIWEEKLY, MONTHLY, NONE";
     /**
@@ -157,7 +160,8 @@ public class ParserUtil {
     }
 
     /**
-     * Parses a {@code String amount} into a positive {@code double} that is greater than or equals to 0.
+     * Parses a {@code String amount} into a non-negative {@code double} that is
+     * exactly representable as a {@code double}.
      * Leading and trailing whitespaces will be trimmed.
      *
      * @throws ParseException if the given {@code amount} is invalid.
@@ -166,9 +170,14 @@ public class ParserUtil {
         requireNonNull(amount);
         String trimmedAmount = amount.trim();
         try {
-            double parsedAmount = Double.parseDouble(trimmedAmount);
+            BigDecimal parsedAmountDecimal = new BigDecimal(trimmedAmount);
+            double parsedAmount = parsedAmountDecimal.doubleValue();
             if (!Double.isFinite(parsedAmount) || parsedAmount < 0) {
                 throw new ParseException(MESSAGE_INVALID_AMOUNT);
+            }
+
+            if (parsedAmountDecimal.compareTo(BigDecimal.valueOf(parsedAmount)) != 0) {
+                throw new ParseException(MESSAGE_INVALID_AMOUNT_PRECISION);
             }
             return parsedAmount;
         } catch (NumberFormatException e) {

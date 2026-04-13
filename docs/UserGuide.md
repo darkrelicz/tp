@@ -110,6 +110,16 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 
 <div markdown="block" class="alert alert-info">
 
+**Date and timezone behavior**
+
+* TutorFlow interprets all `d/` date and date-time inputs using **Singapore time (SGT, UTC+08:00)**.
+* Enter date-time values without a timezone offset (for example, use `2026-01-29T08:00:00`, not `2026-01-29T08:00:00Z`).
+* Relative checks such as "today", "current date", and "future date/time" are also based on **Singapore time**.
+
+</div>
+
+<div markdown="block" class="alert alert-info">
+
 **How finding works**
 
 * `find` commands search within the **currently displayed list**, not always the full student list.
@@ -428,7 +438,7 @@ Format: `edit billing INDEX [a/AMOUNT] [d/DATE]`
 Details:
 * At least one of `a/` or `d/` must be provided.
 * `a/AMOUNT` must be a non-negative number.
-* `d/DATE` must be in ISO 8601 local date format: `YYYY-MM-DD`.
+* `d/DATE` must be in ISO 8601 date format: `YYYY-MM-DD`.
 * This command changes billing settings only. It does not add a payment record.
 
 Examples:
@@ -443,11 +453,11 @@ Records that a student paid on a specific date.
 Format: `add payment INDEX d/DATE`
 
 Details:
-* `d/DATE` must be in ISO 8601 local date format: `YYYY-MM-DD`.
+* `d/DATE` must be in ISO 8601 date format: `YYYY-MM-DD`.
 * The payment date cannot be later than today.
 * Recording a payment advances the student's billing due date by one billing cycle only when the new payment date
   is later than the latest recorded payment date.
-* A billing cycle is one recurrence cycle (monthly by default). Each advancement brings the due date forward by one 
+* A billing cycle is one recurrence cycle (monthly by default). Each advancement brings the due date forward by one
   recurrence cycle.
 * If you add an older (backfilled) payment date, TutorFlow records it but keeps the due date unchanged.
 
@@ -461,11 +471,11 @@ Deletes a previously recorded payment date.
 Format: `delete payment INDEX d/DATE`
 
 Details:
-* `d/DATE` must be in ISO 8601 local date format: `YYYY-MM-DD`.
+* `d/DATE` must be in ISO 8601 date format: `YYYY-MM-DD`.
 * The date cannot be later than today.
 * The specified date must already exist in that student's payment history.
 * If you delete the most recent recorded payment date, TutorFlow rolls the due date back by one billing cycle.
-* A billing cycle is one recurrence cycle (monthly by default). Each advancement brings the due date forward by one 
+* A billing cycle is one recurrence cycle (monthly by default). Each advancement brings the due date forward by one
   recurrence cycle.
 * If you delete an older payment date, the due date stays unchanged.
 
@@ -502,7 +512,7 @@ Adds an appointment to a student.
 Format: `add appt INDEX d/DATETIME [r/RECURRENCE] dsc/DESCRIPTION`
 
 Details:
-* `d/DATETIME` must be in ISO 8601 local date-time format: `YYYY-MM-DDTHH:MM:SS`.
+* `d/DATETIME` must be in ISO 8601 date-time format: `YYYY-MM-DDTHH:MM:SS`.
 * `r/RECURRENCE` is optional. Valid values are `NONE`, `WEEKLY`, `BIWEEKLY`, and `MONTHLY`.
 * If `r/` is omitted, TutorFlow uses `NONE`.
 * `dsc/` is required and should describe the session.
@@ -537,7 +547,7 @@ Details:
 * Edits the selected session for the student at `INDEX`.
 * `SESSION_INDEX` refers to the numbered session shown for that student in the app.
 * At least one of `d/`, `r/`, or `dsc/` must be provided.
-* `d/DATETIME` must be in ISO 8601 local date-time format (`YYYY-MM-DDTHH:MM:SS`).
+* `d/DATETIME` must be in ISO 8601 date-time format (`YYYY-MM-DDTHH:MM:SS`).
 * `r/RECURRENCE` supports `NONE`, `WEEKLY`, `BIWEEKLY`, and `MONTHLY`.
 * `dsc/DESCRIPTION` updates the session description.
 * Any field you omit remains unchanged.
@@ -553,8 +563,8 @@ Shows students whose next appointment falls within the Monday-to-Sunday week con
 Format: `find appt [d/DATE]`
 
 Details:
-* If `d/DATE` is omitted, TutorFlow uses the current local date.
-* `DATE` must be in ISO 8601 local date format: `YYYY-MM-DD`.
+* If `d/DATE` is omitted, TutorFlow uses the current date.
+* `DATE` must be in ISO 8601 date format: `YYYY-MM-DD`.
 
 Examples:
 * `find appt`
@@ -574,7 +584,7 @@ Details:
 * `n` records that the student was absent for the selected session.
 * If `d/DATE_OR_DATE_TIME` is omitted, the selected session's `next` date is used.
 * `d/DATE_OR_DATE_TIME` can be used with both `y` and `n`.
-* `d/DATE_OR_DATE_TIME` must be in ISO local date (`YYYY-MM-DD`) or date-time (`YYYY-MM-DDTHH:MM:SS`) format.
+* `d/DATE_OR_DATE_TIME` must be in ISO date (`YYYY-MM-DD`) or date-time (`YYYY-MM-DDTHH:MM:SS`) format.
 * Attendance cannot be recorded for a future date or time.
 * Recurring sessions allow only one attendance record per calendar date.
 * Recording attendance for a recurring session advances its next scheduled occurrence by one recurrence cycle only
@@ -598,7 +608,7 @@ Format: `delete attd INDEX s/SESSION_INDEX d/DATE_OR_DATE_TIME`
 Details:
 * Deletes attendance for the selected session of the student at `INDEX`.
 * `SESSION_INDEX` refers to the numbered session shown for that student in the app.
-* `d/` accepts either ISO local date (`YYYY-MM-DD`) or local date-time (`YYYY-MM-DDTHH:MM:SS`).
+* `d/` accepts either ISO date (`YYYY-MM-DD`) or date-time (`YYYY-MM-DDTHH:MM:SS`).
 * If deleting by date, records on that date are removed.
 * If deleting by date-time, only the exact record is removed.
 * If the deleted attendance is the latest attendance for the session, recurring sessions roll back by one cycle.

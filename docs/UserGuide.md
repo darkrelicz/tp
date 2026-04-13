@@ -3,6 +3,10 @@ layout: page
 title: User Guide
 ---
 
+<p align="center">
+  <img src="images/tutorflow-logo.png" alt="TutorFlow logo" width="220">
+</p>
+
 TutorFlow is a **desktop app for freelance private tutors who need to manage students, parents, billing, and lesson schedules in one place**. It is optimized for keyboard-first use, so tutors who are comfortable typing commands can update records faster than with a mouse-only workflow.
 
 TutorFlow keeps your student list, parent / guardian details, academics, tuition billing, payment history, appointments, and attendance records together in a single interface.
@@ -140,7 +144,7 @@ Examples:
 * `find student Betsy` followed by `delete student 1`
 
 ### Viewing a student's details : `view`
-
+![Result for 'view index'](images/view_idx.png)
 Selects a student and shows the full record in the detail panel.
 
 Format: `view INDEX`
@@ -176,8 +180,8 @@ Details:
 
 Examples:
 * `find student John`
-* `find student alex david`
-  ![Result for 'find student alex david'](images/findAlexDavidResult.png)
+* `find student bernice david`
+  ![Result for 'find student bernice david'](images/find_student_bernice_david.png)
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -230,8 +234,10 @@ Details:
 
 Examples:
 * `delete tag 1 t/2`
-* `delete tag 1 t/2 t/3`
+* `delete tag 1 t/1 t/2`
 
+![Result for 'delete tag 1 t/1 t/2 before'](images/delete-tag-before.png)
+![Result for 'delete tag 1 t/1 t/2'](images/delete-tag-after.png)
 ### Locating students by tag : `find tag`
 
 Finds students whose tags match any of the given tag keywords.
@@ -512,7 +518,9 @@ Details:
 
 Examples:
 * `find appt`
-* `find appt d/2026-02-13`
+* `find appt d/2026-04-13`
+![appt diag](images/appt-diag.png)
+![Result for 'find appt d/2026-04-13'](images/find_appt_20260413.png)
 
 ### Recording appointment attendance : `add attd`
 

@@ -10,7 +10,7 @@ import seedu.address.commons.util.ToStringBuilder;
 
 /**
  * Tests that a {@code Person}'s {@code Guardian} matches the given name, phone, and/or email keywords.
- * Name matching, phone and email matching are case-insensitive substring.
+ * Name, phone and email matching are case-insensitive substring.
  * A match in any supplied field is sufficient.
  */
 public class GuardianContainsKeywordsPredicate implements Predicate<Person> {

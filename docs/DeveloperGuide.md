@@ -12,6 +12,7 @@ pageNav: 3
 * TutorFlow is based on [AddressBook-Level3](https://se-education.org/addressbook-level3/) by the [SE-EDU initiative](https://se-education.org).
 * The GUI is built with [JavaFX](https://openjfx.io/).
 * JSON persistence is implemented with [Jackson](https://github.com/FasterXML/jackson).
+* AI tools (GitHub Copilot, Claude Code, Codex) were used extensively during the development process by all members.
 
 --------------------------------------------------------------------------------------------------------------------
 

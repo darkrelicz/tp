@@ -37,7 +37,7 @@ TutorFlow keeps your student list, parent / guardian details, academics, tuition
 
 1. Move the jar file into the folder you want TutorFlow to use as its home folder.
 
-1. Open a terminal, `cd` into that folder, and run:
+1. Open a terminal, `cd` into that folder, for example, `cd target_directory/tutorflow_app`, and run:
 
    `java -jar tutorflow.jar`
 
@@ -80,6 +80,8 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 
 **Command format notes**
 
+* Command words and subcommand words are **case insensitive**. For example, `dElEte STUdenT 1` works the same as `delete student 1`. Prefixes such as `n/` and `p/` must still be entered exactly as shown.
+
 * Words in `UPPER_CASE` are values you must supply.
   Example: in `add student n/NAME`, replace `NAME` with an actual name such as `John Doe`.
 
@@ -91,6 +93,9 @@ For commands such as `delete tag`, `delete acad`, `delete appt`, and `add attd`,
 
 * For commands that use prefixes, the order of prefixed fields usually does not matter.
   Example: `p/91234567 n/John Doe` is accepted for commands that expect both fields.
+
+* For `NAME` values in `add student`, `edit student`, and `edit parent`, the value must contain at least one alphabetic character.
+  It may use letters, numbers, spaces, apostrophes (`'`), hyphens (`-`), and periods (`.`).
 
 * Whenever a command uses `INDEX`, it must be a positive integer such as `1`, `2`, or `3`.
 
@@ -132,6 +137,8 @@ Format: `add student n/NAME p/PHONE e/EMAIL a/ADDRESS [t/TAG]...`
 Details:
 * `n/`, `p/`, `e/`, and `a/` are required.
 * `t/` is optional and can be repeated.
+* Phone numbers must be at least 8 digits long (digits only), and there is no support for international numbers.
+* TutorFlow treats two students with the same `NAME` and `EMAIL` as duplicates, so such a student cannot be added.
 * A student can be created without any tags. You can add tags later with `add tag`.
 
 Examples:
@@ -148,9 +155,11 @@ Details:
 * Edits the student at the specified `INDEX`.
 * At least one field must be provided.
 * Only the fields you provide are updated. Unspecified fields stay unchanged.
+* Phone numbers must be at least 8 digits long (digits only), and there is no support for international numbers.
+* The edit is rejected if it would make the student have the same `NAME` and `EMAIL` as another student.
 
 Examples:
-* `edit student 1 p/91234567 e/johndoe@example.com`
+* `edit student 1 n/John Doe p/91234567 e/johndoe@example.com`
 * `edit student 2 n/Betsy Crowe`
 
 ### Deleting a student : `delete student`
@@ -373,6 +382,7 @@ Format: `edit parent INDEX [n/PARENT_NAME] [p/PARENT_PHONE] [e/PARENT_EMAIL]`
 
 Details:
 * At least one field must be provided.
+* Phone numbers must be at least 8 digits long (digits only), and there is no support for international numbers.
 * Existing parent fields stay unchanged unless you replace them.
 * If the student does not already have a parent / guardian record, include `n/PARENT_NAME` so TutorFlow can create one.
 
@@ -437,6 +447,8 @@ Details:
 * The payment date cannot be later than today.
 * Recording a payment advances the student's billing due date by one billing cycle only when the new payment date
   is later than the latest recorded payment date.
+* A billing cycle is one recurrence cycle (monthly by default). Each advancement brings the due date forward by one 
+  recurrence cycle.
 * If you add an older (backfilled) payment date, TutorFlow records it but keeps the due date unchanged.
 
 Examples:
@@ -453,6 +465,8 @@ Details:
 * The date cannot be later than today.
 * The specified date must already exist in that student's payment history.
 * If you delete the most recent recorded payment date, TutorFlow rolls the due date back by one billing cycle.
+* A billing cycle is one recurrence cycle (monthly by default). Each advancement brings the due date forward by one 
+  recurrence cycle.
 * If you delete an older payment date, the due date stays unchanged.
 
 Examples:
@@ -740,7 +754,7 @@ Action | Format | Example
 
 Prefix | Stands for | Used in
 -------|------------|--------
-`n/` | Name | `add student`, `edit student`, `edit parent`, `find parent`
+`n/` | Name / Name keywords | `add student`, `edit student`, `edit parent`, `find parent`
 `p/` | Phone | `add student`, `edit student`, `edit parent`, `find parent`
 `e/` | Email | `add student`, `edit student`, `edit parent`, `find parent`
 `a/` | Address / Amount | Address: `add student`, `edit student` · Amount: `edit billing`

@@ -24,10 +24,11 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ## **Design**
 
-<div markdown="span" class="alert alert-primary">
-
-:bulb: **Tip:** The `.puml` files used to create diagrams are in this document `docs/diagrams` folder. Refer to the [_PlantUML Tutorial_ at se-edu/guides](https://se-education.org/guides/tutorials/plantUml.html) to learn how to create and edit diagrams.
-</div>
+<box type="tip" seamless header="**Tip**">
+<md>
+The `.puml` files used to create diagrams are in this document `docs/diagrams` folder. Refer to the [_PlantUML Tutorial_ at se-edu/guides](https://se-education.org/guides/tutorials/plantUml.html) to learn how to create and edit diagrams.
+</md>
+</box>
 
 ### Architecture
 
@@ -137,11 +138,14 @@ The `Model` component,
 * stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
+<box type="info" seamless header="**Note**">
+<md>
+An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
+</md>
 
 <puml src="diagrams/BetterModelClassDiagram.puml" width="450" />
 
-</div>
+</box>
 
 
 ### Storage component
@@ -453,10 +457,14 @@ Use case ends.
 
 Given below are instructions to test the app manually.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** These instructions only provide a starting point for testers to work on;
+<box type="info" seamless header="**Note**">
+<md>
+These instructions only provide a starting point for testers to work on;
 testers are expected to do more *exploratory* testing.
 
-</div>
+</md>
+
+</box>
 
 ### Launch and shutdown
 

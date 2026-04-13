@@ -411,8 +411,8 @@ Details:
 * Parent name, phone, and email matching are case-insensitive and based on partial text.
 * Within a single field, multiple keywords behave as an `OR` search.
   Example: `n/Susan Meier` matches a parent name containing either `Susan` or `Meier`.
-* If you supply more than one field, the student must match **every supplied field**.
-  Example: `n/Susan p/9999` requires both a matching name keyword and a matching phone keyword.
+* If you supply more than one field, the student is returned if **any supplied field** matches.
+  Example: `n/Susan p/9999` matches if the parent name matches `Susan` or the phone matches `9999`.
 
 Examples:
 * `find parent n/Susan`

@@ -186,6 +186,7 @@ Examples:
 --------------------------------------------------------------------------------------------------------------------
 
 ## Tag Management
+![Highlighted tags](images/highlighted-tags.png)
 
 Use tags to group students by level, stream, exam target, or any other label that fits your teaching workflow.
 
@@ -259,7 +260,7 @@ Examples:
 --------------------------------------------------------------------------------------------------------------------
 
 ## Academic Management
-
+![highlighted academics](images/highlight-acad.png)
 Use academic records to keep track of the subjects a student takes and any overall academic notes.
 
 ### Adding subjects to a student : `add acad`
@@ -382,6 +383,8 @@ Examples:
 
 ## Billing & Payment Management
 
+![highlighted billing](images/highlight-billing.png)
+
 Use billing commands to track tuition fees, next payment due dates, and payment history.
 
 ### Editing billing details : `edit billing`
@@ -452,7 +455,7 @@ Examples:
 --------------------------------------------------------------------------------------------------------------------
 
 ## Appointment & Attendance Management
-
+![highlighted appointments](images/highlight-attd.png)
 Use these commands to schedule lessons, see weekly appointments, and record whether a lesson happened.
 
 ### Adding an appointment : `add appt`

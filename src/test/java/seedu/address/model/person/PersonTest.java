@@ -191,11 +191,13 @@ public class PersonTest {
 
         Person editedAlice = new PersonBuilder(ALICE)
                 .withPhone(new Phone(VALID_PHONE_BOB))
-                .withEmail(new Email(VALID_EMAIL_BOB))
                 .withAddress(new Address(VALID_ADDRESS_BOB))
                 .withTags(Set.of(new Tag(VALID_TAG_JC)))
                 .build();
         assertTrue(ALICE.isSamePerson(editedAlice));
+
+        editedAlice = new PersonBuilder(ALICE).withEmail(new Email(VALID_EMAIL_BOB)).build();
+        assertFalse(ALICE.isSamePerson(editedAlice));
 
         editedAlice = new PersonBuilder(ALICE).withName(new Name(VALID_NAME_BOB)).build();
         assertFalse(ALICE.isSamePerson(editedAlice));
@@ -205,8 +207,8 @@ public class PersonTest {
                 .build();
         assertFalse(BOB.isSamePerson(editedBob));
 
-        String nameWithTrailingSpaces = VALID_NAME_BOB + " ";
-        editedBob = new PersonBuilder(BOB).withName(new Name(nameWithTrailingSpaces)).build();
+        String nameWithPunctuation = VALID_NAME_BOB + ".";
+        editedBob = new PersonBuilder(BOB).withName(new Name(nameWithPunctuation)).build();
         assertFalse(BOB.isSamePerson(editedBob));
     }
 

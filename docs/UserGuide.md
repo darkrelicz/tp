@@ -560,7 +560,7 @@ Shows students whose next appointment falls within the Monday-to-Sunday week con
 Format: `find appt [d/DATE]`
 
 Details:
-* If `d/DATE` is omitted, TutorFlow uses the current date.
+* If `d/DATE` is omitted, TutorFlow uses the current date (SGT) and searches that date's Monday-to-Sunday week.
 * `DATE` must be in ISO 8601 date format: `YYYY-MM-DD`.
 
 Examples:

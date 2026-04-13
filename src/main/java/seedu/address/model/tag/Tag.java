@@ -12,7 +12,7 @@ import seedu.address.model.util.StringUtil;
 public class Tag {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Tag names should be alphanumeric and may contain spaces between words";;
+            "Tag names should be alphanumeric and may contain spaces between words";
     public static final String VALIDATION_REGEX = "[\\p{Alnum}]+( [\\p{Alnum}]+)*";
 
     public final String tagName;
@@ -38,7 +38,15 @@ public class Tag {
      * Returns true if a given string is a valid tag name.
      */
     public static boolean isValidTagName(String test) {
-        return test.matches(VALIDATION_REGEX);
+        requireNonNull(test);
+
+        String trimmed = test.trim();
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+
+        String normalized = StringUtil.toTitleCase(trimmed);
+        return normalized.matches(VALIDATION_REGEX);
     }
 
     @Override

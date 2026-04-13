@@ -1,6 +1,10 @@
 [![CI Status](https://github.com/AY2526S2-CS2103T-T09-3/tp/workflows/Java%20CI/badge.svg)](https://github.com/AY2526S2-CS2103T-T09-3/tp/actions)
 [![codecov](https://codecov.io/gh/AY2526S2-CS2103T-T09-3/tp/branch/master/graph/badge.svg?token=3KXXYIEJP0)](https://codecov.io/gh/AY2526S2-CS2103T-T09-3/tp)
 
+<p align="center">
+  <img src="docs/images/tutorflow-logo.png" alt="TutorFlow logo" width="260">
+</p>
+
 ![Ui](docs/images/UI_v1.5.png)
 
 # TutorFlow

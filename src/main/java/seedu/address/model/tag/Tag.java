@@ -42,7 +42,7 @@ public class Tag {
             return false;
         }
 
-        String normalized = StringUtil.toTitleCase(trimmed);
+        String normalized = trimmed.toLowerCase();
         return normalized.matches(VALIDATION_REGEX);
     }
 
